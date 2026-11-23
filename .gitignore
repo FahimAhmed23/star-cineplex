@@ -21,3 +21,7 @@ references/branches/*.jpg
 
 # Old starter drop
 Claude outputs/
+
+# Raw Blender exports (packed copies live in /public/models)
+tools/blender/out/
+__pycache__/

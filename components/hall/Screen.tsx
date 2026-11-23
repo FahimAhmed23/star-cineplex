@@ -1,0 +1,215 @@
+"use client";
+
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
+import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
+import type { HallLayout } from "@/lib/hall-layout";
+
+RectAreaLightUniformsLib.init();
+
+interface Props {
+  layout: HallLayout;
+  /** trailer .mp4; poster is shown until it plays, and instead of it if it fails (§9.9) */
+  src?: string;
+  poster?: string;
+  muted?: boolean;
+  /** 0..1 — the hero brightens 10% → 100% (§8.1), the scroll transition dims to 35% (§8.3) */
+  brightness?: number;
+  playing?: boolean;
+  /** receives the screen's average colour (for the silhouettes' rim light) */
+  onLightColor?: (c: THREE.Color) => void;
+  videoRef?: React.MutableRefObject<HTMLVideoElement | null>;
+  /** projector beam: an atmosphere touch for the dark hero; hidden when the house lights are up */
+  beam?: boolean;
+}
+
+const FALLBACK = new THREE.Color("#c9b8ff");
+
+/** The hall screen: trailer as a video texture, its light spilling onto the first rows and walls. */
+export function Screen({ layout, src, poster, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
+  const { screen, room } = layout;
+  const [videoTex, setVideoTex] = useState<THREE.VideoTexture | null>(null);
+  const [posterTex, setPosterTex] = useState<THREE.Texture | null>(null);
+  const video = useRef<HTMLVideoElement | null>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+  const light = useRef<THREE.RectAreaLight>(null);
+  const avg = useRef(FALLBACK.clone());
+  const target = useRef(FALLBACK.clone());
+  const level = useRef(brightness);
+  const gl = useThree((s) => s.gl);
+
+  // poster texture
+  useEffect(() => {
+    if (!poster) return setPosterTex(null);
+    const tex = new THREE.TextureLoader().load(poster);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    setPosterTex(tex);
+    return () => tex.dispose();
+  }, [poster]);
+
+  // video element + texture
+  useEffect(() => {
+    if (!src) return;
+    const el = document.createElement("video");
+    Object.assign(el, { src, crossOrigin: "anonymous", loop: true, muted: true, playsInline: true, preload: "auto" });
+    el.setAttribute("playsinline", "");
+    video.current = el;
+    if (videoRef) videoRef.current = el;
+    const tex = new THREE.VideoTexture(el);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
+    const onPlaying = () => setVideoTex(tex);
+    const onError = () => setVideoTex(null);
+    el.addEventListener("playing", onPlaying);
+    el.addEventListener("error", onError);
+    el.play().catch(() => {});
+    return () => {
+      el.removeEventListener("playing", onPlaying);
+      el.removeEventListener("error", onError);
+      el.pause();
+      el.removeAttribute("src");
+      el.load();
+      tex.dispose();
+      setVideoTex(null);
+    };
+  }, [src, gl, videoRef]);
+
+  useEffect(() => {
+    const el = video.current;
+    if (!el) return;
+    el.muted = muted;
+    if (playing) el.play().catch(() => {});
+    else el.pause();
+  }, [muted, playing, videoTex]);
+
+  const map = videoTex ?? posterTex;
+
+  // cover-fit the 16:9 trailer onto the screen's aspect (crop top/bottom a little on wide screens)
+  useEffect(() => {
+    if (!map) return;
+    const img = map.image as { videoWidth?: number; videoHeight?: number; width?: number; height?: number } | undefined;
+    const iw = img?.videoWidth || img?.width || 16;
+    const ih = img?.videoHeight || img?.height || 9;
+    const screenAspect = screen.width / screen.height;
+    const texAspect = iw / ih;
+    if (texAspect > screenAspect) {
+      const r = screenAspect / texAspect;
+      map.repeat.set(r, 1);
+      map.offset.set((1 - r) / 2, 0);
+    } else {
+      const r = texAspect / screenAspect;
+      map.repeat.set(1, r);
+      map.offset.set(0, (1 - r) / 2);
+    }
+  }, [map, screen.width, screen.height]);
+
+  // sample the average colour of the picture a few times a second (tiny canvas, cheap)
+  const sampler = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas");
+    c.width = c.height = 4;
+    return c.getContext("2d", { willReadFrequently: true });
+  }, []);
+  const lastSample = useRef(0);
+
+  useFrame((state, dt) => {
+    level.current += (brightness - level.current) * (1 - Math.exp(-dt * 4));
+    const el = video.current;
+    if (sampler && el && videoTex && el.readyState >= 2 && state.clock.elapsedTime - lastSample.current > 0.25) {
+      lastSample.current = state.clock.elapsedTime;
+      try {
+        sampler.drawImage(el, 0, 0, 4, 4);
+        const d = sampler.getImageData(0, 0, 4, 4).data;
+        let r = 0, g = 0, b = 0;
+        for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
+        const n = d.length / 4;
+        target.current.setRGB(r / n / 255, g / n / 255, b / n / 255, THREE.SRGBColorSpace);
+        // keep some light even on dark frames; soften towards white/purple
+        target.current.lerp(FALLBACK, 0.35);
+      } catch {
+        target.current.copy(FALLBACK);
+      }
+    }
+    avg.current.lerp(target.current, 1 - Math.exp(-dt * 3));
+    // stays just under the bloom threshold: bloom is for the light strips, not a haze around the picture
+    if (matRef.current) matRef.current.color.setScalar(Math.max(0.04, level.current) * (map ? 0.93 : 0.8));
+    if (light.current) {
+      light.current.color.copy(avg.current);
+      light.current.intensity = 1.6 * level.current;
+    }
+    onLightColor?.(avg.current);
+  });
+
+  const geometry = useMemo(() => {
+    if (!screen.curved) return new THREE.PlaneGeometry(screen.width, screen.height);
+    // gentle curve: a slice of a cylinder (Atmos hall's wide curved screen)
+    const radius = screen.width * 1.6;
+    const theta = screen.width / radius;
+    const g = new THREE.CylinderGeometry(radius, radius, screen.height, 48, 1, true, Math.PI - theta / 2, theta);
+    g.scale(-1, 1, 1); // face inwards
+    g.translate(0, 0, radius - 0.0);
+    return g;
+  }, [screen.curved, screen.width, screen.height]);
+
+  return (
+    <group>
+      <mesh geometry={geometry} position={[0, screen.y, screen.z]}>
+        <meshBasicMaterial ref={matRef} map={map ?? undefined} color="#e9e4f5" toneMapped={false} />
+      </mesh>
+      {/* light spill from the screen onto the first rows and the walls */}
+      <rectAreaLight
+        ref={light}
+        width={screen.width}
+        height={screen.height}
+        position={[0, screen.y, screen.z + 0.3]}
+        rotation={[0, Math.PI, 0]} /* lights emit along −Z; turn it to face the audience (+Z) */
+        intensity={2.6}
+        color={FALLBACK}
+      />
+      {/* faint projector beam from the booth to the screen */}
+      <ProjectorBeam visible={beam} from={[0, Math.min(room.height - 0.8, layout.tiers[layout.tiers.length - 1].y + 3), room.zBack - 0.05]} to={[0, screen.y, screen.z]} size={[screen.width, screen.height]} level={level} />
+    </group>
+  );
+}
+
+function ProjectorBeam({ from, to, size, level, visible }: { from: [number, number, number]; to: [number, number, number]; size: [number, number]; level: React.MutableRefObject<number>; visible: boolean }) {
+  const mat = useRef<THREE.MeshBasicMaterial>(null);
+  const fade = useRef(visible ? 1 : 0);
+  const { geometry, position, quaternion } = useMemo(() => {
+    const a = new THREE.Vector3(...from);
+    const b = new THREE.Vector3(...to);
+    const len = a.distanceTo(b);
+    // a 4-sided pyramid from the booth (apex) to the screen rectangle
+    const g = new THREE.ConeGeometry(1, len, 4, 1, true);
+    g.rotateY(Math.PI / 4);
+    g.scale(size[0] * 0.71, 1, size[1] * 0.71);
+    g.rotateX(Math.PI / 2); // apex towards −Z… then aim it
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), b.clone().sub(a).normalize());
+    // cone apex is at +len/2 on its axis; after rotateX it points to −Z
+    return { geometry: g, position: a.clone().lerp(b, 0.5), quaternion: q };
+  }, [from, to, size]);
+  // bright at the projector, fading out well before the screen (cone uv.y = 0 at the apex, 1 at the screen)
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color("#cfd8ff") } },
+        vertexShader: `varying float vT; void main(){ vT = uv.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+        fragmentShader: `uniform float uOpacity; uniform vec3 uColor; varying float vT;
+          void main(){ float a = uOpacity * pow(1.0 - vT, 4.0); gl_FragColor = vec4(uColor * a, 1.0); }`,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      }),
+    [],
+  );
+  useFrame((_, dt) => {
+    fade.current += ((visible ? 1 : 0) - fade.current) * (1 - Math.exp(-dt * 3));
+    material.uniforms.uOpacity.value = 0.09 * level.current * fade.current;
+    material.visible = fade.current > 0.01;
+  });
+  void mat;
+  return <mesh geometry={geometry} material={material} position={position} quaternion={quaternion} raycast={() => null} />;
+}

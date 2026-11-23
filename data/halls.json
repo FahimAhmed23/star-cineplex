@@ -1,5 +1,5 @@
 {
-  "_note": "Seat maps per CLAUDE.md §6. Bashundhara Halls 1–3 and 5 are verified against Star Cineplex's own seat maps. Hall 6 Atmos is approximate until the real map is supplied. Other branches have no real seat maps or prices yet: each gets one placeholder hall that reuses the Hall 1 layout and Bashundhara premium prices (approx: true).",
+  "_note": "Seat maps per CLAUDE.md §6. Bashundhara Halls 1–3 and 5 are verified against Star Cineplex's own seat maps. Hall 6 Atmos is approximate until the real map is supplied. Other branches have no real seat maps or prices yet: each gets one placeholder hall that reuses the Hall 1 layout and Bashundhara premium prices (approx: true). VIP Hall 5 has a per-hall look (walnut walls, amber lights) from references/ai/hall-vip-back.png.",
   "halls": [
     {
       "id": "bdc-hall-1",
@@ -314,6 +314,12 @@
           "evening": 850,
           "weekend": 850
         }
+      },
+      "look": {
+        "walls": "#2A1915",
+        "accentLight": "#FFB25E",
+        "accentPattern": "sconces",
+        "carpet": "#5E1A1F"
       },
       "rows": [
         {

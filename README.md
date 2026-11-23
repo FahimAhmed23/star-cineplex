@@ -22,5 +22,9 @@ Open http://localhost:3000 (Phase 0: redirects to `/styleguide`).
 | `npm run data:showtimes` | Regenerates demo showtimes (`node scripts/generate-showtimes.mjs 2026-11-23`) |
 | `npm run media` | Compresses logo, posters and trailers from `/references` into `/public` (`-- --force` to redo) |
 | `npm run icons` | Rebuilds the verified Solar icon subset (`components/ui/icons.generated.ts`) |
+| `npm run models:blender` | Builds the seat / silhouette / door models headless in Blender 5.3 (`tools/blender/*.py`) |
+| `npm run models` | Packs + meshopt-compresses them into `/public/models` (one merged mesh per seat type) |
+
+Test pages: `/styleguide` (Phase 0 tokens) · `/dev/hall` (Phase 1 hall engine: halls, camera presets, FPS).
 
 Icons: Solar by 480 Design (CC BY 4.0). Fonts: Fraunces, Outfit, Anek Bangla, IBM Plex Mono (SIL OFL).

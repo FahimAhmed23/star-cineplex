@@ -17,9 +17,13 @@
         "leather": "#6B1E24",
         "walls": "#2A2147",
         "accentLight": "#3D5BFF",
+        "accentPattern": "diagonal",
         "accentStyle": "thin blue diagonal light lines (Hall 2/3 variant: magenta LED bars)",
-        "carpet": "#7A1A1E",
-        "ref": ["bashundhara-city-1.jpg", "bashundhara-city-2.jpg"]
+        "carpet": "#4E1418",
+        "ref": [
+          "bashundhara-city-1.jpg",
+          "bashundhara-city-2.jpg"
+        ]
       }
     },
     {
@@ -37,9 +41,12 @@
         "seatMaterial": "fabric",
         "walls": "#1E1E22",
         "accentLight": "#2F7BFF",
+        "accentPattern": "zigzag",
         "accentStyle": "blue zig-zag wall lights + blue step lights",
         "carpet": "#121A33",
-        "ref": ["shimanto-shambhar.jpg"]
+        "ref": [
+          "shimanto-shambhar.jpg"
+        ]
       }
     },
     {
@@ -58,9 +65,13 @@
         "leather": "#2747A8",
         "walls": "#8A6A2E",
         "accentLight": "#FFFFFF",
+        "accentPattern": "columns",
         "accentStyle": "white light frames (gold hall); blue light lines in the blue lounger hall",
         "carpet": "#5A3A22",
-        "ref": ["sks-tower-1-recliners.jpg", "sks-tower-2-loungers.jpg"]
+        "ref": [
+          "sks-tower-1-recliners.jpg",
+          "sks-tower-2-loungers.jpg"
+        ]
       }
     },
     {
@@ -78,9 +89,12 @@
         "seatMaterial": "fabric",
         "walls": "#0E0E10",
         "accentLight": "#FF3B30",
+        "accentPattern": "hexagon",
         "accentStyle": "small red hexagon wall lights",
         "carpet": "#2A2A2E",
-        "ref": ["sony-square.jpg"]
+        "ref": [
+          "sony-square.jpg"
+        ]
       }
     },
     {
@@ -98,9 +112,12 @@
         "seatMaterial": "fabric",
         "walls": "#2A2A2E",
         "accentLight": "#6FA8FF",
+        "accentPattern": "stars",
         "accentStyle": "starry blue ceiling panels; white faceted ceiling",
         "carpet": "#3A3A40",
-        "ref": ["military-museum.jpg"]
+        "ref": [
+          "military-museum.jpg"
+        ]
       }
     },
     {
@@ -119,9 +136,13 @@
         "leather": "#7FBF5A",
         "walls": "#3A2560",
         "accentLight": "#A66BFF",
+        "accentPattern": "lines",
         "accentStyle": "purple light lines on a triangle-lattice wall",
         "carpet": "#141018",
-        "ref": ["centrepoint-1.jpg", "centrepoint-2-recliners.jpg"]
+        "ref": [
+          "centrepoint-1.jpg",
+          "centrepoint-2-recliners.jpg"
+        ]
       }
     },
     {
@@ -139,9 +160,12 @@
         "seatMaterial": "fabric",
         "walls": "#7A1418",
         "accentLight": "#FF2A2A",
+        "accentPattern": "columns",
         "accentStyle": "red LED wall columns",
         "carpet": "#4A2A2E",
-        "ref": ["shimanto-tower-narayanganj.jpg"]
+        "ref": [
+          "shimanto-tower-narayanganj.jpg"
+        ]
       }
     },
     {
@@ -159,9 +183,13 @@
         "seatMaterial": "fabric",
         "walls": "#3A2560",
         "accentLight": "#A66BFF",
+        "accentPattern": "lines",
         "accentStyle": "purple light lines on a triangle-lattice wall (second hall: red #D93A35 seats, charcoal walls with red/white diagonal stripes)",
         "carpet": "#141018",
-        "ref": ["bali-arcade-1.jpg", "bali-arcade-2.jpg"]
+        "ref": [
+          "bali-arcade-1.jpg",
+          "bali-arcade-2.jpg"
+        ]
       }
     },
     {
@@ -179,9 +207,12 @@
         "seatMaterial": "fabric",
         "walls": "#23264F",
         "accentLight": "#FFC98A",
+        "accentPattern": "downlights",
         "accentStyle": "warm downlights; pink + navy geometric panels",
         "carpet": "#1A1F45",
-        "ref": ["finlay-square.jpg"]
+        "ref": [
+          "finlay-square.jpg"
+        ]
       }
     }
   ]

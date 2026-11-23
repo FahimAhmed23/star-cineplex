@@ -26,8 +26,13 @@ export interface Hall {
   approx?: boolean;
   /** BDT by seat class and price band */
   prices: PriceTable;
+  /** optional per-hall overrides of the branch look (e.g. the walnut/amber VIP Hall 5) */
+  look?: Partial<Pick<BranchTheme, "walls" | "accentLight" | "accentPattern" | "carpet">>;
   rows: HallRow[];
 }
+
+/** How the accent lights are drawn on the side walls (procedural, §6 Branch hall themes). */
+export type AccentPattern = "diagonal" | "zigzag" | "hexagon" | "columns" | "lines" | "downlights" | "stars" | "sconces";
 
 export interface BranchTheme {
   seat: string;
@@ -36,6 +41,7 @@ export interface BranchTheme {
   leather?: string;
   walls: string;
   accentLight: string;
+  accentPattern: AccentPattern;
   accentStyle: string;
   carpet: string;
   ref: string[];
