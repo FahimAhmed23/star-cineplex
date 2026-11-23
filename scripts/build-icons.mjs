@@ -28,6 +28,7 @@ export const ICONS = {
   arrowRight: "arrow-right-linear",
   altArrowLeft: "alt-arrow-left-linear",
   altArrowRight: "alt-arrow-right-linear",
+  altArrowUp: "alt-arrow-up-linear",
   // trailer view §8.7
   restart: "restart-linear",
   // booking §9.2–9.5

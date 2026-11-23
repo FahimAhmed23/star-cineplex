@@ -121,5 +121,19 @@
   "intro": {
     "skip": "Skip intro",
     "label": "Opening"
+  },
+  "cards": {
+    "showtimesFor": "Showtimes for {title}",
+    "trailerFor": "Play the trailer of {title}",
+    "imdb": "IMDb rating {r}",
+    "releases": "Releases {date}",
+    "previous": "Previous",
+    "next": "Next",
+    "goTo": "Go to slide {n}",
+    "genres": "Genres"
+  },
+  "trailer": {
+    "back": "Back",
+    "ended": "Trailer ended"
   }
 }

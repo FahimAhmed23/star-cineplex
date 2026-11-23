@@ -30,6 +30,8 @@ export function OpeningSequence() {
     let seen = false;
     try {
       seen = sessionStorage.getItem(SEEN_KEY) === "1";
+      // a shared trailer link (/?trailer=…) goes straight to the Trailer view (§8.7)
+      if (new URLSearchParams(location.search).has("trailer")) seen = true;
     } catch {}
     setShow(!seen);
     if (seen) setStage("revealed");

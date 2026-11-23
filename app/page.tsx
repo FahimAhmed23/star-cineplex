@@ -11,10 +11,8 @@ export default async function Home() {
 
   // "Playing across N branches" — branches that have this film in the schedule
   const branchesFor = (slug: string) => new Set(showtimes.filter((s) => s.movie === slug).map((s) => s.branch)).size;
-  const featured: HeroMovie[] = movies
-    .filter((m) => m.featured && m.status === "now-showing")
-    .slice(0, 6)
-    .map((m) => ({ ...m, branchCount: branchesFor(m.slug) }));
+  const allMovies: HeroMovie[] = movies.map((m) => ({ ...m, branchCount: branchesFor(m.slug) }));
+  const featured = allMovies.filter((m) => m.featured && m.status === "now-showing").slice(0, 6);
 
   // a week of shows without booked-seat lists (~35 KB); the browser picks "tonight" in local time
   const tonight: ShowLite[] = showtimes.map(({ id, branch, movie, date, time, format }) => ({ id, branch, movie, date, time, format }));
@@ -23,5 +21,5 @@ export default async function Home() {
   const hall = getHall(HERO_HALL)!;
   const show = typicalShow(showtimes, HERO_HALL);
 
-  return <HomeExperience movies={featured} hall={hall} bookedSeats={show?.bookedSeats ?? []} tonight={tonight} titles={titles} />;
+  return <HomeExperience movies={featured} allMovies={allMovies} hall={hall} bookedSeats={show?.bookedSeats ?? []} tonight={tonight} titles={titles} />;
 }

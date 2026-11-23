@@ -42,20 +42,30 @@ export function Navbar({ revealWithIntro = false }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // active link = the home section in view (sections arrive in Phases 3–4)
+  // active link = the home section crossing the middle of the viewport (looked up live, so re-mounted
+  // sections and sections added in later phases just work)
   useEffect(() => {
-    if (pathname !== "/") return;
+    if (pathname !== "/") return setActive(null);
     const ids = [...SECTION_LINKS.map((l) => l.id), "branches"];
-    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
-    if (!els.length) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const mid = window.innerHeight * 0.5;
+      const hit = ids.find((id) => {
+        const r = document.getElementById(id)?.getBoundingClientRect();
+        return r && r.top <= mid && r.bottom >= mid;
+      });
+      setActive(hit ?? null);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, [pathname]);
 
   // Escape closes the menu

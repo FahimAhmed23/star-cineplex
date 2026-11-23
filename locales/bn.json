@@ -121,5 +121,19 @@
   "intro": {
     "skip": "ইন্ট্রো বাদ দিন",
     "label": "শুরু"
+  },
+  "cards": {
+    "showtimesFor": "{title}-এর শো-এর সময়",
+    "trailerFor": "{title}-এর ট্রেলার দেখুন",
+    "imdb": "IMDb রেটিং {r}",
+    "releases": "মুক্তি {date}",
+    "previous": "আগের",
+    "next": "পরের",
+    "goTo": "স্লাইড {n}-এ যান",
+    "genres": "ধরন"
+  },
+  "trailer": {
+    "back": "ফিরে যান",
+    "ended": "ট্রেলার শেষ"
   }
 }

@@ -17,6 +17,11 @@ interface Props {
   crop?: { top: number; height: number };
   /** start position as a fraction of the trailer (e.g. 0.18 skips studio logos) */
   startAt?: number;
+  /** loop the trailer (carousel) or play it once (trailer view, §8.7) */
+  loop?: boolean;
+  onEnded?: () => void;
+  /** extra brightness multiplier read every frame (scroll-driven dimming, §8.3) — no re-renders */
+  brightnessScale?: () => number;
   muted?: boolean;
   /** 0..1 — the hero brightens 10% → 100% (§8.1), the scroll transition dims to 35% (§8.3) */
   brightness?: number;
@@ -31,7 +36,7 @@ interface Props {
 const FALLBACK = new THREE.Color("#c9b8ff");
 
 /** The hall screen: trailer as a video texture, its light spilling onto the first rows and walls. */
-export function Screen({ layout, src, poster, crop, startAt = 0, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
+export function Screen({ layout, src, poster, crop, startAt = 0, loop = true, onEnded, brightnessScale, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
   const { screen, room } = layout;
   const [videoTex, setVideoTex] = useState<THREE.VideoTexture | null>(null);
   const [posterTex, setPosterTex] = useState<THREE.Texture | null>(null);
@@ -56,7 +61,7 @@ export function Screen({ layout, src, poster, crop, startAt = 0, muted = true, b
   useEffect(() => {
     if (!src) return;
     const el = document.createElement("video");
-    Object.assign(el, { src, crossOrigin: "anonymous", loop: true, muted: true, playsInline: true, preload: "auto" });
+    Object.assign(el, { src, crossOrigin: "anonymous", loop, muted: true, playsInline: true, preload: "auto" });
     el.setAttribute("playsinline", "");
     video.current = el;
     if (videoRef) videoRef.current = el;
@@ -88,6 +93,18 @@ export function Screen({ layout, src, poster, crop, startAt = 0, muted = true, b
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- startAt only applies to a new src
   }, [src, gl, videoRef]);
+
+  // "ended" callback (trailer view shows Replay / Buy Tickets on the screen)
+  const endedRef = useRef(onEnded);
+  endedRef.current = onEnded;
+  useEffect(() => {
+    const el = video.current;
+    if (!el) return;
+    el.loop = loop;
+    const onEnd = () => endedRef.current?.();
+    el.addEventListener("ended", onEnd);
+    return () => el.removeEventListener("ended", onEnd);
+  }, [loop, videoTex]);
 
   useEffect(() => {
     const el = video.current;
@@ -133,7 +150,8 @@ export function Screen({ layout, src, poster, crop, startAt = 0, muted = true, b
   const lastSample = useRef(0);
 
   useFrame((state, dt) => {
-    level.current += (brightness - level.current) * (1 - Math.exp(-dt * 10)); // fast enough for a 300ms dip to black
+    const want = brightness * (brightnessScale ? brightnessScale() : 1);
+    level.current += (want - level.current) * (1 - Math.exp(-dt * 10)); // fast enough for a 300ms dip to black
     const el = video.current;
     if (sampler && el && videoTex && el.readyState >= 2 && state.clock.elapsedTime - lastSample.current > 0.25) {
       lastSample.current = state.clock.elapsedTime;

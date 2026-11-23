@@ -27,6 +27,11 @@ export interface Hall3DProps {
   muted?: boolean;
   /** where the trailer starts, as a fraction of its length (the hero skips studio logos) */
   startAt?: number;
+  loop?: boolean;
+  onTrailerEnded?: () => void;
+  videoRef?: React.MutableRefObject<HTMLVideoElement | null>;
+  /** extra screen brightness multiplier read every frame (scroll dimming) */
+  screenScale?: () => number;
   /** called once the scene (models, room) has rendered its first frame */
   onReady?: () => void;
   /** 0 = house lights down (hero), 1 = up enough to choose seats (overview) */
@@ -84,6 +89,10 @@ function Scene({
   poster,
   trailerCrop,
   startAt,
+  loop = true,
+  onTrailerEnded,
+  videoRef,
+  screenScale,
   onReady,
   muted = true,
   houseLights = 0,
@@ -116,6 +125,10 @@ function Scene({
         poster={poster}
         crop={trailerCrop}
         startAt={startAt}
+        loop={loop}
+        onEnded={onTrailerEnded}
+        videoRef={videoRef}
+        brightnessScale={screenScale}
         muted={muted}
         brightness={screenBrightness}
         playing={playing}
