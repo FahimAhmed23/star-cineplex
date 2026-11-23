@@ -1,0 +1,108 @@
+{
+  "common": {
+    "buyTickets": "Buy Tickets",
+    "fullSchedule": "Full Schedule",
+    "playTrailer": "Play trailer",
+    "continue": "Continue",
+    "back": "Back",
+    "showAll": "Show all ({count})",
+    "showLess": "Show less",
+    "skipIntro": "Skip intro",
+    "close": "Close",
+    "replay": "Replay",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "minutesShort": "{h}h {m}m",
+    "releasing": "Releasing {date}",
+    "language": "Language"
+  },
+  "nav": {
+    "nowShowing": "Now Showing",
+    "comingSoon": "Coming Soon",
+    "showtimes": "Showtimes",
+    "prices": "Prices",
+    "branches": "Branches",
+    "myTickets": "My tickets",
+    "about": "About",
+    "menu": "Menu",
+    "phone": "09617660660"
+  },
+  "hero": {
+    "eyebrow": "Now showing at Star Cineplex",
+    "playingAcross": "Playing across {count} branches",
+    "tonightAt": "Tonight at"
+  },
+  "home": {
+    "nowShowingTitle": "Now Showing in Theaters",
+    "comingSoonTitle": "Coming Soon",
+    "momentsTitle": "Moments made at Star Cineplex",
+    "reelTitle": "One Star. Nine homes.",
+    "reelSub": "Star Cineplex across Bangladesh"
+  },
+  "booking": {
+    "stepShowtime": "Showtime",
+    "stepSeats": "Seats",
+    "stepCheckout": "Checkout",
+    "branch": "Branch",
+    "date": "Date",
+    "movie": "Movie",
+    "today": "Today",
+    "chooseExperience": "Choose your experience",
+    "available": "Available",
+    "fillingFast": "Filling fast",
+    "soldOut": "Sold out",
+    "changeShowtime": "Change showtime",
+    "bestAvailable": "Best available for",
+    "viewFromSeat": "View from seat",
+    "select": "Select",
+    "selected": "Selected",
+    "booked": "Booked",
+    "rowSeat": "Row {row} · Seat {seat}",
+    "backToHall": "Back to hall",
+    "resetView": "Reset view",
+    "oneSeatAlone": "This leaves one seat alone. Shift right?",
+    "shift": "Shift",
+    "classPremium": "Premium",
+    "classSemiRecliner": "Semi-Recliner",
+    "classVip": "VIP",
+    "hallPremium": "Premium",
+    "hallVip": "VIP",
+    "hallAtmos": "Atmos"
+  },
+  "checkout": {
+    "yourDetails": "Your details",
+    "mobile": "Mobile number",
+    "email": "Email (optional)",
+    "paymentMethod": "Payment method",
+    "seatsHeldFor": "Seats held for {time}",
+    "total": "Total",
+    "pay": "Pay ৳{amount}",
+    "changeSeats": "Change seats",
+    "demoNoPayment": "Demo — no real payment",
+    "seatsReleased": "Your seats were released",
+    "pickSeatsAgain": "Pick seats again"
+  },
+  "ticket": {
+    "showQr": "Show this QR at the hall entrance. A copy was sent to {phone}.",
+    "save": "Save ticket",
+    "addToCalendar": "Add to calendar",
+    "directions": "Get directions",
+    "backHome": "Back to home"
+  },
+  "footer": {
+    "headline1": "The best seat in the house",
+    "headline2": "is waiting for you.",
+    "sub": "Pick your seat in under a minute.",
+    "brandLine": "Movies, made memorable since 2004.",
+    "explore": "Explore",
+    "help": "Help",
+    "follow": "Follow",
+    "contact": "Contact",
+    "copyright": "© Star Cineplex. Concept redesign — not affiliated with Star Cineplex.",
+    "iconCredit": "Icons: Solar by 480 Design (CC BY 4.0)",
+    "designCredit": "Design: Fahim Ahmed"
+  },
+  "states": {
+    "simpleView": "Showing the simple view on this device."
+  }
+}

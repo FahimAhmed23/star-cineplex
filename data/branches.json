@@ -1,0 +1,188 @@
+{
+  "_note": "9 branches from starcineplex.com (CLAUDE.md §6). Theme hex values are approximations sampled from references/branches/*.jpg — tune visually. reelLine copy is placeholder except Bashundhara (§8.9). Bangla names need the designer's review.",
+  "branches": [
+    {
+      "slug": "bashundhara-city",
+      "name": "Bashundhara City",
+      "nameBn": "বসুন্ধরা সিটি",
+      "area": "Panthapath, Dhaka",
+      "areaBn": "পান্থপথ, ঢাকা",
+      "city": "Dhaka",
+      "order": 1,
+      "reelLine": "Where it all began, 2004.",
+      "mapsQuery": "Star Cineplex Bashundhara City, Panthapath, Dhaka",
+      "theme": {
+        "seat": "#C0262D",
+        "seatMaterial": "fabric",
+        "leather": "#6B1E24",
+        "walls": "#2A2147",
+        "accentLight": "#3D5BFF",
+        "accentStyle": "thin blue diagonal light lines (Hall 2/3 variant: magenta LED bars)",
+        "carpet": "#7A1A1E",
+        "ref": ["bashundhara-city-1.jpg", "bashundhara-city-2.jpg"]
+      }
+    },
+    {
+      "slug": "shimanto-shambhar",
+      "name": "Shimanto Shambhar",
+      "nameBn": "সীমান্ত সম্ভার",
+      "area": "Dhanmondi 2, Dhaka",
+      "areaBn": "ধানমন্ডি ২, ঢাকা",
+      "city": "Dhaka",
+      "order": 2,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Shimanto Shambhar, Dhanmondi, Dhaka",
+      "theme": {
+        "seat": "#1F5FD6",
+        "seatMaterial": "fabric",
+        "walls": "#1E1E22",
+        "accentLight": "#2F7BFF",
+        "accentStyle": "blue zig-zag wall lights + blue step lights",
+        "carpet": "#121A33",
+        "ref": ["shimanto-shambhar.jpg"]
+      }
+    },
+    {
+      "slug": "sks-tower",
+      "name": "SKS Tower",
+      "nameBn": "এসকেএস টাওয়ার",
+      "area": "Mohakhali, Dhaka",
+      "areaBn": "মহাখালী, ঢাকা",
+      "city": "Dhaka",
+      "order": 3,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex SKS Tower, Mohakhali, Dhaka",
+      "theme": {
+        "seat": "#D9822B",
+        "seatMaterial": "leather",
+        "leather": "#2747A8",
+        "walls": "#8A6A2E",
+        "accentLight": "#FFFFFF",
+        "accentStyle": "white light frames (gold hall); blue light lines in the blue lounger hall",
+        "carpet": "#5A3A22",
+        "ref": ["sks-tower-1-recliners.jpg", "sks-tower-2-loungers.jpg"]
+      }
+    },
+    {
+      "slug": "sony-square",
+      "name": "Sony Square",
+      "nameBn": "সনি স্কয়ার",
+      "area": "Mirpur, Dhaka",
+      "areaBn": "মিরপুর, ঢাকা",
+      "city": "Dhaka",
+      "order": 4,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Sony Square, Mirpur, Dhaka",
+      "theme": {
+        "seat": "#D42A22",
+        "seatMaterial": "fabric",
+        "walls": "#0E0E10",
+        "accentLight": "#FF3B30",
+        "accentStyle": "small red hexagon wall lights",
+        "carpet": "#2A2A2E",
+        "ref": ["sony-square.jpg"]
+      }
+    },
+    {
+      "slug": "military-museum",
+      "name": "Bangladesh Military Museum",
+      "nameBn": "বাংলাদেশ সামরিক জাদুঘর",
+      "area": "Bijoy Shoroni, Dhaka",
+      "areaBn": "বিজয় সরণি, ঢাকা",
+      "city": "Dhaka",
+      "order": 5,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Bangladesh Military Museum, Bijoy Sarani, Dhaka",
+      "theme": {
+        "seat": "#2F6FD0",
+        "seatMaterial": "fabric",
+        "walls": "#2A2A2E",
+        "accentLight": "#6FA8FF",
+        "accentStyle": "starry blue ceiling panels; white faceted ceiling",
+        "carpet": "#3A3A40",
+        "ref": ["military-museum.jpg"]
+      }
+    },
+    {
+      "slug": "centrepoint",
+      "name": "Centrepoint",
+      "nameBn": "সেন্টারপয়েন্ট",
+      "area": "Uttara, Dhaka",
+      "areaBn": "উত্তরা, ঢাকা",
+      "city": "Dhaka",
+      "order": 6,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Centrepoint, Uttara, Dhaka",
+      "theme": {
+        "seat": "#8E7BE0",
+        "seatMaterial": "fabric",
+        "leather": "#7FBF5A",
+        "walls": "#3A2560",
+        "accentLight": "#A66BFF",
+        "accentStyle": "purple light lines on a triangle-lattice wall",
+        "carpet": "#141018",
+        "ref": ["centrepoint-1.jpg", "centrepoint-2-recliners.jpg"]
+      }
+    },
+    {
+      "slug": "shimanto-tower",
+      "name": "Shimanto Tower",
+      "nameBn": "সীমান্ত টাওয়ার",
+      "area": "Narayanganj",
+      "areaBn": "নারায়ণগঞ্জ",
+      "city": "Narayanganj",
+      "order": 7,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Shimanto Tower, Narayanganj",
+      "theme": {
+        "seat": "#D7262B",
+        "seatMaterial": "fabric",
+        "walls": "#7A1418",
+        "accentLight": "#FF2A2A",
+        "accentStyle": "red LED wall columns",
+        "carpet": "#4A2A2E",
+        "ref": ["shimanto-tower-narayanganj.jpg"]
+      }
+    },
+    {
+      "slug": "bali-arcade",
+      "name": "Bali Arcade",
+      "nameBn": "বালি আর্কেড",
+      "area": "Chattogram",
+      "areaBn": "চট্টগ্রাম",
+      "city": "Chattogram",
+      "order": 8,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Bali Arcade, Chattogram",
+      "theme": {
+        "seat": "#8E7BE0",
+        "seatMaterial": "fabric",
+        "walls": "#3A2560",
+        "accentLight": "#A66BFF",
+        "accentStyle": "purple light lines on a triangle-lattice wall (second hall: red #D93A35 seats, charcoal walls with red/white diagonal stripes)",
+        "carpet": "#141018",
+        "ref": ["bali-arcade-1.jpg", "bali-arcade-2.jpg"]
+      }
+    },
+    {
+      "slug": "finlay-square",
+      "name": "Finlay Square",
+      "nameBn": "ফিনলে স্কয়ার",
+      "area": "Chattogram",
+      "areaBn": "চট্টগ্রাম",
+      "city": "Chattogram",
+      "order": 9,
+      "reelLine": null,
+      "mapsQuery": "Star Cineplex Finlay Square, Chattogram",
+      "theme": {
+        "seat": "#E2462A",
+        "seatMaterial": "fabric",
+        "walls": "#23264F",
+        "accentLight": "#FFC98A",
+        "accentStyle": "warm downlights; pink + navy geometric panels",
+        "carpet": "#1A1F45",
+        "ref": ["finlay-square.jpg"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+# deps & build
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# env & local settings
+.env*
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Source media: large originals stay local. Web-ready copies live in /public.
+references/*.mp4
+references/*.webm
+# Real branch photos are reference only and must never be published (CLAUDE.md §12)
+references/branches/*.jpg
+
+# Old starter drop
+Claude outputs/

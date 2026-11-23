@@ -1,0 +1,1280 @@
+{
+  "_note": "Seat maps per CLAUDE.md §6. Bashundhara Halls 1–3 and 5 are verified against Star Cineplex's own seat maps. Hall 6 Atmos is approximate until the real map is supplied. Other branches have no real seat maps or prices yet: each gets one placeholder hall that reuses the Hall 1 layout and Bashundhara premium prices (approx: true).",
+  "halls": [
+    {
+      "id": "bdc-hall-1",
+      "branch": "bashundhara-city",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "bdc-hall-2",
+      "branch": "bashundhara-city",
+      "name": "Hall 2",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "bdc-hall-3",
+      "branch": "bashundhara-city",
+      "name": "Hall 3",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "bdc-hall-5",
+      "branch": "bashundhara-city",
+      "name": "Hall 5",
+      "type": "vip",
+      "numbering": "rtl",
+      "pad": 0,
+      "prices": {
+        "vip": {
+          "matinee": 650,
+          "evening": 850,
+          "weekend": 850
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS....",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS....",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS....",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS..SS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS..SS",
+          "start": 1
+        },
+        {
+          "row": "F",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS..SS",
+          "start": 1
+        },
+        {
+          "row": "G",
+          "class": "vip",
+          "pattern": ".SSSSSSSSSSSS..SS",
+          "start": 1
+        },
+        {
+          "row": "H",
+          "class": "vip",
+          "pattern": ".SSSS....SSSS..SS",
+          "start": 1
+        },
+        {
+          "row": "J",
+          "class": "vip",
+          "pattern": "SSSS......SSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "bdc-hall-6",
+      "branch": "bashundhara-city",
+      "name": "Hall 6",
+      "type": "atmos",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 600,
+          "evening": 750,
+          "weekend": 750
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "E",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": ".....SSSSSS.SSSSSSS.....",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "...SSSSSSSS.SSSSSSSS....",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "shimanto-shambhar-hall-1",
+      "branch": "shimanto-shambhar",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "sks-tower-hall-1",
+      "branch": "sks-tower",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "sony-square-hall-1",
+      "branch": "sony-square",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "military-museum-hall-1",
+      "branch": "military-museum",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "centrepoint-hall-1",
+      "branch": "centrepoint",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "shimanto-tower-hall-1",
+      "branch": "shimanto-tower",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "bali-arcade-hall-1",
+      "branch": "bali-arcade",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    },
+    {
+      "id": "finlay-square-hall-1",
+      "branch": "finlay-square",
+      "name": "Hall 1",
+      "type": "premium",
+      "numbering": "ltr",
+      "pad": 2,
+      "approx": true,
+      "prices": {
+        "premium": {
+          "matinee": 400,
+          "evening": 550,
+          "weekend": 550
+        },
+        "semi-recliner": {
+          "matinee": 500,
+          "evening": 650,
+          "weekend": 650
+        }
+      },
+      "rows": [
+        {
+          "row": "A",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "B",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "C",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "D",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "E",
+          "class": "semi-recliner",
+          "pattern": ".....SSSSSSSSSSSS...SSS.",
+          "start": 4
+        },
+        {
+          "row": "F",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "G",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "H",
+          "class": "premium",
+          "pattern": ".....SSSSSSSSSSSSS..SSSS",
+          "start": 4
+        },
+        {
+          "row": "J",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "K",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "L",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "M",
+          "class": "premium",
+          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
+          "start": 1
+        },
+        {
+          "row": "N",
+          "class": "premium",
+          "pattern": "SSSSSSSSSSS..SSSSSSSSSSS",
+          "start": 1
+        }
+      ]
+    }
+  ]
+}

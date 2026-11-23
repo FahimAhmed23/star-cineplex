@@ -1,0 +1,108 @@
+{
+  "common": {
+    "buyTickets": "টিকিট কিনুন",
+    "fullSchedule": "পূর্ণ সময়সূচি",
+    "playTrailer": "ট্রেলার দেখুন",
+    "continue": "এগিয়ে যান",
+    "back": "ফিরে যান",
+    "showAll": "সব দেখুন ({count})",
+    "showLess": "কম দেখুন",
+    "skipIntro": "ইন্ট্রো বাদ দিন",
+    "close": "বন্ধ করুন",
+    "replay": "আবার দেখুন",
+    "mute": "শব্দ বন্ধ",
+    "unmute": "শব্দ চালু",
+    "minutesShort": "{h}ঘ {m}মি",
+    "releasing": "মুক্তি {date}",
+    "language": "ভাষা"
+  },
+  "nav": {
+    "nowShowing": "এখন চলছে",
+    "comingSoon": "শীঘ্রই আসছে",
+    "showtimes": "শো-এর সময়",
+    "prices": "টিকিটের দাম",
+    "branches": "শাখাসমূহ",
+    "myTickets": "আমার টিকিট",
+    "about": "পরিচিতি",
+    "menu": "মেনু",
+    "phone": "09617660660"
+  },
+  "hero": {
+    "eyebrow": "স্টার সিনেপ্লেক্সে এখন চলছে",
+    "playingAcross": "{count}টি শাখায় চলছে",
+    "tonightAt": "আজ রাতে"
+  },
+  "home": {
+    "nowShowingTitle": "এখন প্রেক্ষাগৃহে",
+    "comingSoonTitle": "শীঘ্রই আসছে",
+    "momentsTitle": "স্টার সিনেপ্লেক্সের মুহূর্তগুলো",
+    "reelTitle": "এক স্টার। নয়টি ঘর।",
+    "reelSub": "সারা বাংলাদেশে স্টার সিনেপ্লেক্স"
+  },
+  "booking": {
+    "stepShowtime": "শো-এর সময়",
+    "stepSeats": "আসন",
+    "stepCheckout": "পেমেন্ট",
+    "branch": "শাখা",
+    "date": "তারিখ",
+    "movie": "সিনেমা",
+    "today": "আজ",
+    "chooseExperience": "আপনার অভিজ্ঞতা বেছে নিন",
+    "available": "খালি আছে",
+    "fillingFast": "দ্রুত ভরছে",
+    "soldOut": "সব বিক্রি",
+    "changeShowtime": "সময় বদলান",
+    "bestAvailable": "সেরা আসন খুঁজুন",
+    "viewFromSeat": "আসন থেকে দেখুন",
+    "select": "বেছে নিন",
+    "selected": "বাছাই করা",
+    "booked": "বুকড",
+    "rowSeat": "সারি {row} · আসন {seat}",
+    "backToHall": "হলে ফিরে যান",
+    "resetView": "ভিউ রিসেট",
+    "oneSeatAlone": "একটি আসন একা পড়ে থাকবে। ডানে সরাবেন?",
+    "shift": "সরান",
+    "classPremium": "প্রিমিয়াম",
+    "classSemiRecliner": "সেমি-রিক্লাইনার",
+    "classVip": "ভিআইপি",
+    "hallPremium": "প্রিমিয়াম",
+    "hallVip": "ভিআইপি",
+    "hallAtmos": "অ্যাটমস"
+  },
+  "checkout": {
+    "yourDetails": "আপনার তথ্য",
+    "mobile": "মোবাইল নম্বর",
+    "email": "ইমেইল (ঐচ্ছিক)",
+    "paymentMethod": "পেমেন্ট পদ্ধতি",
+    "seatsHeldFor": "আসন সংরক্ষিত {time}",
+    "total": "মোট",
+    "pay": "৳{amount} পরিশোধ করুন",
+    "changeSeats": "আসন বদলান",
+    "demoNoPayment": "ডেমো — কোনো আসল পেমেন্ট নয়",
+    "seatsReleased": "আপনার আসনগুলো ছেড়ে দেওয়া হয়েছে",
+    "pickSeatsAgain": "আবার আসন বেছে নিন"
+  },
+  "ticket": {
+    "showQr": "হলের প্রবেশপথে এই QR দেখান। একটি কপি {phone} নম্বরে পাঠানো হয়েছে।",
+    "save": "টিকিট সেভ করুন",
+    "addToCalendar": "ক্যালেন্ডারে যোগ করুন",
+    "directions": "পথ দেখুন",
+    "backHome": "হোমে ফিরে যান"
+  },
+  "footer": {
+    "headline1": "হলের সেরা আসনটি",
+    "headline2": "আপনার অপেক্ষায়।",
+    "sub": "এক মিনিটের মধ্যে আসন বেছে নিন।",
+    "brandLine": "২০০৪ থেকে সিনেমাকে স্মরণীয় করে তুলছি।",
+    "explore": "ঘুরে দেখুন",
+    "help": "সহায়তা",
+    "follow": "ফলো করুন",
+    "contact": "যোগাযোগ",
+    "copyright": "© স্টার সিনেপ্লেক্স। কনসেপ্ট রিডিজাইন — স্টার সিনেপ্লেক্সের সঙ্গে সম্পর্কিত নয়।",
+    "iconCredit": "আইকন: Solar by 480 Design (CC BY 4.0)",
+    "designCredit": "ডিজাইন: ফাহিম আহমেদ"
+  },
+  "states": {
+    "simpleView": "এই ডিভাইসে সহজ ভিউ দেখানো হচ্ছে।"
+  }
+}
