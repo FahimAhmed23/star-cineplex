@@ -148,7 +148,7 @@ take on "ITC Avant Garde Gothic + Cooper BT" (both paid, not used).
 **Type scale**
 | Token | Font | Size |
 |-------|------|------|
-| `display-xl` (hero movie title) | Fraunces 800 | `clamp(72px, 10vw, 150px)` |
+| `display-xl` (hero movie title) | Fraunces **700** (designer: the film title is one step lighter than the other display text) | `clamp(72px, 10vw, 150px)`, also capped by viewport height |
 | `display-l` (footer headline) | Fraunces 800 | `clamp(64px, 9vw, 136px)` |
 | `display-m` (section titles) | Fraunces 800 | `clamp(44px, 4.6vw, 72px)` |
 | `display-s` (booking titles, ticket movie title, hall-type names) | Fraunces 800 | 32–48px |
@@ -436,7 +436,7 @@ structure, move it into the 3D hall).
 - Progress indicator bottom-right: a row of short dashes, the active one fills over the trailer's duration
   in `--purple-light`; click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
 
-**Hero info overlay** (left-aligned, over the dark left wall of the angled view plus a soft dark gradient on the left ~50%, so it never covers the screen on the right)
+**Hero info overlay** (left-aligned, over the dark left wall of the angled view; a soft dark fade sits right behind the text block so the copy has full contrast while the wall's light lines stay visible around it; the text column always ends before the screen on the right)
 - Eyebrow: [star icon] `Now showing at Star Cineplex`
 - Movie title (`display-xl`, Fraunces)
 - Meta row: `2026 · [A] · 1h 48m · English · [2D]` — rating in an outlined box, format in a purple filled badge

@@ -110,7 +110,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
       />
 
       {/* soft dark gradient on the left ~40%, so the info never covers the screen's centre */}
-      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-[56%] bg-[linear-gradient(to_right,rgb(7_5_10/0.95)_0%,rgb(7_5_10/0.9)_45%,rgb(7_5_10/0.55)_72%,transparent_100%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-[56%] bg-[linear-gradient(to_right,rgb(7_5_10/0.7)_0%,rgb(7_5_10/0.45)_55%,transparent_100%)]" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-night/90 to-transparent" />
 
       {/* hero info */}
@@ -119,12 +119,19 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
           {revealed && (
             <motion.div
               key={movie.slug}
-              className="max-w-[600px]"
+              className="relative isolate" /* own stacking context, so the dark fade below sits in front of the canvas */
+              // the column always ends before the screen (which starts at ~48% of the width)
+              style={{ maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
               initial="hidden"
               animate="show"
               exit={{ opacity: 0, transition: { duration: 0.25 } }}
               variants={{ show: { transition: { staggerChildren: 0.1 } } }}
             >
+              {/* dark fade behind the text block only: high contrast for the copy, the wall lights stay visible around it */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-x-24 -inset-y-16 -z-10 rounded-[64px] bg-night/95 blur-[40px]"
+              />
               <motion.p variants={item} className="eyebrow mb-4">
                 <Icon name="star" size={16} />
                 {t("hero.eyebrow")}
@@ -132,7 +139,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
               <motion.h1
                 variants={item}
                 lang={isBnTitle ? "bn" : "en"} /* English titles keep Fraunces in Bangla mode */
-                className="display-xl mb-5 text-white"
+                className="display-xl mb-5 !font-bold text-white" /* hero film title at 700 (designer) */
                 // display-xl, also capped by viewport height so title + buttons fit above the strip at 1280×720
                 style={{ fontSize: long ? "min(clamp(56px, 6vw, 96px), 9.5vh)" : "min(clamp(72px, 10vw, 150px), 14vh)" }}
               >
@@ -159,7 +166,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
                 <Dot />
                 <li className="rounded-[4px] bg-purple px-1.5 text-[12px] leading-5 font-semibold text-white">{movie.format}</li>
               </motion.ul>
-              <motion.p variants={item} className="body-l mb-7 line-clamp-3 max-w-[540px] text-white/75">
+              <motion.p variants={item} className="body-l mb-7 line-clamp-3 text-white/75">
                 {movie.synopsis}
               </motion.p>
               <motion.div variants={item} className="mb-6 flex flex-wrap gap-3">
