@@ -137,7 +137,7 @@ body {
   font-weight: 600;
 }
 @utility caption {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.4;
   font-weight: 400;
 }
@@ -278,7 +278,7 @@ body {
 .ticket-chip__time {
   padding: 0 14px 0 16px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .ticket-chip__title {
@@ -291,22 +291,19 @@ body {
   font-weight: 500;
   line-height: 44px;
 }
+/* quiet outlined badge in the chip's own text colour — purple is kept for the next show only */
 .ticket-chip__format {
   margin-right: 16px;
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  background: var(--purple);
-  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 40%, transparent);
 }
 .ticket-chip--next {
   --chip-bg: var(--purple);
   --chip-fg: #fff;
-}
-.ticket-chip--next .ticket-chip__format {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 :lang(bn) .ticket-chip__title {
   font-family: var(--font-bangla);

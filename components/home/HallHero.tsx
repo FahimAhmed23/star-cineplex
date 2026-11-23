@@ -157,7 +157,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
                 )}
                 <li>{movie.language}</li>
                 <Dot />
-                <li className="rounded-[4px] bg-purple px-1.5 text-[12px] leading-5 font-bold text-white">{movie.format}</li>
+                <li className="rounded-[4px] bg-purple px-1.5 text-[12px] leading-5 font-semibold text-white">{movie.format}</li>
               </motion.ul>
               <motion.p variants={item} className="body-l mb-7 line-clamp-3 max-w-[540px] text-white/75">
                 {movie.synopsis}
@@ -193,7 +193,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
           aria-label={muted ? t("common.unmute") : t("common.mute")}
           aria-pressed={!muted}
         >
-          <Icon name={muted ? "volumeOff" : "volumeOn"} size={20} />
+          <Icon name={muted ? "volumeOff" : "volumeOn"} size={18} />
         </button>
         <button
           type="button"
@@ -201,7 +201,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
           className="focus-ring grid size-9 place-items-center rounded-pill text-white/80 transition-colors hover:bg-white/10 hover:text-white"
           aria-label={paused ? t("hero.playCarousel") : t("hero.pauseCarousel")}
         >
-          <Icon name={paused ? "play" : "pause"} size={16} />
+          <Icon name={paused ? "play" : "pause"} size={18} />
         </button>
         <ol className="flex items-center gap-2">
           {movies.map((m, i) => (

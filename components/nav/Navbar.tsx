@@ -102,10 +102,10 @@ export function Navbar({ revealWithIntro = false }: Props) {
       inert={hidden || undefined}
     >
       {/* top strip — hidden on phones */}
-      <div className="nav-bg hidden h-9 items-center justify-between px-6 text-[12.5px] text-muted md:flex">
+      <div className="nav-bg hidden h-9 items-center justify-between px-6 text-[13px] text-muted md:flex">
         <a href={`tel:${PHONE}`} className="focus-ring flex items-center gap-1.5 hover:text-white" aria-label={`${t("nav.call")} ${PHONE}`}>
           <Icon name="phone" size={14} />
-          <span className="mono !text-[12.5px] !font-normal">{PHONE}</span>
+          <span className="tabular-nums">{PHONE}</span>
         </a>
         <div className="hidden items-center gap-5 min-[1100px]:flex">
           {/* My tickets: Phase 8 */}
