@@ -22,6 +22,8 @@ export interface Hall3DProps {
   resetKey?: number;
   trailer?: string;
   poster?: string;
+  /** real picture area inside the trailer file (Movie.trailerCrop) */
+  trailerCrop?: { top: number; height: number };
   muted?: boolean;
   /** 0 = house lights down (hero), 1 = up enough to choose seats (overview) */
   houseLights?: number;
@@ -76,6 +78,7 @@ function Scene({
   resetKey,
   trailer,
   poster,
+  trailerCrop,
   muted = true,
   houseLights = 0,
   screenBrightness = 1,
@@ -105,6 +108,7 @@ function Scene({
         layout={layout}
         src={trailer}
         poster={poster}
+        crop={trailerCrop}
         muted={muted}
         brightness={screenBrightness}
         playing={playing}

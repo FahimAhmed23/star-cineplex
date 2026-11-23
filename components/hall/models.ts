@@ -11,7 +11,8 @@ export const SEAT_MODEL_URL: Record<SeatModel, string> = {
   vip: "/models/seat-vip.glb",
   atmos: "/models/seat-atmos.glb",
 };
-export const PERSON_URLS = ["/models/person-a.glb", "/models/person-b.glb", "/models/person-c.glb", "/models/person-d.glb"];
+/** The 8 hairstyles of references/ai/audience-silhouettes.png (messy, bun, cap, long, curly, hijab, ponytail, glasses). */
+export const PERSON_URLS = "abcdefgh".split("").map((v) => `/models/person-${v}.glb`);
 export const DOORS_URL = "/models/doors.glb";
 
 /** Preload everything the hall needs (call on booking pages / during the opening sequence). */
@@ -51,9 +52,6 @@ export function useModelGeometry(url: string) {
 }
 
 export function usePersonGeometries() {
-  const a = useModelGeometry(PERSON_URLS[0]);
-  const b = useModelGeometry(PERSON_URLS[1]);
-  const c = useModelGeometry(PERSON_URLS[2]);
-  const d = useModelGeometry(PERSON_URLS[3]);
-  return [a, b, c, d];
+  const gltfs = useGLTF(PERSON_URLS);
+  return useMemo(() => gltfs.map((g) => extractGeometry(g.scene)), [gltfs]);
 }

@@ -11,31 +11,46 @@
       "runtimeMin": 140,
       "language": "English",
       "format": "2D",
-      "genres": ["Action", "Sci-Fi", "Drama"],
+      "genres": [
+        "Action",
+        "Sci-Fi",
+        "Drama"
+      ],
       "synopsis": "Placeholder synopsis. Fifty years before Katniss, a young Haymitch Abernathy is reaped for the Second Quarter Quell — a Games with twice the tributes and far fewer ways out.",
       "releaseDate": "2026-11-20",
       "poster": "/posters/hunger-games-sunrise-on-the-reaping.webp",
       "trailer": "/trailers/hunger-games-sunrise-on-the-reaping.mp4",
       "trailerPoster": "/trailers/hunger-games-sunrise-on-the-reaping.webp",
-      "featured": true
+      "featured": true,
+      "trailerCrop": {
+        "top": 0.125,
+        "height": 0.75
+      }
     },
     {
       "slug": "spider-man-brand-new-day",
       "title": "Spider-Man: Brand New Day",
       "titleBn": null,
       "status": "now-showing",
-      "imdbRating": 8.0,
+      "imdbRating": 8,
       "certificate": "U",
       "runtimeMin": 135,
       "language": "English",
       "format": "3D",
-      "genres": ["Action", "Adventure"],
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
       "synopsis": "Placeholder synopsis. With the world no longer remembering Peter Parker, Spider-Man starts over in a city that still needs him.",
       "releaseDate": "2026-07-31",
       "poster": "/posters/spider-man-brand-new-day.webp",
       "trailer": "/trailers/spider-man-brand-new-day.mp4",
       "trailerPoster": "/trailers/spider-man-brand-new-day.webp",
-      "featured": true
+      "featured": true,
+      "trailerCrop": {
+        "top": 0.125,
+        "height": 0.75
+      }
     },
     {
       "slug": "japito-jibon",
@@ -47,13 +62,21 @@
       "runtimeMin": 128,
       "language": "Bangla",
       "format": "2D",
-      "genres": ["Family", "Historical", "Drama"],
+      "genres": [
+        "Family",
+        "Historical",
+        "Drama"
+      ],
       "synopsis": "Placeholder synopsis. A family's quiet life is tested as history moves through their home.",
       "releaseDate": "2026-11-14",
       "poster": "/posters/japito-jibon.webp",
       "trailer": "/trailers/japito-jibon.mp4",
       "trailerPoster": "/trailers/japito-jibon.webp",
-      "featured": true
+      "featured": true,
+      "trailerCrop": {
+        "top": 0.0694,
+        "height": 0.9306
+      }
     },
     {
       "slug": "resident-evil",
@@ -65,13 +88,20 @@
       "runtimeMin": 112,
       "language": "English",
       "format": "2D",
-      "genres": ["Horror", "Action"],
+      "genres": [
+        "Horror",
+        "Action"
+      ],
       "synopsis": "Placeholder synopsis. A routine delivery to a remote hospital turns into a fight to survive the night.",
       "releaseDate": "2026-09-18",
       "poster": "/posters/resident-evil.webp",
       "trailer": "/trailers/resident-evil.mp4",
       "trailerPoster": "/trailers/resident-evil.webp",
-      "featured": true
+      "featured": true,
+      "trailerCrop": {
+        "top": 0.1278,
+        "height": 0.7472
+      }
     },
     {
       "slug": "chirkut",
@@ -83,13 +113,20 @@
       "runtimeMin": 124,
       "language": "Bangla",
       "format": "2D",
-      "genres": ["Romance", "Drama"],
+      "genres": [
+        "Romance",
+        "Drama"
+      ],
       "synopsis": "Placeholder synopsis. Based on a true story: a note passed between two strangers changes both their lives.",
       "releaseDate": "2026-11-07",
       "poster": "/posters/chirkut.webp",
       "trailer": "/trailers/chirkut.mp4",
       "trailerPoster": "/trailers/chirkut.webp",
-      "featured": true
+      "featured": true,
+      "trailerCrop": {
+        "top": 0.1083,
+        "height": 0.7833
+      }
     },
     {
       "slug": "clayface",
@@ -101,13 +138,20 @@
       "runtimeMin": 108,
       "language": "English",
       "format": "2D",
-      "genres": ["Horror", "Thriller"],
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
       "synopsis": "Placeholder synopsis. A disfigured actor turns a ruined face into a weapon that can become anyone.",
       "releaseDate": "2026-09-11",
       "poster": "/posters/clayface.webp",
       "trailer": "/trailers/clayface.mp4",
       "trailerPoster": "/trailers/clayface.webp",
-      "featured": true
+      "featured": true,
+      "trailerCrop": {
+        "top": 0.1778,
+        "height": 0.6472
+      }
     },
     {
       "slug": "onnopata",
@@ -119,13 +163,20 @@
       "runtimeMin": 130,
       "language": "Bangla",
       "format": "2D",
-      "genres": ["Family", "Drama"],
+      "genres": [
+        "Family",
+        "Drama"
+      ],
       "synopsis": "Placeholder synopsis. A Durga Puja story of friends, first love and turning the page.",
       "releaseDate": "2026-12-04",
       "poster": "/posters/onnopata.webp",
       "trailer": "/trailers/onnopata.mp4",
       "trailerPoster": "/trailers/onnopata.webp",
-      "featured": false
+      "featured": false,
+      "trailerCrop": {
+        "top": 0.0556,
+        "height": 0.8889
+      }
     },
     {
       "slug": "soy",
@@ -137,13 +188,20 @@
       "runtimeMin": 115,
       "language": "Turkish",
       "format": "2D",
-      "genres": ["Horror", "Mystery"],
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
       "synopsis": "Placeholder synopsis. A family returns to an old mansion and the lineage it hides.",
       "releaseDate": "2026-12-11",
       "poster": "/posters/soy.webp",
       "trailer": "/trailers/soy.mp4",
       "trailerPoster": "/trailers/soy.webp",
-      "featured": false
+      "featured": false,
+      "trailerCrop": {
+        "top": 0.0444,
+        "height": 0.8278
+      }
     },
     {
       "slug": "avengers-endgame-encore",
@@ -155,13 +213,20 @@
       "runtimeMin": 181,
       "language": "English",
       "format": "3D",
-      "genres": ["Action", "Sci-Fi"],
+      "genres": [
+        "Action",
+        "Sci-Fi"
+      ],
       "synopsis": "Placeholder synopsis. The finale of the Infinity Saga returns to the big screen.",
       "releaseDate": "2026-12-25",
       "poster": "/posters/avengers-endgame-encore.webp",
       "trailer": "/trailers/avengers-endgame-encore.mp4",
       "trailerPoster": "/trailers/avengers-endgame-encore.webp",
-      "featured": false
+      "featured": false,
+      "trailerCrop": {
+        "top": 0.1278,
+        "height": 0.7444
+      }
     }
   ]
 }

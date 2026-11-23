@@ -19,9 +19,9 @@ interface Metrics {
 }
 
 const METRICS: Record<HallType, Metrics> = {
-  premium: { pitch: 0.6, rowDepth: 1.0, riser: 0.3, flatRows: 1, frontGap: 5.2, backGap: 2.4, sideAisle: 1.4, screenAspect: 1.9, curvedScreen: false },
-  atmos: { pitch: 0.6, rowDepth: 1.0, riser: 0.3, flatRows: 1, frontGap: 5.6, backGap: 2.4, sideAisle: 1.5, screenAspect: 2.2, curvedScreen: true },
-  vip: { pitch: 0.95, rowDepth: 1.75, riser: 0.36, flatRows: 1, frontGap: 4.6, backGap: 2.2, sideAisle: 1.2, screenAspect: 1.9, curvedScreen: false },
+  premium: { pitch: 0.6, rowDepth: 1.0, riser: 0.3, flatRows: 1, frontGap: 5.2, backGap: 2.4, sideAisle: 1.4, screenAspect: 2.39, curvedScreen: false },
+  atmos: { pitch: 0.6, rowDepth: 1.0, riser: 0.3, flatRows: 1, frontGap: 5.6, backGap: 2.4, sideAisle: 1.5, screenAspect: 2.39, curvedScreen: true },
+  vip: { pitch: 0.95, rowDepth: 1.75, riser: 0.36, flatRows: 1, frontGap: 4.6, backGap: 2.2, sideAisle: 1.2, screenAspect: 2.39, curvedScreen: false },
 };
 
 export const EYE_HEIGHT = 1.12; // seated eye height above the row floor

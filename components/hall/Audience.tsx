@@ -1,14 +1,18 @@
 "use client";
 
+import { useFrame } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { hash01, type HallLayout, type PlacedSeat } from "@/lib/hall-layout";
 import { createTintMaterial } from "./materials";
 import { usePersonGeometries } from "./models";
 
-// Flat dark colours with slight variation, faintly rim-lit by the screen (§9.5 Seated people on booked seats)
-const PALETTE = ["#2b2a30", "#3a2438", "#1f2540", "#302a2a"].map((c) => new THREE.Color(c));
+// Flat dark plum like references/ai/audience-silhouettes.png, with slight variation (charcoal, plum, deep blue)
+const PALETTE = ["#2e2530", "#2a2433", "#262536", "#322630"].map((c) => new THREE.Color(c));
+// The purple rim line along the top edges of hair and shoulders, nudged towards the screen's light colour
+const RIM_PURPLE = new THREE.Color("#8a4fb5");
 const VIP_SCALE = 1.04; // recliners sit a little lower/deeper; a touch bigger reads better
+const VARIANTS = 8;
 
 interface Props {
   layout: HallLayout;
@@ -16,18 +20,20 @@ interface Props {
   rimColor?: THREE.Color;
 }
 
-/** Seated silhouettes on booked seats: 4 variants, one InstancedMesh (one draw call) per variant. */
+/** Seated silhouettes on booked seats: 8 hairstyle variants, one InstancedMesh (one draw call) per variant. */
 export function Audience({ layout, booked, rimColor }: Props) {
   const geometries = usePersonGeometries();
   const material = useMemo(() => createTintMaterial({ rim: true }), []);
 
-  useLayoutEffect(() => {
-    if (rimColor) material.rimUniforms.uRimColor.value.copy(rimColor);
+  useFrame(() => {
+    const u = material.rimUniforms.uRimColor.value;
+    u.copy(RIM_PURPLE);
+    if (rimColor) u.lerp(rimColor, 0.2);
   });
 
   const byVariant = useMemo(() => {
-    const v: PlacedSeat[][] = [[], [], [], []];
-    for (const s of layout.seats) if (booked.has(s.id)) v[Math.floor(hash01(s.id, 1) * 4)].push(s);
+    const v: PlacedSeat[][] = Array.from({ length: VARIANTS }, () => []);
+    for (const s of layout.seats) if (booked.has(s.id)) v[Math.floor(hash01(s.id, 1) * VARIANTS)].push(s);
     return v;
   }, [layout, booked]);
 

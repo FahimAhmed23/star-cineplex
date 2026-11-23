@@ -77,6 +77,8 @@ export interface Movie {
   poster: string;
   trailer: string;
   trailerPoster: string;
+  /** the real picture inside the trailer file (scope films carry black bars), as fractions of the frame height */
+  trailerCrop?: { top: number; height: number };
   featured: boolean;
 }
 

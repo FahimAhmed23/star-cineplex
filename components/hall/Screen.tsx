@@ -13,6 +13,8 @@ interface Props {
   /** trailer .mp4; poster is shown until it plays, and instead of it if it fails (§9.9) */
   src?: string;
   poster?: string;
+  /** real picture area inside the trailer file (Movie.trailerCrop) */
+  crop?: { top: number; height: number };
   muted?: boolean;
   /** 0..1 — the hero brightens 10% → 100% (§8.1), the scroll transition dims to 35% (§8.3) */
   brightness?: number;
@@ -27,7 +29,7 @@ interface Props {
 const FALLBACK = new THREE.Color("#c9b8ff");
 
 /** The hall screen: trailer as a video texture, its light spilling onto the first rows and walls. */
-export function Screen({ layout, src, poster, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
+export function Screen({ layout, src, poster, crop, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
   const { screen, room } = layout;
   const [videoTex, setVideoTex] = useState<THREE.VideoTexture | null>(null);
   const [posterTex, setPosterTex] = useState<THREE.Texture | null>(null);
@@ -85,24 +87,29 @@ export function Screen({ layout, src, poster, muted = true, brightness = 1, play
 
   const map = videoTex ?? posterTex;
 
-  // cover-fit the 16:9 trailer onto the screen's aspect (crop top/bottom a little on wide screens)
+  // The picture fills the whole screen, edge to edge. Trailers carry baked-in black bars (scope films in a 16:9
+  // file), so only the real picture area (`crop`, measured by scripts/detect-trailer-crops.mjs) is mapped, then
+  // cover-fitted to the screen's shape — a sliver may be trimmed at the sides, never padded with bands.
+  const img = map?.image as { videoWidth?: number; videoHeight?: number; width?: number; height?: number } | undefined;
+  const fileAspect = (img?.videoWidth || img?.width || 16) / (img?.videoHeight || img?.height || 9);
+  const isVideo = map === videoTex && !!videoTex;
+  const picture = { w: screen.width, h: screen.height };
   useEffect(() => {
     if (!map) return;
-    const img = map.image as { videoWidth?: number; videoHeight?: number; width?: number; height?: number } | undefined;
-    const iw = img?.videoWidth || img?.width || 16;
-    const ih = img?.videoHeight || img?.height || 9;
+    const c = isVideo && crop ? crop : { top: 0, height: 1 };
+    const v0 = 1 - (c.top + c.height); // texture v runs bottom → top
+    const contentAspect = fileAspect / c.height;
     const screenAspect = screen.width / screen.height;
-    const texAspect = iw / ih;
-    if (texAspect > screenAspect) {
-      const r = screenAspect / texAspect;
-      map.repeat.set(r, 1);
-      map.offset.set((1 - r) / 2, 0);
+    if (contentAspect > screenAspect) {
+      const rx = screenAspect / contentAspect;
+      map.repeat.set(rx, c.height);
+      map.offset.set((1 - rx) / 2, v0);
     } else {
-      const r = texAspect / screenAspect;
-      map.repeat.set(1, r);
-      map.offset.set(0, (1 - r) / 2);
+      const ry = c.height * (contentAspect / screenAspect);
+      map.repeat.set(1, ry);
+      map.offset.set(0, v0 + (c.height - ry) / 2);
     }
-  }, [map, screen.width, screen.height]);
+  }, [map, isVideo, crop, fileAspect, screen.width, screen.height]);
 
   // sample the average colour of the picture a few times a second (tiny canvas, cheap)
   const sampler = useMemo(() => {
@@ -141,36 +148,81 @@ export function Screen({ layout, src, poster, muted = true, brightness = 1, play
     onLightColor?.(avg.current);
   });
 
-  const geometry = useMemo(() => {
-    if (!screen.curved) return new THREE.PlaneGeometry(screen.width, screen.height);
-    // gentle curve: a slice of a cylinder (Atmos hall's wide curved screen)
-    const radius = screen.width * 1.6;
-    const theta = screen.width / radius;
-    const g = new THREE.CylinderGeometry(radius, radius, screen.height, 48, 1, true, Math.PI - theta / 2, theta);
-    g.scale(-1, 1, 1); // face inwards
-    g.translate(0, 0, radius - 0.0);
-    return g;
-  }, [screen.curved, screen.width, screen.height]);
+  // flat, or a gentle slice of a cylinder for the Atmos hall's wide curved screen
+  const radius = screen.curved ? screen.width * 1.6 : 0;
+  const surfaceGeo = useMemo(() => panel(screen.width, screen.height, radius), [screen.width, screen.height, radius]);
+  const pictureGeo = useMemo(() => panel(picture.w, picture.h, radius), [picture.w, picture.h, radius]);
+  const sag = radius ? radius - Math.sqrt(radius * radius - (screen.width / 2) ** 2) : 0; // how far the edges come forward
+
+  const MASK = 0.55; // black velvet masking around the screen
+  const TRIM = 0.06; // thin metal trim between masking and screen surface
+  const W = screen.width;
+  const H = screen.height;
 
   return (
-    <group>
-      <mesh geometry={geometry} position={[0, screen.y, screen.z]}>
+    <group position={[0, screen.y, screen.z]}>
+      {/* screen surface: matte, near-black where the projector shows nothing (around the picture) */}
+      <mesh geometry={surfaceGeo}>
+        <meshStandardMaterial color="#2a2830" emissive="#1a1920" roughness={0.95} />
+      </mesh>
+      {/* the picture, inside the screen */}
+      <mesh geometry={pictureGeo} position={[0, 0, 0.004]}>
         <meshBasicMaterial ref={matRef} map={map ?? undefined} color="#e9e4f5" toneMapped={false} />
       </mesh>
-      {/* light spill from the screen onto the first rows and the walls */}
+      {/* metal trim around the screen surface — it catches the screen light so the edge reads */}
+      <group position={[0, 0, sag + 0.02]}>
+        {[
+          [0, H / 2 + TRIM / 2, W + TRIM * 2, TRIM],
+          [0, -H / 2 - TRIM / 2, W + TRIM * 2, TRIM],
+          [-W / 2 - TRIM / 2, 0, TRIM, H],
+          [W / 2 + TRIM / 2, 0, TRIM, H],
+        ].map(([x, y, w, h], i) => (
+          <mesh key={i} position={[x, y, 0]}>
+            <boxGeometry args={[w, h, 0.04]} />
+            <meshStandardMaterial color="#8d8a96" emissive="#2c2a33" metalness={0.6} roughness={0.35} />
+          </mesh>
+        ))}
+      </group>
+      {/* black velvet masking border, framing the screen on all four sides */}
+      <group position={[0, 0, sag + 0.01]}>
+        {[
+          [0, H / 2 + TRIM + MASK / 2, W + (TRIM + MASK) * 2, MASK],
+          [0, -H / 2 - TRIM - MASK / 2, W + (TRIM + MASK) * 2, MASK],
+          [-W / 2 - TRIM - MASK / 2, 0, MASK, H + TRIM * 2],
+          [W / 2 + TRIM + MASK / 2, 0, MASK, H + TRIM * 2],
+        ].map(([x, y, w, h], i) => (
+          <mesh key={i} position={[x, y, 0]}>
+            <boxGeometry args={[w, h, 0.06]} />
+            <meshStandardMaterial color="#060507" roughness={1} />
+          </mesh>
+        ))}
+      </group>
+      {/* light spill from the picture onto the first rows and the walls */}
       <rectAreaLight
         ref={light}
-        width={screen.width}
-        height={screen.height}
-        position={[0, screen.y, screen.z + 0.3]}
+        width={picture.w}
+        height={picture.h}
+        position={[0, 0, 0.3]}
         rotation={[0, Math.PI, 0]} /* lights emit along −Z; turn it to face the audience (+Z) */
         intensity={2.6}
         color={FALLBACK}
       />
-      {/* faint projector beam from the booth to the screen */}
-      <ProjectorBeam visible={beam} from={[0, Math.min(room.height - 0.8, layout.tiers[layout.tiers.length - 1].y + 3), room.zBack - 0.05]} to={[0, screen.y, screen.z]} size={[screen.width, screen.height]} level={level} />
+      {/* faint projector beam from the booth to the picture (in world space) */}
+      <group position={[0, -screen.y, -screen.z]}>
+        <ProjectorBeam visible={beam} from={[0, Math.min(room.height - 0.8, layout.tiers[layout.tiers.length - 1].y + 3), room.zBack - 0.05]} to={[0, screen.y, screen.z]} size={[picture.w, picture.h]} level={level} />
+      </group>
     </group>
   );
+}
+
+/** A screen-shaped panel facing +Z: flat, or curved around a vertical axis (radius > 0). */
+function panel(w: number, h: number, radius: number) {
+  if (!radius) return new THREE.PlaneGeometry(w, h);
+  const theta = w / radius;
+  const g = new THREE.CylinderGeometry(radius, radius, h, 48, 1, true, Math.PI - theta / 2, theta);
+  g.scale(-1, 1, 1); // face inwards (towards the audience)
+  g.translate(0, 0, radius);
+  return g;
 }
 
 function ProjectorBeam({ from, to, size, level, visible }: { from: [number, number, number]; to: [number, number, number]; size: [number, number]; level: React.MutableRefObject<number>; visible: boolean }) {

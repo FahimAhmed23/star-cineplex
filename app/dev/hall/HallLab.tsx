@@ -53,6 +53,7 @@ export function HallLab({ shows }: { shows: Shows }) {
         resetKey={resetKey}
         trailer={movie.trailer}
         poster={movie.trailerPoster}
+        trailerCrop={movie.trailerCrop}
         houseLights={house}
         selected={selected}
         hovered={hover?.id ?? null}

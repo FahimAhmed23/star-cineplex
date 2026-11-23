@@ -21,6 +21,7 @@ Open http://localhost:3000 (Phase 0: redirects to `/styleguide`).
 | `npm run validate:data` | Checks `/data` against the spec (seat counts, labels, bookings, files) |
 | `npm run data:showtimes` | Regenerates demo showtimes (`node scripts/generate-showtimes.mjs 2026-11-23`) |
 | `npm run media` | Compresses logo, posters and trailers from `/references` into `/public` (`-- --force` to redo) |
+| `npm run media:crops` | Measures the black bars baked into each trailer and stores the picture area in `movies.json` |
 | `npm run icons` | Rebuilds the verified Solar icon subset (`components/ui/icons.generated.ts`) |
 | `npm run models:blender` | Builds the seat / silhouette / door models headless in Blender 5.3 (`tools/blender/*.py`) |
 | `npm run models` | Packs + meshopt-compresses them into `/public/models` (one merged mesh per seat type) |

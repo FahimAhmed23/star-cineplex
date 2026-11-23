@@ -15,13 +15,14 @@ export interface RoomLook {
 
 /** Walls, stadium tiers, stage, ceiling, step lights and the branch's accent lights — all simple geometry. */
 export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
-  const { room, tiers, screen, metrics } = layout;
+  const { room, tiers, metrics } = layout;
   const W = room.width;
   const zMid = (room.zFront + room.zBack) / 2;
 
   const mats = useMemo(
     () => ({
       wall: new THREE.MeshStandardMaterial({ color: look.walls, roughness: 0.9 }),
+      frontWall: new THREE.MeshStandardMaterial({ color: new THREE.Color(look.walls).multiplyScalar(0.75), roughness: 0.9 }),
       carpet: new THREE.MeshStandardMaterial({ color: look.carpet, roughness: 1 }),
       riser: new THREE.MeshStandardMaterial({ color: new THREE.Color(look.carpet).multiplyScalar(0.55), roughness: 1 }),
       ceiling: new THREE.MeshStandardMaterial({ color: "#0c0a10", roughness: 1 }),
@@ -83,7 +84,8 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
           <planeGeometry args={[room.depth, room.height + 0.2]} />
         </mesh>
       ))}
-      <mesh material={mats.black} position={[0, room.height / 2, room.zFront]}>
+      {/* front wall in the hall's wall colour (a little darker), so the black screen masking reads as a frame */}
+      <mesh material={mats.frontWall} position={[0, room.height / 2, room.zFront]}>
         <planeGeometry args={[W, room.height]} />
       </mesh>
       <mesh material={mats.wall} position={[0, room.height / 2, room.zBack]} rotation-y={Math.PI}>
@@ -105,10 +107,7 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
         <planeGeometry args={[0.9, 0.5]} />
       </mesh>
 
-      {/* screen masking (black frame around the screen) */}
-      <mesh material={mats.black} position={[0, screen.y, screen.z - 0.06]}>
-        <boxGeometry args={[screen.width + 0.6, screen.height + 0.6, 0.05]} />
-      </mesh>
+      {/* the screen itself (surface, trim, masking) lives in Screen.tsx */}
 
       <Accents layout={layout} look={look} material={mats.accent} />
     </group>

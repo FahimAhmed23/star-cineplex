@@ -14,7 +14,8 @@
                     "icons":  "node scripts/build-icons.mjs",
                     "media":  "node scripts/compress-media.mjs",
                     "models":  "node scripts/pack-models.mjs",
-                    "models:blender":  "\"C:/Program Files/Blender Foundation/Blender 5.3/blender.exe\" -b --factory-startup --python tools/blender/build_models.py -- tools/blender/out"
+                    "models:blender":  "node scripts/blender-models.mjs",
+                    "media:crops":  "node scripts/detect-trailer-crops.mjs"
                 },
     "dependencies":  {
                          "@iconify/react":  "^6.0.4",
