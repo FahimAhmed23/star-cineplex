@@ -71,7 +71,7 @@ export function Styleguide() {
       </header>
 
       {/* Type */}
-      <Section title="Typography — Fraunces 900 (SOFT 100, WONK 0, opsz 144) · Outfit · Anek Bangla · IBM Plex Mono">
+      <Section title="Typography — Fraunces 800 (SOFT 100, WONK 0, opsz 144) · Outfit · Anek Bangla · IBM Plex Mono">
         <p className="eyebrow mb-4">
           <Icon name="star" size={16} />
           {t("hero.eyebrow")}

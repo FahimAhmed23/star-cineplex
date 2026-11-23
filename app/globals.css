@@ -90,7 +90,7 @@ body {
 /* Fraunces only at 32px+ and never all-caps (§5 Typography rules). */
 @utility font-display-settings {
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 800;
   font-variation-settings: "SOFT" 100, "WONK" 0, "opsz" 144;
   letter-spacing: -0.025em;
   line-height: 0.9;

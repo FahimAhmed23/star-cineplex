@@ -132,7 +132,7 @@ take on "ITC Avant Garde Gothic + Cooper BT" (both paid, not used).
 
 | Role | Font | Settings | Use for |
 |------|------|----------|---------|
-| **Display** | **Fraunces** | weight 900 (Black), `font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 144`, letter-spacing `-0.025em`, line-height `0.9` | Big moments only: hero movie titles, section titles, the Moments / Film Reel headlines, booking-step titles, ticket movie title, footer headline |
+| **Display** | **Fraunces** | weight 800 (ExtraBold), `font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 144`, letter-spacing `-0.025em`, line-height `0.9` | Big moments only: hero movie titles, section titles, the Moments / Film Reel headlines, booking-step titles, ticket movie title, footer headline |
 | **UI & body** | **Outfit** | 300–700 (same as starcineplex.com) | Everything functional: navbar, buttons, labels, meta, synopsis, forms, prices, cards' small text |
 | **Bangla** | **Anek Bangla** | 600–700 | All Bangla text and the বাংলা toggle |
 | **Ticket details** | **IBM Plex Mono** | 400–500 | Seat codes (E7), booking ID, countdown, film-reel edge printing |
@@ -148,10 +148,10 @@ take on "ITC Avant Garde Gothic + Cooper BT" (both paid, not used).
 **Type scale**
 | Token | Font | Size |
 |-------|------|------|
-| `display-xl` (hero movie title) | Fraunces 900 | `clamp(72px, 10vw, 150px)` |
-| `display-l` (footer headline) | Fraunces 900 | `clamp(64px, 9vw, 136px)` |
-| `display-m` (section titles) | Fraunces 900 | `clamp(44px, 4.6vw, 72px)` |
-| `display-s` (booking titles, ticket movie title, hall-type names) | Fraunces 900 | 32–48px |
+| `display-xl` (hero movie title) | Fraunces 800 | `clamp(72px, 10vw, 150px)` |
+| `display-l` (footer headline) | Fraunces 800 | `clamp(64px, 9vw, 136px)` |
+| `display-m` (section titles) | Fraunces 800 | `clamp(44px, 4.6vw, 72px)` |
+| `display-s` (booking titles, ticket movie title, hall-type names) | Fraunces 800 | 32–48px |
 | `body-l` (synopsis) | Outfit 400 | 16px / 1.55 |
 | `body` | Outfit 400 | 15px / 1.5 |
 | `ui` (buttons, links) | Outfit 500–600 | 13–15px |
@@ -668,7 +668,7 @@ screen, and a seat is waiting for you. Dark theme (`--night`).
 - Full width, height ≈ 100vh on desktop; the image is `object-fit: cover`, anchored to the screen (centre top).
 
 **Content (on top of the image, centred, below the screen)**
-- Headline (`display-l`, Fraunces 900, `--paper`), two lines:
+- Headline (`display-l`, Fraunces 800, `--paper`), two lines:
   **"The best seat in the house / is waiting for you."**
   Bangla: **"হলের সেরা আসনটি আপনার অপেক্ষায়।"**
 - Line under it (Outfit 18px, `--muted`): "Pick your seat in under a minute."
@@ -1049,7 +1049,7 @@ uneven spacing, mixed radii, pointless looping motion, filler visuals, hype copy
 | Decision | Why it stays |
 |----------|--------------|
 | Star Cineplex purple `#7F3E98`, `--purple-light`, the logo | The real brand (§5), not a generic AI purple |
-| Fraunces **900** display type (§5 Typography) | A deliberate brand choice for big moments; the 400–600 weight rule applies to UI text only |
+| Fraunces **800** display type (§5 Typography) | A deliberate brand choice for big moments; the 400–600 weight rule applies to UI text only |
 | The 3D hall, the screen light spill, the trailer glow on the hall | The "moment" of every hall screen — exactly where the skill says richness belongs |
 | Gold selected-seat outline/glow `#F5B72E` (§5) | Functional state, the only gold in the UI |
 | Footer seat glow, opening projector beams, cinema doors, ticket print (§8.1, §8.10, §9.4, §9.8) | Storytelling moments of the concept |

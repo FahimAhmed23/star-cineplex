@@ -2,7 +2,7 @@ import { Anek_Bangla, Fraunces, IBM_Plex_Mono, Outfit } from "next/font/google";
 
 // All four are SIL OFL fonts, self-hosted by next/font at build time (§4, §5 Typography).
 
-/** Display — Fraunces variable with the SOFT / WONK / opsz axes (used at weight 900). */
+/** Display — Fraunces variable with the SOFT / WONK / opsz axes (used at weight 800). */
 export const fraunces = Fraunces({
   subsets: ["latin"],
   axes: ["SOFT", "WONK", "opsz"],
