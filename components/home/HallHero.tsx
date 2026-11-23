@@ -110,7 +110,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles }: Props) 
       />
 
       {/* soft dark gradient on the left ~40%, so the info never covers the screen's centre */}
-      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-[52%] bg-gradient-to-r from-night/95 via-night/65 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-[56%] bg-[linear-gradient(to_right,rgb(7_5_10/0.95)_0%,rgb(7_5_10/0.9)_45%,rgb(7_5_10/0.55)_72%,transparent_100%)]" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-night/90 to-transparent" />
 
       {/* hero info */}

@@ -30,20 +30,25 @@ interface Pose {
 
 const OVERVIEW_ELEVATION = THREE.MathUtils.degToRad(52); // 50–55° looking down (§9.5)
 const MARGIN = 0.92; // seats fill the view with ~8% margin
+const BASE_FOV = 42; // overview + view from seat
+const HERO_FOV = 54; // the angled hero shot needs a wider lens to keep the whole screen on the right half
 
 function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 /**
- * §8.1 step 5: centred, just above the last row, straight at the screen — framed like
- * references/ai/hall-premium-front.png, with rows of seats in the foreground (designer-approved over row G).
+ * §8.1 step 5 / §8.2 hero: an angled view from the left side of the hall, just above the back rows.
+ * The dark left wall and seats fill the left of the frame (calm space for the hero text) and the screen
+ * sits on the right half. (Designer decision, replacing the centred front view.)
  */
 export function frontPose(layout: HallLayout): Pose {
   const t = layout.tiers[layout.tiers.length - 1];
+  const { room, screen } = layout;
   return {
-    pos: new THREE.Vector3(0, t.y + EYE_HEIGHT + 0.55, t.z + 0.6),
-    look: new THREE.Vector3(0, layout.screen.y - layout.screen.height * 0.22, layout.screen.z),
+    pos: new THREE.Vector3(-room.width * 0.36, t.y + EYE_HEIGHT + 0.9, t.z + 1.6),
+    // aim left of the screen centre, so the screen lands right of the frame centre
+    look: new THREE.Vector3(-screen.width * 0.46, screen.y - screen.height * 0.2, screen.z),
   };
 }
 
@@ -103,8 +108,8 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false }:
   const look = useRef({ yaw: 0, pitch: 0, dragging: false, lastInput: 0 });
 
   const overview = useMemo(
-    () => overviewPose(layout, size.width / size.height, camera.fov),
-    [layout, size.width, size.height, camera.fov],
+    () => overviewPose(layout, size.width / size.height, BASE_FOV),
+    [layout, size.width, size.height],
   );
 
   const targetPose = useMemo<Pose>(() => {
@@ -192,6 +197,12 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false }:
 
   const tmp = useMemo(() => new THREE.Vector3(), []);
   useFrame((state, dt) => {
+    // lens: wider for the hero, normal elsewhere (eased so mode changes never jump)
+    const targetFov = mode === "front" ? HERO_FOV : BASE_FOV;
+    if (Math.abs(camera.fov - targetFov) > 0.01) {
+      camera.fov += (targetFov - camera.fov) * (first.current ? 1 : 1 - Math.exp(-dt * 4));
+      camera.updateProjectionMatrix();
+    }
     const orbiting = mode === "overview" && !tweening.current;
     if (orbiting) return; // OrbitControls owns the camera
     camera.position.copy(pose.current.pos);

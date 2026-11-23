@@ -408,9 +408,7 @@ Total ≈ 3.2s. Skippable at any time ("Skip intro ›", bottom-right). Plays on
 | 2. Projector beams | 0.3–1.2s | **Two projector light beams** fade/grow in from the **bottom-left and bottom-right corners**, angled up toward the centre (shape exactly like the two wedges in the reference). Beams are soft volumetric light: white→`--purple-light` gradient, ~25–35% opacity, blurred edges, subtle floating dust particles inside the beams. |
 | 3. Logo panel | 0.6–1.6s | Where the beams converge, a **centre panel** (the grey rectangle in the reference, ~29% of viewport width, ~2.1:1 ratio) lights up. The **Star Cineplex logo** fades in on it, glowing slightly as if projected. Hold ~0.6s. |
 | 4. Split reveal | 1.8–2.6s | The screen **splits horizontally through the middle of the panel**: the **top half slides up** and the **bottom half slides down** (like opening doors), each taking its half of the beams/logo with it. `--ease-in-out`, 800ms. Behind the split, the 3D hall is revealed. |
-| 5. Hall arrival | 2.2–3.2s | The 3D hall is shown in a **straight, symmetrical front view** (camera centred, just above the **last row** at seated eye height, looking straight at the screen — the screen
-sits in the upper middle with walls, light lines and rows of seats around it, as in `references/ai/hall-premium-front.png`;
-row G was too close: the screen filled the whole frame). House lights are already dimmed; the screen brightens from 10% → 100% as the trailer starts. Navbar slides in; hero info (§8.2) fades up with a 100ms stagger. |
+| 5. Hall arrival | 2.2–3.2s | The 3D hall is shown in an **angled view from the left side of the hall** (camera near the left wall, just above the **last row**, a slightly wider 54° lens): the dark left wall and seats fill the left of the frame, where the hero text sits, and the screen sits on the **right half** with rows of seats in the foreground. (Designer decision; replaces the earlier centred front view — row G was too close.) House lights are already dimmed; the screen brightens from 10% → 100% as the trailer starts. Navbar slides in; hero info (§8.2) fades up with a 100ms stagger. |
 
 Implementation notes:
 - Build steps 1–4 as a **2D overlay** (HTML/CSS/SVG or canvas) above the 3D canvas. Only the hall is 3D.
@@ -426,7 +424,7 @@ Implementation notes:
 structure, move it into the 3D hall).
 
 **The scene**
-- The 3D hall (Bashundhara Hall 1 from `data/halls.json`) in the **front view** from §8.1 step 5. The camera
+- The 3D hall (Bashundhara Hall 1 from `data/halls.json`) in the **angled left-side view** from §8.1 step 5. The camera
   stays put (very slow idle drift of ±0.3° allowed). Seats in the foreground are dark silhouettes; the screen is the brightest object.
 - **The trailer plays on the hall's 3D screen** (video texture from `/public/trailers/*.mp4`), muted by default,
   with a small unmute button. The screen's light spills softly onto the first rows and the walls (colour taken
@@ -438,7 +436,7 @@ structure, move it into the 3D hall).
 - Progress indicator bottom-right: a row of short dashes, the active one fills over the trailer's duration
   in `--purple-light`; click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
 
-**Hero info overlay** (left-aligned, over a soft dark gradient on the left ~40% of the viewport, so it never covers the screen's centre)
+**Hero info overlay** (left-aligned, over the dark left wall of the angled view plus a soft dark gradient on the left ~50%, so it never covers the screen on the right)
 - Eyebrow: [star icon] `Now showing at Star Cineplex`
 - Movie title (`display-xl`, Fraunces)
 - Meta row: `2026 · [A] · 1h 48m · English · [2D]` — rating in an outlined box, format in a purple filled badge
@@ -994,7 +992,7 @@ Rule: **follow the written spec; use reference images for look and feel only.**
 - [x] Star Cineplex logo — supplied as PNG (`references/logo.png`). An SVG would be sharper if available.
 - [ ] Which 5–6 movies/trailers to feature, and the trailer files (use official trailers only for a private demo;
       check usage before publishing the case study publicly).
-- [ ] Hero info placement in the front view: left side (current spec) vs. below the screen.
+- [x] Hero info placement: left side, with the hall seen from the left so the screen sits on the right half.
 - [ ] Exact projector-beam colour: pure white light vs. purple-tinted.
 - [ ] Real IMDb ratings for the featured movies (placeholders until then).
 - [ ] Coming Soon: confirm the release-date pill in place of the rating.
