@@ -169,7 +169,10 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
                   aria-label={t("cards.goTo", { n: i + 1 })}
                   aria-current={i === active || undefined}
                 >
-                  <span className={`block h-1.5 rounded-pill transition-[width,background-color] duration-300 ${i === active ? "w-6 bg-purple-light" : "w-1.5 bg-white/30"}`} />
+                  {/* one 24px pill, scaled down to a dot when inactive (scale, not width) */}
+                  <span
+                    className={`block h-1.5 w-6 rounded-pill transition-[scale,background-color] duration-300 ease-out ${i === active ? "scale-x-100 bg-purple-light" : "scale-x-25 bg-white/30"}`}
+                  />
                 </button>
               </li>
             ))}

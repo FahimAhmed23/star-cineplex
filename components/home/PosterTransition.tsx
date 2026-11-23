@@ -34,6 +34,10 @@ interface Props {
  * Shared-element expand for the Trailer view (CLAUDE.md §8.7): the clicked card's poster grows from its
  * place to fill the screen (≈700ms), the page jumps under it, then it cross-fades into the hall.
  * Back plays it in reverse, shrinking into the same card.
+ *
+ * Motion note: this animates top / left / width / height on purpose. It is a single fixed-position element,
+ * outside the page flow (nothing else re-lays out), for 700ms — and a transform scale would stretch the
+ * poster between the card's 2:3 and the screen's shape. object-fit: cover keeps the image right throughout.
  */
 export function PosterTransition({ poster, from, to, fadeIn, fadeOut, onArrive, onDone }: Props) {
   const arrived = useRef(false);
