@@ -436,7 +436,7 @@ structure, move it into the 3D hall).
 - Progress indicator bottom-right: a row of short dashes, the active one fills over the trailer's duration
   in `--purple-light`; click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
 
-**Hero info overlay** (left-aligned, over the dark left wall of the angled view; a soft dark fade sits right behind the text block so the copy has full contrast while the wall's light lines stay visible around it; the text column always ends before the screen on the right)
+**Hero info overlay** (left-aligned, over the dark left wall of the angled view, under **one linear gradient across the whole hero**: dark behind the text column for full contrast, easing to clear just before the screen; no boxed or blurred panel behind the text; the text column always ends before the screen on the right)
 - Eyebrow: [star icon] `Now showing at Star Cineplex`
 - Movie title (`display-xl`, Fraunces)
 - Meta row: `2026 · [A] · 1h 48m · English · [2D]` — rating in an outlined box, format in a purple filled badge

@@ -234,6 +234,21 @@ body {
   border-radius: 6px;
 }
 
+/* Hero (§8.2): one linear gradient across the whole hero. Solid enough behind the text column for full
+   contrast, then easing out so the screen on the right half stays untouched. The text column ends at
+   --hero-text-end (≈46% of the width), the screen starts at ≈48%. */
+.hero-fade {
+  --hero-text-end: calc(max(0px, (100vw - 1440px) / 2) + 32px + min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px)));
+  background: linear-gradient(
+    to right,
+    rgb(7 5 10 / 0.94) 0%,
+    rgb(7 5 10 / 0.9) calc(var(--hero-text-end) - 120px),
+    rgb(7 5 10 / 0.72) var(--hero-text-end),
+    rgb(7 5 10 / 0.25) calc(var(--hero-text-end) + 6vw),
+    transparent calc(var(--hero-text-end) + 12vw)
+  );
+}
+
 /* "Tonight at" ticket-stub chips (§8.2): time | title | format, dashed divider, semicircle notches */
 .ticket-chip {
   --chip-bg: #fff;
