@@ -38,9 +38,8 @@ function reducedMotion() {
 }
 
 /**
- * §8.1 step 5: centred, straight at the screen. The spec says "around row G eye height", but from row G the
- * screen fills the whole frame; the reference (references/ai/hall-premium-front.png) is framed from the back
- * rows with seats in the foreground, so the hero sits just above the last row. (Listed as a deviation.)
+ * §8.1 step 5: centred, just above the last row, straight at the screen — framed like
+ * references/ai/hall-premium-front.png, with rows of seats in the foreground (designer-approved over row G).
  */
 export function frontPose(layout: HallLayout): Pose {
   const t = layout.tiers[layout.tiers.length - 1];
