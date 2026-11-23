@@ -3,14 +3,12 @@
 import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { CustomEase } from "gsap/CustomEase";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { EYE_HEIGHT, type HallLayout } from "@/lib/hall-layout";
+import { EASE_IN_OUT } from "@/lib/motion";
 
-gsap.registerPlugin(CustomEase);
-const EASE_IN_OUT = CustomEase.create("sc-ease-in-out", "0.65,0,0.35,1"); // --ease-in-out (§5)
 
 export type CameraMode = "front" | "overview" | "seat";
 

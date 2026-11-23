@@ -25,12 +25,25 @@
     "myTickets": "My tickets",
     "about": "About",
     "menu": "Menu",
-    "phone": "09617660660"
+    "phone": "09617660660",
+    "home": "Star Cineplex home",
+    "mainNav": "Main",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "call": "Call Star Cineplex"
   },
   "hero": {
     "eyebrow": "Now showing at Star Cineplex",
     "playingAcross": "Playing across {count} branches",
-    "tonightAt": "Tonight at"
+    "tonightAt": "Tonight at",
+    "pauseCarousel": "Pause trailers",
+    "playCarousel": "Play trailers",
+    "showTrailer": "Show trailer {n} of {total}",
+    "certificate": "Rated {c}",
+    "branchLabel": "Branch",
+    "noShowsTonight": "No more shows tonight at this branch.",
+    "tonightShows": "Shows tonight",
+    "minutes": "{h}h {m}m"
   },
   "home": {
     "nowShowingTitle": "Now Showing in Theaters",
@@ -104,5 +117,9 @@
   },
   "states": {
     "simpleView": "Showing the simple view on this device."
+  },
+  "intro": {
+    "skip": "Skip intro",
+    "label": "Opening"
   }
 }

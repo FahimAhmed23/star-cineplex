@@ -113,7 +113,8 @@ body {
   font-size: clamp(32px, 3vw, 48px);
 }
 /* In Bangla, Fraunces headlines become Anek Bangla 700 (§5 Language) */
-:lang(bn) :is(.display-xl, .display-l, .display-m, .display-s) {
+/* (matches the headline's own language, so an English film title inside a Bangla page keeps Fraunces) */
+:is(.display-xl, .display-l, .display-m, .display-s):lang(bn) {
   font-family: var(--font-bangla);
   font-weight: 700;
   font-variation-settings: normal;
@@ -167,6 +168,188 @@ body {
 .icon-duo {
   color: var(--purple);
   --icon-secondary: var(--purple-light);
+}
+
+/* ───────────────────────── Navbar — notch tab (§7) ───────────────────────── */
+.nav-bg {
+  --nav-bg: rgba(11, 8, 16, 0.9);
+  background: var(--nav-bg);
+  transition: background-color 300ms var(--ease-out);
+}
+.nav-scrolled .nav-bg {
+  --nav-bg: rgba(11, 8, 16, 0.985);
+}
+/* concave flares where the tab meets the strip, so the tab looks carved from it */
+.nav-tab::before,
+.nav-tab::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  transition: background 300ms var(--ease-out);
+}
+.nav-tab::before {
+  left: -14px;
+  background: radial-gradient(circle at 0 100%, transparent 13.5px, var(--nav-bg) 14px);
+}
+.nav-tab::after {
+  right: -14px;
+  background: radial-gradient(circle at 100% 100%, transparent 13.5px, var(--nav-bg) 14px);
+}
+@media (max-width: 767px) {
+  /* phones: no strip above, so no flares — the tab simply hangs from the top edge */
+  .nav-tab::before,
+  .nav-tab::after {
+    display: none;
+  }
+}
+.nav-link {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 180ms var(--ease-out);
+}
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link[aria-current="true"] {
+  color: #fff;
+}
+.nav-link[aria-current="true"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 9999px;
+  background: var(--purple-light);
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--purple-light);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* "Tonight at" ticket-stub chips (§8.2): time | title | format, dashed divider, semicircle notches */
+.ticket-chip {
+  --chip-bg: #fff;
+  --chip-fg: var(--ink);
+  --notch: #0b0810;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    transform 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.ticket-chip:hover,
+.ticket-chip:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.6);
+}
+.ticket-chip::before,
+.ticket-chip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 9999px;
+  background: var(--notch);
+}
+.ticket-chip::before {
+  left: -6px;
+}
+.ticket-chip::after {
+  right: -6px;
+}
+.ticket-chip__time {
+  padding: 0 14px 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ticket-chip__title {
+  display: block;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px 0 12px;
+  border-left: 1px dashed color-mix(in srgb, currentColor 35%, transparent);
+  font-weight: 500;
+  line-height: 44px;
+}
+.ticket-chip__format {
+  margin-right: 16px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--purple);
+  color: #fff;
+}
+.ticket-chip--next {
+  --chip-bg: var(--purple);
+  --chip-fg: #fff;
+}
+.ticket-chip--next .ticket-chip__format {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+:lang(bn) .ticket-chip__title {
+  font-family: var(--font-bangla);
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Opening (§8.1): beams grow in from the bottom corners (0.3–1.2s) */
+.op-beam {
+  opacity: 0;
+  transform: scale(0.55);
+  transform-box: view-box;
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 900ms var(--ease-out);
+}
+.op-beam-l {
+  transform-origin: 0px 1110px;
+}
+.op-beam-r {
+  transform-origin: 2000px 1110px;
+  transition-delay: 60ms;
+}
+.op-beam.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+/* Opening (§8.1): dust drifting in the projector beams */
+.op-mote {
+  animation: op-drift 5s ease-in-out infinite alternate;
+  transform-box: fill-box;
+}
+@keyframes op-drift {
+  from {
+    transform: translate(-6px, 4px);
+  }
+  to {
+    transform: translate(8px, -10px);
+  }
 }
 
 /* ───────────────────────── Buttons — centre fill ───────────────────────── */
@@ -265,6 +448,18 @@ body {
 }
 .btn-secondary:where(:hover, :focus-visible):not(:disabled) {
   border-color: var(--purple);
+}
+/* White pill (navbar "Buy Tickets", §7): white, ink text → purple fill, white text */
+.btn-white {
+  --btn-bg: #fff;
+  --btn-fg: var(--ink);
+  --btn-fill: var(--purple);
+  --btn-fg-hover: #fff;
+  --btn-shadow: none;
+}
+.btn-xs {
+  padding: 8px 14px;
+  font-size: 13px;
 }
 /* Primary on light theme (Pay, Save ticket): purple → white fill, purple border, text and icon */
 .btn-primary-light {

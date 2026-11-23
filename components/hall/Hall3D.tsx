@@ -25,6 +25,10 @@ export interface Hall3DProps {
   /** real picture area inside the trailer file (Movie.trailerCrop) */
   trailerCrop?: { top: number; height: number };
   muted?: boolean;
+  /** where the trailer starts, as a fraction of its length (the hero skips studio logos) */
+  startAt?: number;
+  /** called once the scene (models, room) has rendered its first frame */
+  onReady?: () => void;
   /** 0 = house lights down (hero), 1 = up enough to choose seats (overview) */
   houseLights?: number;
   screenBrightness?: number;
@@ -79,6 +83,8 @@ function Scene({
   trailer,
   poster,
   trailerCrop,
+  startAt,
+  onReady,
   muted = true,
   houseLights = 0,
   screenBrightness = 1,
@@ -109,6 +115,7 @@ function Scene({
         src={trailer}
         poster={poster}
         crop={trailerCrop}
+        startAt={startAt}
         muted={muted}
         brightness={screenBrightness}
         playing={playing}
@@ -133,6 +140,7 @@ function Scene({
         <Vignette offset={0.3} darkness={0.55} />
       </EffectComposer>
       {onFps && <FpsProbe onFps={onFps} />}
+      {onReady && <ReadyProbe onReady={onReady} />}
     </>
   );
 }
@@ -153,6 +161,17 @@ function HouseLights({ level, layout }: { level: number; layout: ReturnType<type
       <directionalLight ref={fill} position={[0, layout.room.height + 6, layout.room.zBack + 6]} intensity={0.2} color="#fff1e0" />
     </>
   );
+}
+
+/** Fires once after the first rendered frame (everything inside the Suspense boundary has loaded). */
+function ReadyProbe({ onReady }: { onReady: () => void }) {
+  const done = useRef(false);
+  useFrame(() => {
+    if (done.current) return;
+    done.current = true;
+    requestAnimationFrame(() => onReady());
+  });
+  return null;
 }
 
 function FpsProbe({ onFps }: { onFps: (fps: number) => void }) {

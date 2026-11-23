@@ -6,8 +6,8 @@ import { Icon, type IconName } from "./Icon";
 
 /* Hover effect adapted from Uiverse.io by thisSasha (MIT) — styles live in app/globals.css (.btn) */
 
-type Variant = "primary" | "secondary" | "primary-light";
-type Size = "lg" | "sm";
+type Variant = "primary" | "secondary" | "primary-light" | "white";
+type Size = "lg" | "sm" | "xs";
 
 interface CommonProps {
   variant?: Variant;
@@ -27,7 +27,7 @@ function Content({ icon, loading, children, size }: Pick<CommonProps, "icon" | "
     return (
       <>
         <span className="invisible inline-flex items-center gap-2" aria-hidden>
-          {icon && <Icon name={icon} size={size === "sm" ? 18 : 20} />}
+          {icon && <Icon name={icon} size={size === "lg" ? 20 : 18} />}
           {children}
         </span>
         <span className="absolute inset-0 grid place-items-center" role="status">
@@ -38,7 +38,7 @@ function Content({ icon, loading, children, size }: Pick<CommonProps, "icon" | "
   }
   return (
     <>
-      {icon && <Icon name={icon} size={size === "sm" ? 18 : 20} />}
+      {icon && <Icon name={icon} size={size === "lg" ? 20 : 18} />}
       {children}
     </>
   );

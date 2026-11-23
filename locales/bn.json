@@ -25,12 +25,25 @@
     "myTickets": "আমার টিকিট",
     "about": "পরিচিতি",
     "menu": "মেনু",
-    "phone": "09617660660"
+    "phone": "09617660660",
+    "home": "স্টার সিনেপ্লেক্স হোম",
+    "mainNav": "প্রধান",
+    "openMenu": "মেনু খুলুন",
+    "closeMenu": "মেনু বন্ধ করুন",
+    "call": "স্টার সিনেপ্লেক্সে কল করুন"
   },
   "hero": {
     "eyebrow": "স্টার সিনেপ্লেক্সে এখন চলছে",
     "playingAcross": "{count}টি শাখায় চলছে",
-    "tonightAt": "আজ রাতে"
+    "tonightAt": "আজ রাতে",
+    "pauseCarousel": "ট্রেলার থামান",
+    "playCarousel": "ট্রেলার চালান",
+    "showTrailer": "ট্রেলার {n} / {total}",
+    "certificate": "রেটিং {c}",
+    "branchLabel": "শাখা",
+    "noShowsTonight": "আজ রাতে এই শাখায় আর কোনো শো নেই।",
+    "tonightShows": "আজ রাতের শো",
+    "minutes": "{h}ঘ {m}মি"
   },
   "home": {
     "nowShowingTitle": "এখন প্রেক্ষাগৃহে",
@@ -104,5 +117,9 @@
   },
   "states": {
     "simpleView": "এই ডিভাইসে সহজ ভিউ দেখানো হচ্ছে।"
+  },
+  "intro": {
+    "skip": "ইন্ট্রো বাদ দিন",
+    "label": "শুরু"
   }
 }

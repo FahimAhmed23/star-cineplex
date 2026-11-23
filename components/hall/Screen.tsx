@@ -15,6 +15,8 @@ interface Props {
   poster?: string;
   /** real picture area inside the trailer file (Movie.trailerCrop) */
   crop?: { top: number; height: number };
+  /** start position as a fraction of the trailer (e.g. 0.18 skips studio logos) */
+  startAt?: number;
   muted?: boolean;
   /** 0..1 — the hero brightens 10% → 100% (§8.1), the scroll transition dims to 35% (§8.3) */
   brightness?: number;
@@ -29,7 +31,7 @@ interface Props {
 const FALLBACK = new THREE.Color("#c9b8ff");
 
 /** The hall screen: trailer as a video texture, its light spilling onto the first rows and walls. */
-export function Screen({ layout, src, poster, crop, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
+export function Screen({ layout, src, poster, crop, startAt = 0, muted = true, brightness = 1, playing = true, onLightColor, videoRef, beam = true }: Props) {
   const { screen, room } = layout;
   const [videoTex, setVideoTex] = useState<THREE.VideoTexture | null>(null);
   const [posterTex, setPosterTex] = useState<THREE.Texture | null>(null);
@@ -63,18 +65,28 @@ export function Screen({ layout, src, poster, crop, muted = true, brightness = 1
     tex.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
     const onPlaying = () => setVideoTex(tex);
     const onError = () => setVideoTex(null);
+    // seek past the studio logos first, then play (so the first frame shown is already the film)
+    const onMeta = () => {
+      if (startAt > 0 && isFinite(el.duration)) el.currentTime = el.duration * startAt;
+      else el.play().catch(() => {});
+    };
+    const onSeeked = () => el.play().catch(() => {});
     el.addEventListener("playing", onPlaying);
     el.addEventListener("error", onError);
-    el.play().catch(() => {});
+    el.addEventListener("loadedmetadata", onMeta, { once: true });
+    el.addEventListener("seeked", onSeeked, { once: true });
     return () => {
       el.removeEventListener("playing", onPlaying);
       el.removeEventListener("error", onError);
+      el.removeEventListener("loadedmetadata", onMeta);
+      el.removeEventListener("seeked", onSeeked);
       el.pause();
       el.removeAttribute("src");
       el.load();
       tex.dispose();
       setVideoTex(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- startAt only applies to a new src
   }, [src, gl, videoRef]);
 
   useEffect(() => {
@@ -121,7 +133,7 @@ export function Screen({ layout, src, poster, crop, muted = true, brightness = 1
   const lastSample = useRef(0);
 
   useFrame((state, dt) => {
-    level.current += (brightness - level.current) * (1 - Math.exp(-dt * 4));
+    level.current += (brightness - level.current) * (1 - Math.exp(-dt * 10)); // fast enough for a 300ms dip to black
     const el = video.current;
     if (sampler && el && videoTex && el.readyState >= 2 && state.clock.elapsedTime - lastSample.current > 0.25) {
       lastSample.current = state.clock.elapsedTime;
