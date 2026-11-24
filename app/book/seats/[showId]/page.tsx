@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
-import { SeatsPlaceholder } from "@/components/booking/SeatsPlaceholder";
+import { notFound } from "next/navigation";
+import { SeatSelection } from "@/components/booking/SeatSelection";
+import { getBranch, getHall, getMovie } from "@/lib/data";
+import { loadShowtimes } from "@/lib/showtimes.server";
 
 export const metadata: Metadata = { title: "Choose your seats · Star Cineplex — Concept Redesign" };
 
-// Seat selection is Phase 6 (§9.5). Phase 5 lands here through the cinema doors (§9.4).
+/** Step 2 — seat selection in the 3D hall (CLAUDE.md §9.5). */
 export default async function SeatsPage({ params }: { params: Promise<{ showId: string }> }) {
   const { showId } = await params;
-  return <SeatsPlaceholder showId={showId} />;
+  const show = (await loadShowtimes()).find((s) => s.id === showId);
+  const hall = show && getHall(show.hall);
+  const movie = show && getMovie(show.movie);
+  const branch = show && getBranch(show.branch);
+  if (!show || !hall || !movie || !branch) notFound();
+  return <SeatSelection show={show} hallId={hall.id} />;
 }

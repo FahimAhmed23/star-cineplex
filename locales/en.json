@@ -94,7 +94,19 @@
     "seats": "{count} seats",
     "priceRange": "৳{min}–{max}",
     "semiNote": "Includes a Semi-Recliner row",
-    "pickShowtime": "Pick a showtime"
+    "pickShowtime": "Pick a showtime",
+    "oneSeatAloneLeft": "This leaves one seat alone. Shift left?",
+    "viewFrom": "View from {seat}",
+    "selectThis": "Select this seat",
+    "noSeats": "Pick seats in the hall — tap any free seat.",
+    "total": "Total",
+    "remove": "Remove {seat}",
+    "maxSeats": "Up to 10 seats per booking.",
+    "legend": "Seat legend",
+    "viewMode": "View",
+    "howMany": "How many seats",
+    "screen": "SCREEN",
+    "seatMap": "Seat map"
   },
   "checkout": {
     "yourDetails": "Your details",

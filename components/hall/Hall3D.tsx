@@ -1,6 +1,6 @@
 "use client";
 
-import { AdaptiveDpr, PerformanceMonitor } from "@react-three/drei";
+import { AdaptiveDpr, Html, PerformanceMonitor } from "@react-three/drei";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useMemo, useRef, useState } from "react";
@@ -46,6 +46,13 @@ export interface Hall3DProps {
   onSeatPointer?: (seat: PlacedSeat | null, e?: ThreeEvent<PointerEvent>) => void;
   onSeatClick?: (seat: PlacedSeat, e: ThreeEvent<MouseEvent>) => void;
   onFps?: (fps: number) => void;
+  /** §9.5 hover popup: HTML anchored above a seat */
+  anchor?: { seatId: string; node: React.ReactNode } | null;
+  /** §9.5 selected seats get a small gold ✓ marker above them */
+  markers?: string[];
+  /** §9.5 overview: glide the camera to show these seats (Best available); bump focusKey to re-run */
+  focusSeats?: string[] | null;
+  focusKey?: number;
   className?: string;
 }
 
@@ -104,6 +111,10 @@ function Scene({
   onSeatPointer,
   onSeatClick,
   onFps,
+  anchor,
+  markers,
+  focusSeats,
+  focusKey,
 }: Hall3DProps) {
   const layout = useMemo(() => buildLayout(hall), [hall]);
   const theme = useMemo(() => hallTheme(hall), [hall]);
@@ -146,7 +157,27 @@ function Scene({
         onSeatClick={onSeatClick}
       />
       <Audience layout={layout} booked={booked} rimColor={rim} />
-      <CameraRig layout={layout} mode={mode} seatId={seatId} resetKey={resetKey} drift={mode === "front"} />
+      <CameraRig layout={layout} mode={mode} seatId={seatId} resetKey={resetKey} drift={mode === "front"} focusSeats={focusSeats} focusKey={focusKey} />
+      {anchor && layout.byId.get(anchor.seatId) && (
+        <Html
+          key={anchor.seatId}
+          position={[layout.byId.get(anchor.seatId)!.x, layout.byId.get(anchor.seatId)!.y + 1.15, layout.byId.get(anchor.seatId)!.z]}
+          center
+          zIndexRange={[40, 30]}
+          style={{ pointerEvents: "auto" }}
+        >
+          {anchor.node}
+        </Html>
+      )}
+      {mode !== "seat" &&
+        markers?.map((id) => {
+          const s = layout.byId.get(id);
+          return s ? (
+            <Html key={id} position={[s.x, s.y + 1.05, s.z]} center zIndexRange={[20, 10]} style={{ pointerEvents: "none" }}>
+              <span className="seat-check" aria-hidden>✓</span>
+            </Html>
+          ) : null;
+        })}
       <EffectComposer multisampling={0}>
         {/* bloom only on emissive parts: accent lights, step lights, the screen (§10) */}
         <Bloom mipmapBlur luminanceThreshold={1} luminanceSmoothing={0.05} intensity={0.8} radius={0.6} />

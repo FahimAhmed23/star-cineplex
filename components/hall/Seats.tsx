@@ -24,6 +24,7 @@ interface Props {
   onSeatClick?: (seat: PlacedSeat, e: ThreeEvent<MouseEvent>) => void;
 }
 
+const GOLD = new THREE.Color("#f5b72e"); // "your seat" (§9.5)
 const BOOKED = new THREE.Color("#1d1c20"); // dark grey, ≈40% brightness — must read darker than oxblood VIP leather (§9.5)
 const LIFT = 0.06;
 
@@ -75,11 +76,11 @@ function SeatGroup({
     if (!mesh) return;
     const c = new THREE.Color();
     seats.forEach((s, i) => {
-      c.copy(booked.has(s.id) ? BOOKED : base);
+      c.copy(booked.has(s.id) ? BOOKED : selected?.has(s.id) ? GOLD : base);
       mesh.setColorAt(i, c);
     });
     mesh.instanceColor!.needsUpdate = true;
-  }, [seats, booked, base]);
+  }, [seats, booked, base, selected]);
 
   // matrices, hover/selected lift and glow — eased every frame
   const m = useMemo(() => new THREE.Matrix4(), []);

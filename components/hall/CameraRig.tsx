@@ -21,6 +21,9 @@ interface Props {
   resetKey?: number;
   /** idle drift in the hero front view (±0.3°) */
   drift?: boolean;
+  /** overview: glide in to show these seats (§9.5 Best available) */
+  focusSeats?: string[] | null;
+  focusKey?: number;
 }
 
 interface Pose {
@@ -94,7 +97,19 @@ export function seatPose(layout: HallLayout, seatId: string): Pose | null {
   };
 }
 
-export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false }: Props) {
+/** §9.5 Best available: a closer overview aimed at a group of seats, from the same side and angle. */
+export function focusPose(layout: HallLayout, overview: Pose, ids: string[]): Pose | null {
+  const seats = ids.map((id) => layout.byId.get(id)).filter(Boolean) as NonNullable<ReturnType<typeof layout.byId.get>>[];
+  if (!seats.length) return null;
+  const c = new THREE.Vector3();
+  seats.forEach((s) => c.add(new THREE.Vector3(s.x, s.y + 0.5, s.z)));
+  c.divideScalar(seats.length);
+  const dir = overview.pos.clone().sub(overview.look).normalize();
+  const dist = overview.pos.distanceTo(overview.look) * 0.5;
+  return { pos: c.clone().addScaledVector(dir, dist), look: c };
+}
+
+export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, focusSeats, focusKey = 0 }: Props) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const size = useThree((s) => s.size);
   const gl = useThree((s) => s.gl);
@@ -113,12 +128,12 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false }:
   );
 
   const targetPose = useMemo<Pose>(() => {
-    if (mode === "overview") return overview;
+    if (mode === "overview") return (focusSeats?.length && focusPose(layout, overview, focusSeats)) || overview;
     if (mode === "seat" && seatId) return seatPose(layout, seatId) ?? overview;
     return frontPose(layout);
     // resetKey: recompute (and re-tween) on "Reset view"
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, seatId, layout, overview, resetKey]);
+  }, [mode, seatId, layout, overview, resetKey, focusKey]);
 
   useEffect(() => {
     const from = { p: pose.current.pos.clone(), l: pose.current.look.clone() };

@@ -94,7 +94,19 @@
     "seats": "{count}টি আসন",
     "priceRange": "৳{min}–{max}",
     "semiNote": "একটি সেমি-রিক্লাইনার সারি আছে",
-    "pickShowtime": "শো-টাইম বেছে নিন"
+    "pickShowtime": "শো-টাইম বেছে নিন",
+    "oneSeatAloneLeft": "একটি আসন একা পড়ে থাকবে। বামে সরাবেন?",
+    "viewFrom": "{seat} থেকে দৃশ্য",
+    "selectThis": "এই আসনটি নিন",
+    "noSeats": "হলে আসন বেছে নিন — যেকোনো খালি আসনে চাপুন।",
+    "total": "মোট",
+    "remove": "{seat} বাদ দিন",
+    "maxSeats": "প্রতি বুকিংয়ে সর্বোচ্চ 10টি আসন।",
+    "legend": "আসনের চিহ্ন",
+    "viewMode": "দৃশ্য",
+    "howMany": "কয়টি আসন",
+    "screen": "পর্দা",
+    "seatMap": "আসন ম্যাপ"
   },
   "checkout": {
     "yourDetails": "আপনার তথ্য",

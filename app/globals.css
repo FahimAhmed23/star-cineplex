@@ -1149,3 +1149,49 @@ body {
 @keyframes doors-fade {
   to { opacity: 0; }
 }
+
+/* ── Phase 6 · seat selection (§9.5) ─────────────────────────── */
+.seat-popup {
+  min-width: 220px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  transform: translateY(-50%);
+  white-space: nowrap;
+  animation: seat-pop 180ms var(--ease-out);
+}
+@keyframes seat-pop { from { opacity: 0; transform: translateY(calc(-50% + 6px)); } }
+.seat-popup__btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: #fff;
+  border: 1px solid rgb(255 255 255 / 0.2);
+  transition: background 160ms, border-color 160ms;
+}
+.seat-popup__btn:hover { border-color: var(--purple-light); }
+.seat-popup__btn--primary { background: var(--purple); border-color: var(--purple); }
+.seat-popup__btn--primary:hover { background: #8f4aab; }
+.seat-check {
+  display: grid; place-items: center; width: 20px; height: 20px; border-radius: 999px;
+  background: var(--gold); color: #1a1206; font-size: 12px; font-weight: 800;
+  box-shadow: 0 0 0 2px rgb(7 5 10 / 0.6), 0 0 14px rgb(245 183 46 / 0.55);
+}
+.seg-btn { height: 32px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.seg-btn.is-on { background: rgb(255 255 255 / 0.14); color: #fff; }
+.legend-dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+.seat-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 8px 0 12px; border-radius: 999px;
+  background: rgb(245 183 46 / 0.14); border: 1px solid rgb(245 183 46 / 0.5);
+  color: #fff; font: 600 13px/1 var(--font-mono, ui-monospace), monospace;
+}
+.seat2d {
+  width: 28px; height: 26px; border-radius: 7px 7px 4px 4px;
+  font-size: 10px; font-weight: 600; color: rgb(255 255 255 / 0.85);
+  background: #c0262d; transition: transform 120ms, background 120ms;
+}
+.seat2d--semi-recliner { background: #8d1d23; }
+.seat2d--vip { background: #6b1e24; width: 34px; }
+.seat2d:hover:not(:disabled) { transform: translateY(-2px); }
+.seat2d:disabled { background: #1d1c20; color: transparent; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); cursor: not-allowed; }
+.seat2d.is-selected { background: var(--gold); color: #1a1206; box-shadow: 0 0 12px rgb(245 183 46 / 0.5); }
+.seat2d-gap { width: 28px; height: 26px; }
