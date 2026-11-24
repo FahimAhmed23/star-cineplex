@@ -1,6 +1,7 @@
 "use client";
 
 import gsap from "gsap";
+import { playSound } from "@/lib/sound";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n";
@@ -86,7 +87,10 @@ export function OpeningSequence() {
     // 2. projector beams grow from the corners 0.3–1.2s
     // (each half of the split is its own copy of the artwork, so every tween targets both copies)
     // (CSS transitions on the SVG groups: transform-box: view-box keeps the corner origins in artboard units)
-    t1.call(() => q(".op-beam").forEach((el) => el.classList.add("is-on")), [], 0.3);
+    t1.call(() => {
+      q(".op-beam").forEach((el) => el.classList.add("is-on"));
+      playSound("projector");
+    }, [], 0.3);
     t1.fromTo(q(".op-dust"), { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "none" }, 0.6);
     // 3. the panel lights up 0.6–1.6s, the logo fades in on it (projected, with a slight glow)
     t1.fromTo(q(".op-panel"), { opacity: 0 }, { opacity: 1, duration: 0.7, ease: EASE_OUT }, 0.6);

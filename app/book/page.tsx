@@ -4,7 +4,7 @@ import { halls } from "@/lib/data";
 import { buildSeats } from "@/lib/halls";
 import { loadShowtimes } from "@/lib/showtimes.server";
 
-export const metadata: Metadata = { title: "Showtimes · Star Cineplex — Concept Redesign" };
+export const metadata: Metadata = { title: "Showtimes · Star Cineplex" };
 
 /** Step 1 (CLAUDE.md §9.2–9.3). Booked-seat lists stay on the server; the page only gets counts. */
 export default async function BookPage({ searchParams }: { searchParams: Promise<{ movie?: string }> }) {

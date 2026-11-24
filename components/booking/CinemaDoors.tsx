@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDoors } from "@/lib/doors";
+import { playSound } from "@/lib/sound";
 
 /**
  * §9.4 the cinema doors (≈1.8s): padded purple leather doors slide in and meet, a "HALL 1" sign flickers on
@@ -10,6 +12,9 @@ import { useDoors } from "@/lib/doors";
 export function CinemaDoors() {
   const phase = useDoors((s) => s.phase);
   const sign = useDoors((s) => s.sign);
+  useEffect(() => {
+    if (phase === "opening") playSound("doors");
+  }, [phase]);
   if (phase === "idle") return null;
   return (
     <div className={`doors doors--${phase}`} role="status" aria-live="polite">

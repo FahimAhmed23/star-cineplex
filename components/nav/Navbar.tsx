@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useLang, useT } from "@/lib/i18n";
+import { usePanels } from "@/lib/panels";
+import { toggleSound, useSound } from "@/lib/sound";
+import { useMyTickets } from "./MyTickets";
 import { useUi } from "@/lib/store";
 
 /** Home sections the navbar scrolls to (§7 navigation map). Built in Phases 3–4. */
@@ -34,6 +37,8 @@ export function Navbar({ revealWithIntro = false }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const hidden = revealWithIntro && stage === "intro";
+  const showPanel = usePanels((s) => s.show);
+  const openTickets = useMyTickets();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -97,8 +102,9 @@ export function Navbar({ revealWithIntro = false }: Props) {
       <Link href="/book" className="nav-link focus-ring" aria-current={pathname.startsWith("/book") || undefined}>
         {t("nav.showtimes")}
       </Link>
-      {/* Prices slide-over panel: Phase 8 */}
-      <button type="button" className="nav-link focus-ring">{t("nav.prices")}</button>
+      <button type="button" className="nav-link focus-ring" aria-haspopup="dialog" onClick={() => { setMenuOpen(false); showPanel("prices"); }}>
+        {t("nav.prices")}
+      </button>
       <a href="/#branches" onClick={goToSection("branches")} className="nav-link focus-ring" aria-current={active === "branches" || undefined}>
         {t("nav.branches")}
       </a>
@@ -118,8 +124,8 @@ export function Navbar({ revealWithIntro = false }: Props) {
           <span className="tabular-nums">{PHONE}</span>
         </a>
         <div className="hidden items-center gap-5 min-[1100px]:flex">
-          {/* My tickets: Phase 8 */}
-          <button type="button" className="focus-ring flex items-center gap-1.5 hover:text-white">
+          <SoundToggle />
+          <button type="button" onClick={openTickets} className="focus-ring flex items-center gap-1.5 hover:text-white">
             <Icon name="ticket" size={14} />
             {t("nav.myTickets")}
           </button>
@@ -156,10 +162,11 @@ export function Navbar({ revealWithIntro = false }: Props) {
         <div id="nav-menu" className="glass mx-auto mt-3 w-[min(92vw,420px)] rounded-card-md border border-white/10 p-6 min-[1100px]:hidden">
           <div className="flex flex-col items-start gap-4 [&_.nav-link]:text-[16px]">{links}</div>
           <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5 text-[13px] text-muted">
-            <button type="button" className="focus-ring flex items-center gap-1.5 hover:text-white">
+            <button type="button" onClick={() => { setMenuOpen(false); openTickets(); }} className="focus-ring flex items-center gap-1.5 hover:text-white">
               <Icon name="ticket" size={16} />
               {t("nav.myTickets")}
             </button>
+            <SoundToggle />
             <LangToggle />
           </div>
           <a href={`tel:${PHONE}`} className="focus-ring mt-4 flex items-center gap-1.5 text-[13px] text-muted hover:text-white">
@@ -169,6 +176,18 @@ export function Navbar({ revealWithIntro = false }: Props) {
         </div>
       )}
     </header>
+  );
+}
+
+/** §10 global sound toggle: off by default, remembered. */
+export function SoundToggle() {
+  const { t } = useT();
+  const on = useSound((s) => s.on);
+  return (
+    <button type="button" onClick={toggleSound} aria-pressed={on} className={`focus-ring flex items-center gap-1.5 ${on ? "text-white" : "hover:text-white"}`}>
+      <Icon name={on ? "volumeOn" : "volumeOff"} size={14} />
+      {t(on ? "nav.soundOn" : "nav.soundOff")}
+    </button>
   );
 }
 

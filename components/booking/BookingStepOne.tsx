@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navbar } from "@/components/nav/Navbar";
 import { branches, movies } from "@/lib/data";
-import { demoDateFor, localIso, nowHhmm } from "@/lib/demo-date";
+import { demoDateFor, localIso, nowHhmm, dateLocale } from "@/lib/demo-date";
 import { markDoorsReady } from "@/lib/doors";
 import { useT } from "@/lib/i18n";
 import type { HallType, PriceTable } from "@/lib/types";
@@ -66,13 +66,13 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
         real,
         demo: demoDateFor(real),
         isToday: i === 0,
-        label: d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric" }),
+        label: d.toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric" }),
       };
     });
     setDays(list);
     setNow(nowHhmm());
     markDoorsReady();
-  }, []);
+  }, [lang]);
 
   const day = days?.[dayIdx];
   // the day's shows at this branch; today hides the ones that have already started

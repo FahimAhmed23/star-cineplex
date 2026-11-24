@@ -24,12 +24,15 @@ export function formatTime(hhmm: string) {
   return `${h12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
 
+/** Dates follow the language (Bangla weekday/month names), digits stay Latin (§5 Language). */
+export const dateLocale = (lang: string) => (lang === "bn" ? "bn-BD-u-nu-latn" : "en-GB");
+
 /** "Today" / "Tomorrow" (in the demo week) or "Wed 25 Nov" */
-export function showDateLabel(date: string, t: (k: string) => string) {
+export function showDateLabel(date: string, t: (k: string) => string, lang = "en") {
   const now = new Date();
   if (date === demoDateFor(localIso(now))) return t("common.today");
   if (date === demoDateFor(localIso(new Date(now.getTime() + DAY)))) return t("common.tomorrow");
-  return new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  return new Date(`${date}T00:00:00`).toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric", month: "short" });
 }
 
 export function nowHhmm(d = new Date()) {

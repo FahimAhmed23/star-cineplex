@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { getHall, getMovie, hallTheme } from "@/lib/data";
+import { getHall, getMovie, hallTheme, hallName } from "@/lib/data";
 import { formatTime } from "@/lib/demo-date";
 import { useDoors } from "@/lib/doors";
 import { useT } from "@/lib/i18n";
@@ -45,7 +45,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
 
   const pick = (s: ShowSlot) => {
     const hall = halls[s.hall];
-    go(`/book/seats/${s.id}`, { hall: hall.name.toUpperCase(), line: `${title} · ${formatTime(s.time)}` }, router.push);
+    go(`/book/seats/${s.id}`, { hall: hallName(hall, lang).toUpperCase(), line: `${title} · ${formatTime(s.time)}` }, router.push);
   };
 
   const hallsLine = (g: (typeof groups)[number]) => {
@@ -107,10 +107,10 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                     const label = t(sold ? "booking.soldOut" : ratio > FILLING ? "booking.fillingFast" : "booking.available");
                     return (
                       <li key={s.id}>
-                        <button type="button" disabled={sold} onClick={() => pick(s)} className="show-chip focus-ring" aria-label={`${formatTime(s.time)} · ${halls[s.hall].name} · ${label}`}>
+                        <button type="button" disabled={sold} onClick={() => pick(s)} className="show-chip focus-ring" aria-label={`${formatTime(s.time)} · ${hallName(halls[s.hall], lang)} · ${label}`}>
                           <span className={`show-chip__dot show-chip__dot--${state}`} aria-hidden />
                           <span className="tabular-nums">{formatTime(s.time)}</span>
-                          <span className="text-muted">· {halls[s.hall].name}</span>
+                          <span className="text-muted">· {hallName(halls[s.hall], lang)}</span>
                         </button>
                       </li>
                     );

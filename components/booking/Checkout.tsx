@@ -18,7 +18,7 @@ import {
   validPhone,
   type PayMethod,
 } from "@/lib/booking";
-import { getBranch, getHall, getMovie } from "@/lib/data";
+import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
 import { formatTime, showDateLabel } from "@/lib/demo-date";
 import { seatPrice } from "@/lib/halls";
 import { useT } from "@/lib/i18n";
@@ -130,7 +130,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
 
   const mm = left === null ? "10:00" : `${String(Math.floor(left / 60)).padStart(2, "0")}:${String(left % 60).padStart(2, "0")}`;
   const title = (lang === "bn" && movie.titleBn) || movie.title;
-  const when = `${showDateLabel(show.date, t)}, ${formatTime(show.time)}`;
+  const when = `${showDateLabel(show.date, t, lang)}, ${formatTime(show.time)}`;
   const m = METHODS.find((x) => x.id === method)!;
   const back = `/book/seats/${show.id}?seats=${seatIds.join(",")}`;
 
@@ -140,7 +140,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
       <main className="mx-auto grid max-w-[1120px] gap-12 px-8 pt-[136px] pb-24 lg:grid-cols-[1fr_420px]">
         {/* left: details + payment */}
         <div>
-          <Link href={back} className="focus-ring inline-flex items-center gap-2 text-[14px] text-ink/60 hover:text-ink">
+          <Link href={back} className="focus-ring inline-flex items-center gap-2 text-[14px] text-ink/65 hover:text-ink">
             <Icon name="arrowLeft" size={18} />
             {t("checkout.changeSeats")}
           </Link>
@@ -151,7 +151,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
 
           {failed && (
             <div role="alert" className="mt-8 flex gap-3 rounded-card-sm border border-[#e5484d]/30 bg-[#e5484d]/8 p-4 text-[15px]">
-              <Icon name="danger" size={22} className="shrink-0 text-[#d23c41]" />
+              <Icon name="danger" size={22} className="shrink-0 text-[#b42f34]" />
               <div>
                 <p className="font-semibold">{t("checkout.failedTitle")}</p>
                 <p className="mt-1 text-ink/70">{t("checkout.failedBody")}</p>
@@ -167,7 +167,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
             <label className="mt-5 block">
               <span className="text-[14px] font-medium">{t("checkout.mobile")}</span>
               <span className={`field mt-2 flex items-center ${phoneTouched && !phoneOk ? "is-invalid" : ""}`}>
-                <span className="border-r border-ink/10 pr-3 font-medium text-ink/60 tabular-nums">+880</span>
+                <span className="border-r border-ink/10 pr-3 font-medium text-ink/65 tabular-nums">+880</span>
                 <input
                   inputMode="numeric"
                   autoComplete="tel-national"
@@ -185,15 +185,15 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                   aria-describedby="phone-help"
                   className="min-w-0 flex-1 bg-transparent pl-3 tabular-nums outline-none"
                 />
-                {phoneOk && <Icon name="checkCircleDuo" size={20} className="text-[#2f9e6a]" />}
+                {phoneOk && <Icon name="checkCircleDuo" size={20} className="text-[#237a51]" />}
               </span>
-              <span id="phone-help" className={`mt-2 block text-[13px] ${phoneTouched && !phoneOk ? "text-[#d23c41]" : "text-ink/55"}`}>
+              <span id="phone-help" className={`mt-2 block text-[13px] ${phoneTouched && !phoneOk ? "text-[#b42f34]" : "text-ink/65"}`}>
                 {phoneTouched && !phoneOk ? t("checkout.mobileInvalid") : t("checkout.mobileHelp")}
               </span>
             </label>
             <label className="mt-5 block">
               <span className="text-[14px] font-medium">
-                {t("checkout.email")} <span className="font-normal text-ink/50">· {t("checkout.optional")}</span>
+                {t("checkout.email")} <span className="font-normal text-ink/65">· {t("checkout.optional")}</span>
               </span>
               <span className="field mt-2 flex items-center">
                 <input type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" />
@@ -264,7 +264,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                     </span>
                   </label>
                   <label className="block">
-                    <span className="text-[14px] font-medium">CVC</span>
+                    <span className="text-[14px] font-medium">{t("checkout.cvc")}</span>
                     <span className="field mt-2 flex">
                       <input inputMode="numeric" autoComplete="off" placeholder="123" value={card.cvc} onChange={(e) => setCard({ ...card, cvc: e.target.value.replace(/\D/g, "").slice(0, 4) })} className="min-w-0 flex-1 bg-transparent tabular-nums outline-none" />
                     </span>
@@ -272,7 +272,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                 </div>
               </div>
             ) : (
-              <p className="mt-4 text-[14px] text-ink/60">{t("checkout.walletNote", { name: m.name })}</p>
+              <p className="mt-4 text-[14px] text-ink/65">{t("checkout.walletNote", { name: m.name })}</p>
             )}
           </section>
         </div>
@@ -281,7 +281,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
         <aside className="lg:sticky lg:top-[112px] lg:self-start">
           <div className="ticket-card">
             <div className="p-6">
-              <p className={`flex items-center gap-2 text-[14px] font-medium ${left !== null && left <= 120 ? "text-[#b7791f]" : "text-ink/70"}`} aria-live="off">
+              <p className={`flex items-center gap-2 text-[14px] font-medium ${left !== null && left <= 120 ? "text-[#8f5d12]" : "text-ink/70"}`} aria-live="off">
                 <Icon name="stopwatch" size={18} />
                 {t("checkout.held")} <span className="font-mono font-semibold tabular-nums">{mm}</span>
               </p>
@@ -290,7 +290,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                 <div className="min-w-0">
                   <p className="text-[18px] leading-snug font-semibold">{title}</p>
                   <p className="mt-1 text-[14px] text-ink/65">
-                    {(lang === "bn" && branch.nameBn) || branch.name} · {hall.name}
+                    {(lang === "bn" && branch.nameBn) || branch.name} · {hallName(hall, lang)}
                   </p>
                   <p className="text-[14px] text-ink/65">{when}</p>
                 </div>
@@ -298,7 +298,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
               {view && (
                 <figure className="mt-5">
                   <img src={view} alt={t("checkout.viewAlt", { seat: seatIds[0] })} className="aspect-[16/9] w-full rounded-[12px] object-cover" />
-                  <figcaption className="mt-2 text-[12px] text-ink/55">{t("checkout.viewCaption", { seat: seatIds[0] })}</figcaption>
+                  <figcaption className="mt-2 text-[12px] text-ink/65">{t("checkout.viewCaption", { seat: seatIds[0] })}</figcaption>
                 </figure>
               )}
             </div>
@@ -336,7 +336,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
               >
                 {t("checkout.pay", { amount: total.toLocaleString("en-US") })}
               </Button>
-              <p className="mt-3 text-center text-[12px] text-ink/50">{t("checkout.noFee")}</p>
+              <p className="mt-3 text-center text-[12px] text-ink/65">{t("checkout.noFee")}</p>
             </div>
           </div>
         </aside>
@@ -346,11 +346,11 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
       {stage !== "idle" && (
         <div className="pay-overlay" role="status" aria-live="polite" style={{ ["--brand" as string]: m.color }}>
           <div className="text-center">
-            {stage === "paying" ? <span className="pay-spinner" aria-hidden /> : <Icon name="checkCircleDuo" size={56} className="mx-auto text-[#2f9e6a]" />}
+            {stage === "paying" ? <span className="pay-spinner" aria-hidden /> : <Icon name="checkCircleDuo" size={56} className="mx-auto text-[#237a51]" />}
             <p className="mt-6 text-[20px] font-semibold">
               {stage === "done" ? t("checkout.paid") : method === "card" ? t("checkout.processing") : t("checkout.connecting", { name: m.name })}
             </p>
-            <p className="mt-2 text-[14px] text-ink/55">{t("checkout.demoNote")}</p>
+            <p className="mt-2 text-[14px] text-ink/65">{t("checkout.demoNote")}</p>
           </div>
         </div>
       )}
@@ -359,7 +359,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
       {expired && (
         <div className="pay-overlay" role="alertdialog" aria-modal="true" aria-labelledby="exp-h">
           <div className="w-[min(440px,90vw)] rounded-card-lg bg-white p-8 text-center shadow-2xl">
-            <span className="mx-auto grid size-14 place-items-center rounded-pill bg-gold/20 text-[#b7791f]">
+            <span className="mx-auto grid size-14 place-items-center rounded-pill bg-gold/20 text-[#8f5d12]">
               <Icon name="stopwatch" size={28} />
             </span>
             <h2 id="exp-h" className="mt-5 text-[22px] font-semibold">{t("checkout.releasedTitle")}</h2>

@@ -4,12 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { dateLocale } from "@/lib/demo-date";
 import { useT } from "@/lib/i18n";
 import type { Movie } from "@/lib/types";
 
-export function releaseLabel(iso: string) {
+export function releaseLabel(iso: string, lang = "en") {
   // "28 Nov" — Latin digits in both languages (§5 Language)
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(dateLocale(lang), { day: "numeric", month: "short" });
 }
 
 interface Props {
@@ -73,9 +74,9 @@ export function MovieCard({ movie, variant, onPlayTrailer, priority, inert }: Pr
           </span>
         )}
         {variant === "soon" && (
-          <span className="movie-card__pill" aria-label={t("cards.releases", { date: releaseLabel(movie.releaseDate) })}>
+          <span className="movie-card__pill" aria-label={t("cards.releases", { date: releaseLabel(movie.releaseDate, lang) })}>
             <Icon name="calendar" size={14} />
-            {releaseLabel(movie.releaseDate)}
+            {releaseLabel(movie.releaseDate, lang)}
           </span>
         )}
 

@@ -8,6 +8,8 @@ export const halls = hallsData.halls as Hall[];
 export const branches = (branchesData.branches as Branch[]).slice().sort((a, b) => a.order - b.order);
 export const movies = moviesData.movies as Movie[];
 
+/** "Hall 1" → "হল 1" in Bangla (§5 Language) */
+export const hallName = (h: { name: string }, lang: string) => (lang === "bn" ? h.name.replace(/^Hall/, "হল") : h.name);
 export const getHall = (id: string) => halls.find((h) => h.id === id);
 export const getBranch = (slug: string) => branches.find((b) => b.slug === slug);
 export const getMovie = (slug: string) => movies.find((m) => m.slug === slug);

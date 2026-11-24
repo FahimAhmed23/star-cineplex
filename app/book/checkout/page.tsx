@@ -5,7 +5,7 @@ import { getHall } from "@/lib/data";
 import { buildSeats } from "@/lib/halls";
 import { loadShowtimes } from "@/lib/showtimes.server";
 
-export const metadata: Metadata = { title: "Checkout · Star Cineplex — Concept Redesign" };
+export const metadata: Metadata = { title: "Checkout · Star Cineplex" };
 
 /** Step 3 — Checkout (§9.6). Seat selection hands over ?show=…&seats=E07,E08. */
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ show?: string; seats?: string; hold?: string }> }) {

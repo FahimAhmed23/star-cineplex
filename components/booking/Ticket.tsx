@@ -8,7 +8,8 @@ import { Navbar } from "@/components/nav/Navbar";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { formatPhone, getBooking, type Booking } from "@/lib/booking";
-import { getBranch, getHall, getMovie } from "@/lib/data";
+import { playSound } from "@/lib/sound";
+import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
 import { formatTime, showDateLabel } from "@/lib/demo-date";
 import { useT } from "@/lib/i18n";
 import type { SeatClass } from "@/lib/types";
@@ -30,7 +31,9 @@ export function Ticket({ bookingId }: { bookingId: string }) {
   const ticketRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setB(getBooking(bookingId));
+    const found = getBooking(bookingId);
+    setB(found);
+    if (found) playSound("print");
     QRCode.toDataURL(`STARCINEPLEX:${bookingId}`, { margin: 0, width: 240, color: { dark: "#231f20", light: "#ffffff" } }).then(setQr);
   }, [bookingId]);
 
@@ -42,7 +45,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
         <main className="grid min-h-[100svh] place-items-center px-8 text-center">
           <div>
             <p className="display-s">{t("ticket.notFound")}</p>
-            <p className="mt-3 text-ink/60">{t("ticket.notFoundBody")}</p>
+            <p className="mt-3 text-ink/65">{t("ticket.notFoundBody")}</p>
             <ButtonLink href="/book" className="mt-8" icon="ticket">
               {t("common.buyTickets")}
             </ButtonLink>
@@ -106,7 +109,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
       <Navbar />
       <main className="mx-auto max-w-[1120px] px-8 pt-[128px] pb-24">
         <div className="text-center">
-          <p className="inline-flex items-center gap-2 text-[14px] font-medium text-[#2f9e6a]">
+          <p className="inline-flex items-center gap-2 text-[14px] font-medium text-[#237a51]">
             <Icon name="checkCircleDuo" size={20} />
             {t("ticket.confirmed")}
           </p>
@@ -125,7 +128,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                     <div className="min-w-0">
                       <p className="eyebrow text-purple">Star Cineplex · {(lang === "bn" && branch.nameBn) || branch.name}</p>
                       <h2 className="mt-2 text-[26px] leading-tight font-semibold">{title}</h2>
-                      <p className="mt-1 text-[14px] text-ink/60">
+                      <p className="mt-1 text-[14px] text-ink/65">
                         {movie.format} · {movie.certificate ?? ""} {movie.runtimeMin ? `· ${Math.floor(movie.runtimeMin / 60)}h ${movie.runtimeMin % 60}m` : ""}
                       </p>
                     </div>
@@ -133,7 +136,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                   <dl className="mt-6 grid grid-cols-3 gap-x-6 gap-y-4 text-[14px]">
                     <div>
                       <dt className="ticket__label">{t("ticket.date")}</dt>
-                      <dd className="font-semibold">{showDateLabel(b.date, t)}</dd>
+                      <dd className="font-semibold">{showDateLabel(b.date, t, lang)}</dd>
                     </div>
                     <div>
                       <dt className="ticket__label">{t("ticket.time")}</dt>
@@ -141,7 +144,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                     </div>
                     <div>
                       <dt className="ticket__label">{t("ticket.hall")}</dt>
-                      <dd className="font-semibold">{hall.name}</dd>
+                      <dd className="font-semibold">{hallName(hall, lang)}</dd>
                     </div>
                     <div className="col-span-2">
                       <dt className="ticket__label">{t("ticket.seats")}</dt>
@@ -156,8 +159,8 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                 </div>
                 <div className="ticket__stub">
                   {qr ? <img src={qr} alt={t("ticket.qrAlt")} className="size-[148px]" /> : <span className="size-[148px]" />}
-                  <p className="mt-4 font-mono text-[12px] tracking-wide text-ink/60">{b.id}</p>
-                  <p className="mt-4 text-[13px] text-ink/60">
+                  <p className="mt-4 font-mono text-[12px] tracking-wide text-ink/65">{b.id}</p>
+                  <p className="mt-4 text-[13px] text-ink/65">
                     {b.seats.length} {t("ticket.seats").toLowerCase()} · <span className="font-semibold text-ink tabular-nums">৳{b.total.toLocaleString("en-US")}</span>
                   </p>
                 </div>

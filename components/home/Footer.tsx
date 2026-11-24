@@ -9,6 +9,8 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n";
 import { AboutPanel } from "./AboutPanel";
+import { useMyTickets } from "@/components/nav/MyTickets";
+import { usePanels } from "@/lib/panels";
 
 const PHONE = "09617660660";
 /** Brand marks from Simple Icons (CC0). Links are placeholders until the official pages are confirmed (§8.10). */
@@ -31,6 +33,8 @@ export function Footer() {
   const hall = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(false);
   const [about, setAbout] = useState(false);
+  const showPanel = usePanels((s) => s.show);
+  const openTickets = useMyTickets();
 
   // plays once per page view when the footer comes into view; light parallax on the hall image
   useEffect(() => {
@@ -127,7 +131,7 @@ export function Footer() {
               <li><a href="/#coming-soon" onClick={goTo("coming-soon")} className="footer-link focus-ring">{t("nav.comingSoon")}</a></li>
               <li><Link href="/book" className="footer-link focus-ring">{t("nav.showtimes")}</Link></li>
               {/* Prices slide-over panel: Phase 8 */}
-              <li><button type="button" className="footer-link focus-ring">{t("nav.prices")}</button></li>
+              <li><button type="button" onClick={() => showPanel("prices")} aria-haspopup="dialog" className="footer-link focus-ring">{t("nav.prices")}</button></li>
               <li><a href="/#branches" onClick={goTo("branches")} className="footer-link focus-ring">{t("nav.branches")}</a></li>
             </ul>
           </nav>
@@ -138,7 +142,7 @@ export function Footer() {
             </h3>
             <ul className="space-y-3 text-[15px] text-muted">
               {/* My tickets: Phase 8 */}
-              <li><button type="button" className="footer-link focus-ring">{t("nav.myTickets")}</button></li>
+              <li><button type="button" onClick={openTickets} className="footer-link focus-ring">{t("nav.myTickets")}</button></li>
               <li><button type="button" onClick={() => setAbout(true)} className="footer-link focus-ring">{t("nav.about")}</button></li>
               <li>
                 <a href={`tel:${PHONE}`} className="footer-link focus-ring inline-flex items-center gap-2">

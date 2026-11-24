@@ -8,8 +8,8 @@ import type { CameraMode } from "@/components/hall/CameraRig";
 import { Navbar } from "@/components/nav/Navbar";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { getBranch, getHall, getMovie } from "@/lib/data";
-import { formatTime } from "@/lib/demo-date";
+import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
+import { dateLocale, formatTime } from "@/lib/demo-date";
 import { saveSeatView, startHold } from "@/lib/booking";
 import { markDoorsReady } from "@/lib/doors";
 import { buildLayout, type PlacedSeat } from "@/lib/hall-layout";
@@ -194,8 +194,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   };
 
   const title = (lang === "bn" && movie.titleBn) || movie.title;
-  const dateLabel = new Date(`${show.date}T00:00:00`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
-  const info = [title, (lang === "bn" && branch.nameBn) || branch.name, hall.name, dateLabel, formatTime(show.time)].join(" · ");
+  const dateLabel = new Date(`${show.date}T00:00:00`).toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric", month: "short" });
+  const info = [title, (lang === "bn" && branch.nameBn) || branch.name, hallName(hall, lang), dateLabel, formatTime(show.time)].join(" · ");
   const popupSeat = mode === "overview" && view === "3d" ? pinned : null;
   const seatView = mode === "seat" && seatId ? layout.byId.get(seatId) : null;
 

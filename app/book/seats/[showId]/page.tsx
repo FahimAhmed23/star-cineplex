@@ -4,7 +4,13 @@ import { SeatSelection } from "@/components/booking/SeatSelection";
 import { getBranch, getHall, getMovie } from "@/lib/data";
 import { loadShowtimes } from "@/lib/showtimes.server";
 
-export const metadata: Metadata = { title: "Choose your seats · Star Cineplex — Concept Redesign" };
+// §10: "Choose your seats · Hall 1 · Star Cineplex"
+export async function generateMetadata({ params }: { params: Promise<{ showId: string }> }): Promise<Metadata> {
+  const { showId } = await params;
+  const show = (await loadShowtimes()).find((s) => s.id === showId);
+  const hall = show && getHall(show.hall);
+  return { title: hall ? `Choose your seats · ${hall.name} · Star Cineplex` : "Choose your seats · Star Cineplex" };
+}
 
 /** Step 2 — seat selection in the 3D hall (CLAUDE.md §9.5). `?seats=` keeps a selection ("Change seats"). */
 export default async function SeatsPage({

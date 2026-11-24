@@ -32,7 +32,9 @@
     "mainNav": "Main",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "call": "Call Star Cineplex"
+    "call": "Call Star Cineplex",
+    "soundOn": "Sound on",
+    "soundOff": "Sound off"
   },
   "hero": {
     "eyebrow": "Now showing at Star Cineplex",
@@ -146,7 +148,8 @@
     "failedBody": "Nothing was charged and your seats are still held. Try again, or pick another payment method.",
     "releasedTitle": "Your seats were released",
     "releasedBody": "Seats are held for 10 minutes so everyone gets a fair chance. Pick them again — it only takes a moment.",
-    "pickAgain": "Pick seats again"
+    "pickAgain": "Pick seats again",
+    "cvc": "CVC"
   },
   "ticket": {
     "showQr": "Show this QR at the hall entrance. A copy was sent to {phone}.",
@@ -211,5 +214,30 @@
     "credit3": "Button hover adapted from Uiverse.io by thisSasha (MIT)",
     "credit4": "Posters and trailers belong to their studios; event photos: Star Cineplex",
     "credit5": "Social icons: Simple Icons (CC0)"
+  },
+  "prices": {
+    "title": "Ticket prices",
+    "branch": "Branch",
+    "caption": "Ticket prices by seat class and show time",
+    "seat": "Seat",
+    "halls": "Halls {list}",
+    "now": "Shows starting now use {band} prices",
+    "rulesTitle": "Which price applies",
+    "source": "Prices from starcineplex.com, November 2026. Concept redesign — not affiliated with Star Cineplex.",
+    "band": {
+      "matinee": "Weekday matinee",
+      "evening": "Weekday evening",
+      "weekend": "Weekend & holidays"
+    },
+    "rule": {
+      "matinee": "Sunday to Thursday, shows before 5:00 PM",
+      "evening": "Sunday to Thursday, shows at 5:00 PM or later",
+      "weekend": "Friday, Saturday and public holidays, all day"
+    }
+  },
+  "myTickets": {
+    "title": "My tickets",
+    "empty": "No tickets yet",
+    "emptyBody": "Tickets you book on this device will show up here."
   }
 }
