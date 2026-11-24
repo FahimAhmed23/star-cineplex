@@ -8,12 +8,12 @@ export function Stepper({ step, tone = "dark" }: { step: 1 | 2 | 3; tone?: "dark
   const { t } = useT();
   const steps = [t("booking.stepShowtime"), t("booking.stepSeats"), t("booking.stepCheckout")];
   return (
-    <ol className="flex items-center gap-3 text-[14px]" aria-label={t("booking.steps")}>
+    <ol className="flex items-center gap-2 text-[14px] md:gap-3" aria-label={t("booking.steps")}>
       {steps.map((label, i) => {
         const n = i + 1;
         const state = n < step ? "done" : n === step ? "current" : "next";
         return (
-          <li key={label} className="flex items-center gap-3" aria-current={state === "current" ? "step" : undefined}>
+          <li key={label} className="flex items-center gap-2 md:gap-3" aria-current={state === "current" ? "step" : undefined}>
             <span className={`flex items-center gap-2 ${state === "next" ? (light ? "text-ink/65" : "text-muted") : light ? "text-ink" : "text-white"}`}>
               <span
                 className={`grid size-6 place-items-center rounded-pill font-mono text-[12px] tabular-nums ${
@@ -22,9 +22,10 @@ export function Stepper({ step, tone = "dark" }: { step: 1 | 2 | 3; tone?: "dark
               >
                 {n}
               </span>
-              {label}
+              {/* phones: only the current step keeps its label */}
+              <span className={state === "current" ? "" : "max-md:sr-only"}>{label}</span>
             </span>
-            {n < 3 && <span aria-hidden className={`h-px w-8 ${light ? "bg-ink/15" : "bg-white/15"}`} />}
+            {n < 3 && <span aria-hidden className={`h-px w-4 md:w-8 ${light ? "bg-ink/15" : "bg-white/15"}`} />}
           </li>
         );
       })}

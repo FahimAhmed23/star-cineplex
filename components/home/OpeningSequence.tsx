@@ -1,6 +1,7 @@
 "use client";
 
 import gsap from "gsap";
+import { deviceNow } from "@/lib/device";
 import { playSound } from "@/lib/sound";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
@@ -109,6 +110,7 @@ export function OpeningSequence() {
     // 5. hall arrival: navbar + hero info come in as the halves open (≈2.2s)
     t1.call(() => setStage("revealed"), [], 2.1);
     t1.call(finish, [], 2.65);
+    if (deviceNow().phone) t1.timeScale(1.3); // §11: a shorter opening on phones (≈2s)
     tl.current = t1;
     return () => {
       t1.kill();

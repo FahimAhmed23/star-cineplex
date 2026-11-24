@@ -30,6 +30,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   const [hold, setHold] = useState(false); // hover / focus
   const [onScreen, setOnScreen] = useState(false);
   const [cardW, setCardW] = useState(302);
+  const [visible, setVisible] = useState(VISIBLE); // §11: 2 cards on phones, 3 on tablets
   const section = useRef<HTMLElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const resumeTimer = useRef<number | undefined>(undefined);
@@ -39,7 +40,12 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   useLayoutEffect(() => {
     const el = viewport.current;
     if (!el) return;
-    const measure = () => setCardW((el.clientWidth - GAP * (VISIBLE - 1)) / VISIBLE);
+    const measure = () => {
+      const w = el.clientWidth;
+      const v = w < 640 ? 2 : w < 960 ? 3 : VISIBLE;
+      setVisible(v);
+      setCardW((w - GAP * (v - 1)) / v);
+    };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
@@ -124,10 +130,10 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
               initial={false}
             >
               {track.map((m, i) => {
-                const visible = i >= pos && i < pos + VISIBLE;
+                const inView = i >= pos && i < pos + visible;
                 return (
-                  <li key={`${m.slug}-${i}`} className="shrink-0" style={{ width: cardW }} aria-hidden={!visible || undefined}>
-                    <MovieCard movie={m} variant="soon" onPlayTrailer={onPlayTrailer} inert={!visible} />
+                  <li key={`${m.slug}-${i}`} className="shrink-0" style={{ width: cardW }} aria-hidden={!inView || undefined}>
+                    <MovieCard movie={m} variant="soon" onPlayTrailer={onPlayTrailer} inert={!inView} />
                   </li>
                 );
               })}

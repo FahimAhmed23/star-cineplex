@@ -10,7 +10,7 @@ import { EYE_HEIGHT, type HallLayout } from "@/lib/hall-layout";
 import { EASE_IN_OUT } from "@/lib/motion";
 
 
-export type CameraMode = "front" | "overview" | "seat";
+export type CameraMode = "front" | "overview" | "seat" | "portrait";
 
 interface Props {
   layout: HallLayout;
@@ -55,6 +55,23 @@ export function frontPose(layout: HallLayout): Pose {
   };
 }
 
+/**
+ * §11 phones: a centred, straight-on view from just behind the last row, a little above the heads, so the
+ * screen sits square in the upper part of a portrait frame (the phone hero is a still of this view with the
+ * trailer laid over its screen). Returns the pose and the vertical fov that fits the screen width.
+ */
+export function portraitPose(layout: HallLayout, aspect: number): Pose & { fov: number } {
+  const t = layout.tiers[layout.tiers.length - 1];
+  const { screen } = layout;
+  const pos = new THREE.Vector3(0, t.y + EYE_HEIGHT + 0.7, t.z + 1.2);
+  const d = pos.z - screen.z;
+  const hHalf = Math.atan(screen.width / 2 / 0.94 / d); // screen fills 94% of the width
+  const vHalf = Math.atan(Math.tan(hHalf) / aspect);
+  // aim below the screen so it lands in the upper part of the frame (no pitch keystone worth noticing)
+  const look = new THREE.Vector3(0, pos.y - Math.tan(vHalf) * d * 0.38, screen.z);
+  return { pos, look, fov: THREE.MathUtils.radToDeg(vHalf * 2) };
+}
+
 /** §9.5 overview: behind the last row, high up, whole seating area fitted to the viewport. */
 export function overviewPose(layout: HallLayout, aspect: number, fov: number): Pose {
   const { min, max } = layout.seatBounds;
@@ -97,6 +114,16 @@ export function seatPose(layout: HallLayout, seatId: string): Pose | null {
   };
 }
 
+/** §11 phones, view from seat in portrait: widen the lens until the whole screen width fits (capped at 100°). */
+function seatFovPortrait(layout: HallLayout, seatId: string | null | undefined, aspect: number) {
+  const s = seatId ? layout.byId.get(seatId) : null;
+  if (!s) return BASE_FOV;
+  const d = s.z - layout.screen.z;
+  const hHalf = Math.atan(layout.screen.width / 2 / 0.96 / d);
+  const v = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(hHalf) / aspect));
+  return Math.min(100, Math.max(BASE_FOV, v));
+}
+
 /** §9.5 Best available: a closer overview aimed at a group of seats, from the same side and angle. */
 export function focusPose(layout: HallLayout, overview: Pose, ids: string[]): Pose | null {
   const seats = ids.map((id) => layout.byId.get(id)).filter(Boolean) as NonNullable<ReturnType<typeof layout.byId.get>>[];
@@ -130,6 +157,7 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
   const targetPose = useMemo<Pose>(() => {
     if (mode === "overview") return (focusSeats?.length && focusPose(layout, overview, focusSeats)) || overview;
     if (mode === "seat" && seatId) return seatPose(layout, seatId) ?? overview;
+    if (mode === "portrait") return portraitPose(layout, size.width / size.height);
     return frontPose(layout);
     // resetKey: recompute (and re-tween) on "Reset view"
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -213,7 +241,15 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
   const tmp = useMemo(() => new THREE.Vector3(), []);
   useFrame((state, dt) => {
     // lens: wider for the hero, normal elsewhere (eased so mode changes never jump)
-    const targetFov = mode === "front" ? HERO_FOV : BASE_FOV;
+    const aspect = size.width / size.height;
+    const targetFov =
+      mode === "front"
+        ? HERO_FOV
+        : mode === "portrait"
+          ? portraitPose(layout, aspect).fov
+          : mode === "seat" && aspect < 1
+            ? seatFovPortrait(layout, seatId, aspect)
+            : BASE_FOV;
     if (Math.abs(camera.fov - targetFov) > 0.01) {
       camera.fov += (targetFov - camera.fov) * (first.current ? 1 : 1 - Math.exp(-dt * 4));
       camera.updateProjectionMatrix();

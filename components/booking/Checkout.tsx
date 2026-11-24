@@ -68,6 +68,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
   const [failed, setFailed] = useState(false);
   const [left, setLeft] = useState<number | null>(null);
   const [view, setView] = useState<string | null>(null);
+  const [sheet, setSheet] = useState(false); // phones: the summary as a bottom sheet (§9.6 Mobile)
   const altRef = useRef(false);
 
   // the seat hold: 10:00 from landing on checkout (kept across a refresh)
@@ -137,7 +138,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
   return (
     <div className="theme-light checkout-in min-h-[100svh]">
       <Navbar />
-      <main className="mx-auto grid max-w-[1120px] gap-12 px-8 pt-[136px] pb-24 lg:grid-cols-[1fr_420px]">
+      <main className="mx-auto grid max-w-[1120px] gap-12 px-5 pt-[96px] pb-32 md:px-8 md:pt-[136px] md:pb-24 lg:grid-cols-[1fr_420px]">
         {/* left: details + payment */}
         <div>
           <Link href={back} className="focus-ring inline-flex items-center gap-2 text-[14px] text-ink/65 hover:text-ink">
@@ -206,7 +207,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
               <span className="mr-2 font-mono text-[14px] text-purple">02</span>
               {t("checkout.payment")}
             </h2>
-            <div role="radiogroup" aria-labelledby="pay-h" className="mt-5 grid grid-cols-3 gap-3">
+            <div role="radiogroup" aria-labelledby="pay-h" className="mt-5 grid grid-cols-3 gap-2 md:gap-3">
               {METHODS.map((x) => (
                 <button
                   key={x.id}
@@ -278,7 +279,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
         </div>
 
         {/* right: the ticket summary */}
-        <aside className="lg:sticky lg:top-[112px] lg:self-start">
+        <aside className={`lg:sticky lg:top-[112px] lg:self-start ${sheet ? "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:max-h-[88svh] max-md:overflow-y-auto max-md:px-3 max-md:pt-3 max-md:pb-[88px]" : "max-md:hidden"}`} id="checkout-summary">
           <div className="ticket-card">
             <div className="p-6">
               <p className={`flex items-center gap-2 text-[14px] font-medium ${left !== null && left <= 120 ? "text-[#8f5d12]" : "text-ink/70"}`} aria-live="off">
@@ -341,6 +342,29 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
           </div>
         </aside>
       </main>
+
+      {/* phones: total + Pay always in reach; tap the total for the full ticket summary */}
+      {sheet && <div aria-hidden className="fixed inset-0 z-30 bg-black/40 md:hidden" onClick={() => setSheet(false)} />}
+      <div className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3 border-t border-ink/10 bg-white/95 px-4 py-3 backdrop-blur-md md:hidden">
+        <button type="button" onClick={() => setSheet((v) => !v)} aria-expanded={sheet} aria-controls="checkout-summary" className="focus-ring flex min-w-0 flex-1 flex-col items-start rounded-[8px] text-left">
+          <span className={`flex items-center gap-1 text-[12px] ${left !== null && left <= 120 ? "text-[#8f5d12]" : "text-ink/65"}`}>
+            {seatIds.length} {t("ticket.seats").toLowerCase()} · <span className="font-mono tabular-nums">{mm}</span>
+            <Icon name="altArrowUp" size={14} className={`transition-transform ${sheet ? "rotate-180" : ""}`} />
+          </span>
+          <span className="text-[20px] font-semibold tabular-nums">৳{total.toLocaleString("en-US")}</span>
+        </button>
+        <Button
+          size="sm"
+          disabled={expired || stage !== "idle"}
+          onClick={(e) => {
+            altRef.current = e.altKey;
+            setSheet(false);
+            pay();
+          }}
+        >
+          {t("checkout.pay", { amount: total.toLocaleString("en-US") })}
+        </Button>
+      </div>
 
       {/* payment in progress (mock, §9.7) */}
       {stage !== "idle" && (

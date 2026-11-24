@@ -11,6 +11,7 @@ import { Icon } from "@/components/ui/Icon";
 import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
 import { dateLocale, formatTime } from "@/lib/demo-date";
 import { saveSeatView, startHold } from "@/lib/booking";
+import { deviceNow, useDevice } from "@/lib/device";
 import { markDoorsReady } from "@/lib/doors";
 import { buildLayout, type PlacedSeat } from "@/lib/hall-layout";
 import { seatPrice } from "@/lib/halls";
@@ -57,14 +58,36 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   const highlightTimer = useRef<number | undefined>(undefined);
 
   // 2D first on phones / when WebGL is missing (§11, §9.9)
+  // §11 / §9.9: phones and devices without full 3D open in the 2D map; the hall (WebGL) is only mounted once
+  // it is needed — at once on desktop, on phones for "View from seat" or "Explore in 3D"
+  const { phone, full3D } = useDevice();
+  const [hallOn, setHallOn] = useState(false);
+  const decided = useRef(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  const [mapTop, setMapTop] = useState(248);
   useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-    if (!gl || window.matchMedia("(max-width: 767px)").matches) {
+    if (decided.current) return;
+    decided.current = true;
+    const d = deviceNow(); // the hook still holds the server (desktop) values during hydration
+    if (d.phone || !d.full3D) {
       setView("2d");
       markDoorsReady();
-    }
+    } else setHallOn(true);
   }, []);
+  // the 2D map starts right under the header block (taller on phones, where it wraps)
+  useEffect(() => {
+    const el = headRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setMapTop(Math.ceil(el.getBoundingClientRect().bottom) + 16));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  // phones: centre the (wider than the screen) map horizontally
+  useEffect(() => {
+    const el = mapRef.current;
+    if (view === "2d" && el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+  }, [view]);
 
   const price = useCallback((cls: SeatClass) => seatPrice(hall, cls, show.priceBand) ?? 0, [hall, show.priceBand]);
   const selectedSeats = useMemo(() => layout.seats.filter((s) => selected.has(s.id)), [layout.seats, selected]);
@@ -91,6 +114,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   }, [limitHit]);
 
   const viewFrom = (id: string) => {
+    if (!full3D) return;
+    setHallOn(true);
     setPinned(null);
     setHover(null);
     setSeatId(id);
@@ -128,6 +153,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
     setSelected(new Set(ids));
     setMode("overview");
     setFocus((f) => ({ ids, key: (f?.key ?? 0) + 1 }));
+    if (view === "2d") window.setTimeout(() => document.querySelector(`[data-seat="${ids[0]}"]`)?.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }), 50);
   };
   const resetView = () => {
     setFocus(null);
@@ -196,7 +222,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   const title = (lang === "bn" && movie.titleBn) || movie.title;
   const dateLabel = new Date(`${show.date}T00:00:00`).toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric", month: "short" });
   const info = [title, (lang === "bn" && branch.nameBn) || branch.name, hallName(hall, lang), dateLabel, formatTime(show.time)].join(" · ");
-  const popupSeat = mode === "overview" && view === "3d" ? pinned : null;
+  const show3D = view === "3d" || mode === "seat";
+  const popupSeat = mode === "overview" && view === "3d" && !phone ? pinned : null;
   const seatView = mode === "seat" && seatId ? layout.byId.get(seatId) : null;
 
   const popup = popupSeat && (
@@ -238,7 +265,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       <Navbar />
 
       {/* the hall */}
-      <div data-hall className={`absolute inset-0 transition-opacity duration-500 ${view === "3d" ? "opacity-100" : "pointer-events-none opacity-0"}`}>
+      <div data-hall className={`absolute inset-0 transition-opacity duration-500 ${show3D ? "z-[5] opacity-100" : "pointer-events-none opacity-0"}`}>
+        {hallOn && (
         <Hall3D
           className="!absolute inset-0"
           hall={hall}
@@ -251,7 +279,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           trailerCrop={movie.trailerCrop}
           startAt={0.18}
           houseLights={mode === "seat" ? 0.15 : 0.85}
-          active={view === "3d"}
+          active={show3D}
           selected={selected}
           hovered={hover?.id ?? null}
           highlightClass={highlight}
@@ -266,22 +294,37 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           focusKey={focus?.key ?? 0}
           onReady={markDoorsReady}
         />
+        )}
       </div>
 
       {view === "2d" && (
-        <div className="absolute inset-x-0 top-[248px] bottom-[120px] overflow-auto px-8">
+        <div ref={mapRef} className="absolute inset-x-0 bottom-[148px] overflow-auto px-4 md:bottom-[120px] md:px-8" style={{ top: mapTop }}>
+          {phone && (
+            <ul className="mb-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[12px] text-white/75" aria-label={t("booking.legend")}>
+              {classes.map((c) => (
+                <li key={c} className="inline-flex items-center gap-1.5">
+                  <span className="legend-dot" style={{ background: c === "vip" ? "#6B1E24" : c === "semi-recliner" ? "#8d1d23" : "#C0262D" }} />
+                  {t(CLASS_KEY[c])} <span className="text-muted tabular-nums">৳{price(c)}</span>
+                </li>
+              ))}
+              <li className="inline-flex items-center gap-1.5">
+                <span className="legend-dot" style={{ background: "#1d1c20", boxShadow: "inset 0 0 0 1px rgb(255 255 255 / .15)" }} />
+                {t("booking.booked")}
+              </li>
+            </ul>
+          )}
           <SeatMap2D hall={hall} seats={layout.seats} booked={booked} selected={selected} onToggle={toggle} price={price} />
         </div>
       )}
 
       {/* top-left: change showtime + show info */}
-      <div className="pointer-events-none absolute inset-x-0 top-[112px] z-10 mx-auto flex max-w-[1440px] items-start justify-between gap-6 px-8">
+      <div ref={headRef} className={`pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto flex max-w-[1440px] items-start justify-between gap-3 px-4 max-md:flex-col md:top-[112px] md:gap-6 md:px-8 ${mode === "seat" && phone ? "invisible" : ""}`}>
         <div className="pointer-events-auto">
           <Link href={`/book?movie=${movie.slug}`} className="focus-ring inline-flex items-center gap-2 text-[14px] text-white/80 hover:text-white">
             <Icon name="arrowLeft" size={18} />
             {t("booking.changeShowtime")}
           </Link>
-          <p className="mt-2 text-[15px] font-medium text-white">{info}</p>
+          <p className="mt-2 text-[14px] font-medium text-white md:text-[15px]">{info}</p>
           <div className="mt-3">
             <Stepper step={2} />
           </div>
@@ -289,18 +332,46 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
 
         {/* top-right: 3D / 2D + Best available + Reset view */}
         {mode === "overview" && (
-          <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-3">
-            <div className="glass flex rounded-pill border border-white/10 p-1" role="group" aria-label={t("booking.viewMode")}>
-              {(["3d", "2d"] as const).map((v) => (
-                <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} className={`seg-btn focus-ring ${view === v ? "is-on" : ""}`}>
-                  {v.toUpperCase()}
+          <div className="pointer-events-auto flex flex-wrap items-center gap-2 max-md:flex-nowrap md:justify-end md:gap-3">
+            {phone ? (
+              // §11: phones start in 2D; capable phones can open the whole hall in 3D
+              full3D && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (view === "2d") setHallOn(true);
+                    setView(view === "2d" ? "3d" : "2d");
+                  }}
+                  className="glass focus-ring inline-flex h-10 shrink-0 items-center gap-2 rounded-pill border border-white/10 px-4 text-[14px] font-medium text-white"
+                >
+                  <Icon name={view === "2d" ? "armchair" : "map"} size={18} />
+                  {view === "2d" ? t("booking.explore3d") : t("booking.map2d")}
                 </button>
-              ))}
-            </div>
+              )
+            ) : (
+              full3D && (
+                <div className="glass flex rounded-pill border border-white/10 p-1" role="group" aria-label={t("booking.viewMode")}>
+                  {(["3d", "2d"] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => {
+                        if (v === "3d") setHallOn(true);
+                        setView(v);
+                      }}
+                      aria-pressed={view === v}
+                      className={`seg-btn focus-ring ${view === v ? "is-on" : ""}`}
+                    >
+                      {v.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              )
+            )}
             <div className="glass flex items-center gap-1 rounded-pill border border-white/10 py-1 pr-1 pl-4">
               <button type="button" onClick={pickBest} className="focus-ring inline-flex items-center gap-2 text-[14px] font-medium text-white">
                 <Icon name="magic" size={18} />
-                {t("booking.bestAvailable")}
+                {phone ? t("booking.bestShort") : t("booking.bestAvailable")}
               </button>
               <label className="relative">
                 <span className="sr-only">{t("booking.howMany")}</span>
@@ -324,9 +395,9 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       </div>
 
       {/* view from seat HUD */}
-      {seatView && view === "3d" && !leaving && (
-        <div className="absolute inset-x-0 bottom-[132px] z-10 flex justify-center">
-          <div className="glass flex items-center gap-4 rounded-pill border border-white/10 py-2 pr-2 pl-5">
+      {seatView && !leaving && (
+        <div className="absolute inset-x-0 bottom-[132px] z-10 flex justify-center px-4 max-md:top-[84px] max-md:bottom-auto">
+          <div className="glass flex flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-card-md border border-white/10 py-2 pr-2 pl-5 md:rounded-pill">
             <span className="text-[15px] font-medium text-white">{t("booking.viewFrom", { seat: seatView.id })}</span>
             {!booked.has(seatView.id) && (
               <Button size="sm" variant={selected.has(seatView.id) ? "secondary" : "primary"} onClick={() => toggle(seatView.id)}>
@@ -342,7 +413,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
 
       {/* §9.9 a seat was taken while choosing */}
       {takenNote && (
-        <div role="alert" className="absolute inset-x-0 top-[248px] z-20 flex justify-center">
+        <div role="alert" className="absolute inset-x-0 z-20 flex justify-center px-4" style={{ top: mapTop }}>
           <div className="glass flex items-center gap-3 rounded-pill border border-white/10 py-2 pr-2 pl-4 text-[14px] text-white">
             <Icon name="info" size={18} className="text-gold" />
             {t(taken.length > 1 ? "booking.justTakenMany" : "booking.justTaken", { seat: taken.join(", ") })}
@@ -357,9 +428,9 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       <div aria-hidden className={`pointer-events-none fixed inset-0 z-[60] bg-paper transition-opacity duration-[600ms] ${leaving && (view !== "3d" || mode === "seat") ? "" : "opacity-0"}`} style={{ transitionDelay: leaving && view === "3d" ? "1700ms" : "0ms" }} />
 
       {/* bottom bar */}
-      <div className="absolute inset-x-0 bottom-0 z-10 p-4">
-        <div className="glass mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-8 gap-y-3 rounded-card-md border border-white/10 px-6 py-4">
-          <ul className="flex flex-wrap items-center gap-4 text-[13px] text-white/80" aria-label={t("booking.legend")}>
+      <div className="absolute inset-x-0 bottom-0 z-10 p-3 md:p-4">
+        <div className="glass mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-8 gap-y-3 rounded-card-md border border-white/10 px-4 py-3 md:px-6 md:py-4">
+          <ul className="flex flex-wrap items-center gap-4 text-[13px] text-white/80 max-md:hidden" aria-label={t("booking.legend")}>
             {classes.map((c) => (
               <li key={c}>
                 <button type="button" onMouseEnter={() => glowClass(c)} onFocus={() => glowClass(c)} className="focus-ring inline-flex items-center gap-2 hover:text-white">
@@ -378,11 +449,12 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             </li>
           </ul>
 
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 max-md:basis-full">
             {selectedSeats.length === 0 && <span className="text-[14px] text-muted">{t("booking.noSeats")}</span>}
             {selectedSeats.map((s) => (
               <span key={s.id} className="seat-chip">
-                <button type="button" className="focus-ring" onClick={() => (view === "3d" ? viewFrom(s.id) : undefined)} title={view === "3d" ? t("booking.viewFromSeat") : undefined}>
+                <button type="button" className="focus-ring inline-flex items-center gap-1" onClick={() => viewFrom(s.id)} title={full3D ? t("booking.viewFromSeat") : undefined} aria-label={full3D ? `${t("booking.viewFromSeat")} ${s.id}` : s.id}>
+                  {full3D && <Icon name="eye" size={14} className="text-white/60" />}
                   {s.id}
                 </button>
                 <button type="button" onClick={() => toggle(s.id)} className="focus-ring text-white/60 hover:text-white" aria-label={t("booking.remove", { seat: s.id })}>
@@ -401,8 +473,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             )}
           </div>
 
-          <div className="flex items-center gap-5">
-            <div className="text-right">
+          <div className="flex items-center gap-5 max-md:w-full max-md:justify-between">
+            <div className="md:text-right">
               <p className="text-[12px] text-muted">{t("booking.total")}</p>
               <p className="text-[20px] font-semibold text-white tabular-nums">৳{total.toLocaleString("en-US")}</p>
             </div>

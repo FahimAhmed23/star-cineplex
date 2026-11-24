@@ -42,14 +42,14 @@ export function SeatMap2D({ hall, seats, booked, selected, onToggle, price }: {
   };
 
   return (
-    <div className="mx-auto w-max py-6">
+    <div className="mx-auto w-max py-2 md:py-6">
       <div className="mx-auto mb-10 h-2 w-[70%] rounded-pill bg-gradient-to-r from-transparent via-white/70 to-transparent shadow-[0_8px_30px_rgb(255_255_255/0.25)]" />
       <p className="-mt-8 mb-8 text-center text-[12px] text-muted">{t("booking.screen")}</p>
-      <div role="grid" aria-label={t("booking.seatMap")} className="flex flex-col gap-2">
+      <div role="grid" aria-label={t("booking.seatMap")} className="flex flex-col gap-1.5 md:gap-2">
         {grid.map((r) => (
-          <div key={r.row} role="row" className="flex items-center gap-2">
-            <span className="w-6 text-right font-mono text-[12px] text-muted">{r.row}</span>
-            <div className="flex gap-1.5">
+          <div key={r.row} role="row" className="flex items-center gap-1.5 md:gap-2">
+            <span className="w-4 text-right font-mono text-[11px] text-muted md:w-6 md:text-[12px]">{r.row}</span>
+            <div className="flex gap-1 md:gap-1.5">
               {r.cells.map((s, c) =>
                 s ? (
                   <button
@@ -58,6 +58,7 @@ export function SeatMap2D({ hall, seats, booked, selected, onToggle, price }: {
                       if (el) refs.current.set(s.id, el);
                     }}
                     role="gridcell"
+                    data-seat={s.id}
                     type="button"
                     disabled={booked.has(s.id)}
                     aria-pressed={selected.has(s.id)}
@@ -79,7 +80,7 @@ export function SeatMap2D({ hall, seats, booked, selected, onToggle, price }: {
                 ),
               )}
             </div>
-            <span className="w-6 font-mono text-[12px] text-muted">{r.row}</span>
+            <span className="w-4 font-mono text-[11px] text-muted md:w-6 md:text-[12px]">{r.row}</span>
           </div>
         ))}
       </div>

@@ -936,7 +936,7 @@ _The designer will spec remaining screens one by one. Add them here instead of i
 
 ---
 
-## 11. Mobile (later pass — do not build yet)
+## 11. Mobile (built in Phase 9)
 
 Planned: shorter opening (≈2s), the hall hero in portrait with the trailer screen in the upper half,
 hero info below, "Tonight at" chips as a swipeable row, the navbar reduced to logo + Buy Tickets.
@@ -949,6 +949,19 @@ hero info below, "Tonight at" chips as a swipeable row, the navbar reduced to lo
 | Seat selection | Opens in the **2D map by default** (thumb-friendly, precise). **"View from seat" stays 3D**: one fixed camera view from the chosen seat, no orbiting. An **"Explore in 3D"** button offers the full hall on capable phones |
 | Capability check | Full 3D only if WebGL2 is available and the device isn't low-end (e.g. `navigator.deviceMemory >= 4` and `hardwareConcurrency >= 4`); otherwise 2D only (§9.9) |
 
+
+**As built (Phase 9):**
+- Device check: `lib/device.ts` (`useDevice()` / `deviceNow()`): phone = width < 768px; full 3D = WebGL2 and, on phones,
+  `deviceMemory ≥ 4` and `hardwareConcurrency ≥ 4`.
+- Phone hero: `components/home/PhoneHall.tsx` — the still `public/hero/hall-portrait.webp` (1080×2340, rendered from the
+  3D hall with the `portrait` camera pose) with the trailer laid over its screen via a CSS `matrix3d` (corners in `QUAD`).
+  Info sits under the screen; synopsis hidden; the opening runs 1.3× faster (≈2s).
+- "Choose your experience" on phones: `public/seats/{vip,premium,atmos}.webp` (stills of the turntables).
+- Seat selection on phones: 2D map first (no WebGL mounted); "View from seat" (eye icon on the seat chips) opens the 3D
+  view with a lens wide enough for the whole screen; "Explore in 3D" on capable phones.
+- Checkout on phones: sticky bar (seats · hold timer · total · Pay); tapping the total opens the summary as a sheet.
+- Re-render the stills with the dev page `/dev/capture` (`?mode=portrait&w=1080&h=2340` for the hall,
+  `?turntable=vip&w=1056&h=726` for a seat).
 ---
 
 ## 12. Reference index

@@ -112,7 +112,10 @@
     "screen": "Screen",
     "seatMap": "Seat map",
     "justTaken": "Seat {seat} was just taken by someone else. Your other seats are still selected.",
-    "justTakenMany": "Seats {seat} were just taken by someone else. Your other seats are still selected."
+    "justTakenMany": "Seats {seat} were just taken by someone else. Your other seats are still selected.",
+    "explore3d": "Explore in 3D",
+    "map2d": "Seat map",
+    "bestShort": "Best seats"
   },
   "checkout": {
     "yourDetails": "Your details",

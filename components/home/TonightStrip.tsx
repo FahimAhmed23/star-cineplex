@@ -74,8 +74,8 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
 
   return (
     <div className="tonight-strip relative border-t border-white/8 bg-[#0b0810]/95 backdrop-blur-md">
-      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center gap-6 px-8">
-        <div className="flex shrink-0 items-center gap-4">
+      <div className="mx-auto flex max-w-[1440px] gap-3 px-5 py-3 max-md:flex-col md:h-[72px] md:items-center md:gap-6 md:px-8 md:py-0">
+        <div className="flex shrink-0 items-center justify-between gap-4">
           <span className="eyebrow !text-[14px]">
             <Icon name="star" size={16} />
             {t("hero.tonightAt")}
@@ -85,7 +85,7 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
             <select
               value={branch}
               onChange={(e) => pick(e.target.value)}
-              className="focus-ring h-10 w-[248px] cursor-pointer appearance-none rounded-pill border border-white/15 bg-white/5 pr-10 pl-4 text-[14px] font-medium text-white transition-colors hover:border-white/30"
+              className="focus-ring h-10 w-[200px] cursor-pointer md:w-[248px] appearance-none rounded-pill border border-white/15 bg-white/5 pr-10 pl-4 text-[14px] font-medium text-white transition-colors hover:border-white/30"
             >
               {branches.map((b) => (
                 <option key={b.slug} value={b.slug} className="bg-[#0b0810]">
@@ -100,7 +100,7 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
         <div className="relative min-w-0 flex-1">
           <ul
             aria-label={t("hero.tonightShows")}
-            className="no-scrollbar flex items-center gap-3 overflow-x-auto py-2 pr-16 [mask-image:linear-gradient(to_right,#000_calc(100%-64px),transparent)]"
+            className="no-scrollbar flex snap-x items-center gap-3 overflow-x-auto py-2 pr-16 max-md:-mx-5 max-md:px-5 [mask-image:linear-gradient(to_right,#000_calc(100%-64px),transparent)] [&>li]:snap-start"
           >
             {today && list.length === 0 && <li className="text-[14px] text-muted">{t("hero.noShowsTonight")}</li>}
             {list.map((s, i) => (

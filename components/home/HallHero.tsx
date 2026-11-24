@@ -5,10 +5,12 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { useDevice } from "@/lib/device";
 import { useT } from "@/lib/i18n";
 import { useUi } from "@/lib/store";
 import type { Hall, Movie } from "@/lib/types";
 import { releaseLabel } from "./MovieCard";
+import { PhoneHall } from "./PhoneHall";
 import { TonightStrip, type ShowLite } from "./TonightStrip";
 
 const Hall3D = dynamic(() => import("@/components/hall/Hall3D"), { ssr: false });
@@ -45,6 +47,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
   const covered = useUi((s) => s.heroCovered);
   const setHallReady = useUi((s) => s.setHallReady);
   const reduced = useReducedMotion();
+  const { phone } = useDevice();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -123,6 +126,22 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
     <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-night" aria-label={single ? title : t("hero.eyebrow")}>
       {/* the hall: slight scale + black overlay while the next section covers it (§8.3) */}
       <div className="hero-p-scale absolute inset-0">
+        {phone ? (
+          // §11 phones: a still of the hall with the trailer on its screen — no live 3D
+          <PhoneHall
+            src={movie.trailer}
+            poster={movie.trailerPoster}
+            crop={movie.trailerCrop}
+            startAt={single ? 0 : START_AT}
+            loop={!single}
+            onEnded={() => setEnded(true)}
+            videoRef={video}
+            muted={muted}
+            playing={!paused && !covered && !ended}
+            brightness={brightness}
+            onReady={() => setHallReady(true)}
+          />
+        ) : (
         <Hall3D
           key={single ? "trailer" : "carousel"}
           className="!absolute inset-0"
@@ -144,11 +163,14 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           houseLights={0}
           onReady={() => setHallReady(true)}
         />
+        )}
       </div>
       <div aria-hidden className="hero-p-dim pointer-events-none absolute inset-0 bg-black" />
 
       {/* one smooth left-to-right gradient over the whole hero: dark behind the text, clear before the screen */}
-      <div aria-hidden className="hero-fade pointer-events-none absolute inset-0" />
+      <div aria-hidden className="hero-fade pointer-events-none absolute inset-0 max-md:hidden" />
+      {/* phones: the info sits under the screen, on a fade to night */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-night via-night/85 to-transparent md:hidden" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-night/90 to-transparent" />
 
       {/* trailer view: Back chip top-left (§8.7) */}
@@ -159,7 +181,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="hero-p-early focus-ring absolute top-[112px] left-8 z-10 flex items-center gap-2 rounded-pill border border-white/25 bg-black/30 px-4 py-2 text-[14px] font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          className="hero-p-early focus-ring absolute top-[76px] left-4 md:top-[112px] md:left-8 z-10 flex items-center gap-2 rounded-pill border border-white/25 bg-black/30 px-4 py-2 text-[14px] font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/10"
         >
           <Icon name="arrowLeft" size={18} />
           {t("trailer.back")}
@@ -167,14 +189,14 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       )}
 
       {/* hero info */}
-      <div className={`absolute inset-x-0 mx-auto max-w-[1440px] px-8 ${single ? "top-[max(172px,22vh)]" : "top-[max(124px,16vh)]"}`}>
+      <div className={`absolute inset-x-0 mx-auto max-w-[1440px] px-5 md:px-8 ${phone ? "bottom-[156px]" : single ? "top-[max(172px,22vh)]" : "top-[max(124px,16vh)]"}`}>
         <AnimatePresence mode="wait">
           {revealed && (
             <motion.div
               key={movie.slug}
               className="relative"
               // the column always ends before the screen (which starts at ~48% of the width)
-              style={{ maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
+              style={phone ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
               initial="hidden"
               animate="show"
               exit={{ opacity: 0, transition: { duration: 0.25 } }}
@@ -182,22 +204,22 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
             >
               {/* scroll: the synopsis and buttons fade first, then the title (§8.3) */}
               <div className="hero-p-late">
-                <motion.p variants={item} className="eyebrow mb-4">
+                <motion.p variants={item} className="eyebrow mb-3 md:mb-4">
                   <Icon name="star" size={16} />
                   {soon ? t("home.comingSoonTitle") : t("hero.eyebrow")}
                 </motion.p>
                 <motion.h1
                   variants={item}
                   lang={isBnTitle ? "bn" : "en"} /* English titles keep Fraunces in Bangla mode */
-                  className="display-xl mb-5 !font-bold text-white" /* hero film title at 700 (designer) */
+                  className="display-xl mb-4 !font-bold text-white md:mb-5" /* hero film title at 700 (designer) */
                   // display-xl, also capped by viewport height so title + buttons fit above the strip at 1280×720
-                  style={{ fontSize: long ? "min(clamp(56px, 6vw, 96px), 9.5vh)" : "min(clamp(72px, 10vw, 150px), 14vh)" }}
+                  style={{ fontSize: phone ? (long ? "clamp(30px, 8.5vw, 40px)" : "clamp(40px, 12vw, 56px)") : long ? "min(clamp(56px, 6vw, 96px), 9.5vh)" : "min(clamp(72px, 10vw, 150px), 14vh)" }}
                 >
                   {title}
                 </motion.h1>
               </div>
               <div className="hero-p-early">
-                <motion.ul variants={item} className="mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-2 text-[14px] font-medium text-white/85" aria-label="Details">
+                <motion.ul variants={item} className="mb-5 flex max-md:text-[13px] flex-wrap items-center gap-x-2.5 gap-y-2 text-[14px] font-medium text-white/85" aria-label="Details">
                   <li>{movie.releaseDate.slice(0, 4)}</li>
                   <Dot />
                   {movie.certificate && (
@@ -218,10 +240,10 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                   <Dot />
                   <li className="rounded-[4px] bg-purple px-1.5 text-[12px] leading-5 font-semibold text-white">{movie.format}</li>
                 </motion.ul>
-                <motion.p variants={item} className="body-l mb-7 line-clamp-3 text-white/75">
+                <motion.p variants={item} className="body-l mb-7 line-clamp-3 text-white/75 max-md:hidden">
                   {movie.synopsis}
                 </motion.p>
-                <motion.div variants={item} className="mb-6 flex flex-wrap gap-3">
+                <motion.div variants={item} className="mb-6 flex flex-wrap gap-3 max-md:mb-0 max-md:[&_.btn]:flex-1">
                   {soon ? (
                     // Coming Soon in the trailer view: a non-clickable release badge instead of Buy Tickets (§8.6)
                     <span className="inline-flex items-center gap-2 rounded-pill border border-white/25 px-6 py-[14px] text-[15px] font-semibold text-white">
@@ -237,7 +259,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                     {t("common.fullSchedule")}
                   </ButtonLink>
                 </motion.div>
-                {!soon && (
+                {!soon && !phone && (
                   <motion.p variants={item} className="flex items-center gap-1.5 text-[13px] text-muted">
                     <Icon name="mapPoint" size={16} />
                     {t("hero.playingAcross", { count: movie.branchCount })}
@@ -253,7 +275,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       <AnimatePresence>
         {single && ended && (
           <motion.div
-            className="absolute top-[42%] left-[71%] z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4"
+            className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 ${phone ? "top-[calc(100vw*2.1667*0.35)] left-1/2" : "top-[42%] left-[71%]"}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -277,7 +299,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       </AnimatePresence>
 
       {/* carousel controls: sound, pause/play, progress dashes (click to jump); trailer view: sound only */}
-      <div className="hero-p-early absolute right-8 bottom-[104px]">
+      <div className={`hero-p-early absolute ${phone ? "top-[calc(100vw*2.1667*0.455)] right-4" : "right-8 bottom-[104px]"}`}>
         <motion.div
           className="flex items-center gap-4"
           initial={{ opacity: 0 }}

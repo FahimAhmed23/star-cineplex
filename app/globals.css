@@ -1294,3 +1294,30 @@ body {
   .seat2d:hover:not(:disabled) { transform: none; }
   .pay-spinner { animation-duration: 2.4s; }
 }
+
+/* ── Phase 9 · phones (§11) ─────────────────────────────────── */
+@media (max-width: 767px) {
+  .seat2d { width: 24px; height: 24px; font-size: 9px; border-radius: 6px 6px 3px 3px; }
+  .seat2d--vip { width: 28px; }
+  .seat2d-gap { width: 24px; height: 24px; }
+}
+@media (max-width: 767px) {
+  /* the ticket: QR stub drops under the details, tear line turns horizontal */
+  .ticket { grid-template-columns: 1fr; }
+  .ticket__main { padding: 20px; }
+  .ticket__stub { border-left: 0; border-top: 2px dashed rgb(35 31 32 / 0.14); padding: 24px 20px; }
+  .ticket__stub::before, .ticket__stub::after { top: -13px; bottom: auto; }
+  .ticket__stub::before { left: -12px; }
+  .ticket__stub::after { left: auto; right: -12px; }
+  .pay-card { padding: 14px; gap: 10px; }
+}
+@media (max-width: 767px) {
+  /* Film Reel: portrait frames that fit the phone width */
+  .reel-strip { --fw: 84vw; --fh: min(calc(84vw * 5 / 4), calc(62vh - 84px)); }
+  .reel-caption { padding: 20px; }
+}
+@media (max-width: 767px) {
+  /* checkout summary as a sheet over the dimmed page: notches take the dimmed paper colour */
+  #checkout-summary .ticket-card__tear::before,
+  #checkout-summary .ticket-card__tear::after { background: rgb(150 149 147); }
+}

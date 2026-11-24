@@ -8,6 +8,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { getHall, getMovie, hallTheme, hallName } from "@/lib/data";
 import { formatTime } from "@/lib/demo-date";
 import { useDoors } from "@/lib/doors";
+import { useDevice } from "@/lib/device";
 import { useT } from "@/lib/i18n";
 import type { HallType } from "@/lib/types";
 import type { HallInfo, ShowSlot } from "./BookingStepOne";
@@ -30,6 +31,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
   const root = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<HallType | null>(null);
   const [mounted, setMounted] = useState(false);
+  const { phone } = useDevice();
   useEffect(() => setMounted(true), []);
   const m = getMovie(movie);
   const title = (m && ((lang === "bn" && m.titleBn) || m.title)) ?? movie;
@@ -83,7 +85,12 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
               onMouseLeave={() => setHover(null)}
             >
               <div className="experience-card__stage relative aspect-[16/11] overflow-hidden rounded-t-card-md bg-night">
-                {mounted && (
+                {mounted && phone && (
+                  // §11 phones: a still render of the seat instead of the live turntable
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`/seats/${g.type}.webp`} alt="" className="absolute inset-0 size-full object-cover" />
+                )}
+                {mounted && !phone && (
                   <View className="absolute inset-0">
                     <Suspense fallback={null}>
                       <SeatTurntable model={MODEL[g.type]} color={color} leather={vip} hover={hover === g.type} rings={g.type === "atmos"} />
@@ -122,7 +129,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
         })}
       </div>
       {/* one shared WebGL canvas for all turntables (§9.3 performance) */}
-      {mounted && (
+      {mounted && !phone && (
         <Canvas
           eventSource={root as React.RefObject<HTMLElement>}
           className="!pointer-events-none !fixed !inset-0"
