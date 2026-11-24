@@ -13,6 +13,7 @@ import { CameraRig, type CameraMode } from "./CameraRig";
 import { Room } from "./Room";
 import { Screen } from "./Screen";
 import { Seats } from "./Seats";
+import { StoryTitle } from "./StoryTitle";
 
 export interface Hall3DProps {
   hall: Hall;
@@ -46,6 +47,8 @@ export interface Hall3DProps {
   onSeatPointer?: (seat: PlacedSeat | null, e?: ThreeEvent<PointerEvent>) => void;
   onSeatClick?: (seat: PlacedSeat, e: ThreeEvent<MouseEvent>) => void;
   onFps?: (fps: number) => void;
+  /** §8.3: the film title that stands in the room during the scroll story (hero only) */
+  storyTitle?: string;
   className?: string;
 }
 
@@ -104,6 +107,7 @@ function Scene({
   onSeatPointer,
   onSeatClick,
   onFps,
+  storyTitle,
 }: Hall3DProps) {
   const layout = useMemo(() => buildLayout(hall), [hall]);
   const theme = useMemo(() => hallTheme(hall), [hall]);
@@ -146,6 +150,11 @@ function Scene({
         onSeatClick={onSeatClick}
       />
       <Audience layout={layout} booked={booked} rimColor={rim} />
+      {storyTitle && mode === "front" && (
+        <Suspense fallback={null}>
+          <StoryTitle layout={layout} title={storyTitle} />
+        </Suspense>
+      )}
       <CameraRig layout={layout} mode={mode} seatId={seatId} resetKey={resetKey} drift={mode === "front"} />
       <EffectComposer multisampling={0}>
         {/* bloom only on emissive parts: accent lights, step lights, the screen (§10) */}

@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n";
 import { useUi } from "@/lib/store";
+import { STORY, band } from "@/lib/story";
 import type { Hall, Movie } from "@/lib/types";
 import { releaseLabel } from "./MovieCard";
 import { TonightStrip, type ShowLite } from "./TonightStrip";
@@ -37,7 +38,7 @@ interface Props {
 /**
  * Hero (CLAUDE.md §8.2): the 3D hall (angled left-side view) with the trailer carousel playing on its screen,
  * the movie info on the left and the "Tonight at" strip pinned to the bottom. Also the Trailer view (§8.7).
- * Scroll fades (§8.3) read the --p custom property set on the sticky wrapper.
+ * Scroll fades (§8.3 beat 1) read the --p custom property set on the pinned story section.
  */
 export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, trailerSound, onBack }: Props) {
   const { t, lang } = useT();
@@ -85,7 +86,9 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
     const loop = (now: number) => {
       const dt = now - last;
       last = now;
-      if (!paused && !dipping && !covered) progress.current = Math.min(1, progress.current + dt / SLIDE_MS);
+      // the carousel holds still while the scroll story runs (the title in the room belongs to this film)
+      const scrolling = useUi.getState().heroScroll > 0.02;
+      if (!paused && !dipping && !covered && !scrolling) progress.current = Math.min(1, progress.current + dt / SLIDE_MS);
       bars.current.forEach((el, i) => {
         if (el) el.style.transform = `scaleX(${i === index ? progress.current : 0})`;
       });
@@ -140,7 +143,8 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           muted={muted}
           playing={!paused && !covered && !ended}
           screenBrightness={brightness}
-          screenScale={() => 1 - 0.65 * useUi.getState().heroScroll}
+          screenScale={() => 1 - 0.3 * band(STORY.walk[0], STORY.walk[1], useUi.getState().heroScroll)}
+          storyTitle={movie.title}
           houseLights={0}
           onReady={() => setHallReady(true)}
         />

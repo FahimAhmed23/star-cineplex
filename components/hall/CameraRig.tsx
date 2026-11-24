@@ -8,6 +8,8 @@ import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { EYE_HEIGHT, type HallLayout } from "@/lib/hall-layout";
 import { EASE_IN_OUT } from "@/lib/motion";
+import { useUi } from "@/lib/store";
+import { STORY, band } from "@/lib/story";
 
 
 export type CameraMode = "front" | "overview" | "seat";
@@ -49,6 +51,20 @@ export function frontPose(layout: HallLayout): Pose {
     pos: new THREE.Vector3(-room.width * 0.36, t.y + EYE_HEIGHT + 0.9, t.z + 1.6),
     // aim left of the screen centre, so the screen lands right of the frame centre
     look: new THREE.Vector3(-screen.width * 0.46, screen.y - screen.height * 0.2, screen.z),
+  };
+}
+
+/**
+ * §8.3 beat 3, the end of the walk: down the left side aisle ~6 rows, seated eye height, turned towards
+ * the screen, slightly off-axis (frames 05–06 of the reference).
+ */
+export function walkPose(layout: HallLayout): Pose {
+  const { room, screen, tiers, metrics } = layout;
+  const t = tiers[Math.max(0, tiers.length - 7)];
+  return {
+    pos: new THREE.Vector3(-(room.width / 2 - metrics.sideAisle * 0.55), t.y + EYE_HEIGHT + 0.15, t.z + 0.2),
+    // aimed left of and below the screen: the screen lands upper-right, beside the headline and above the cards
+    look: new THREE.Vector3(-screen.width * 0.32, screen.y - screen.height * 0.6, screen.z),
   };
 }
 
@@ -195,6 +211,7 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false }:
     };
   }, [mode, gl]);
 
+  const walk = useMemo(() => walkPose(layout), [layout]);
   const tmp = useMemo(() => new THREE.Vector3(), []);
   useFrame((state, dt) => {
     // lens: wider for the hero, normal elsewhere (eased so mode changes never jump)
@@ -208,7 +225,14 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false }:
     camera.position.copy(pose.current.pos);
     tmp.copy(pose.current.look);
 
-    if (mode === "front" && drift) {
+    // §8.3 the scroll story walks the hero camera into the hall (progress from the pinned scroll)
+    const k = mode === "front" ? band(STORY.walk[0], STORY.walk[1], useUi.getState().heroScroll) : 0;
+    if (k > 0) {
+      camera.position.lerp(walk.pos, k);
+      tmp.lerp(walk.look, k);
+    }
+
+    if (mode === "front" && drift && k < 1) {
       const t = state.clock.elapsedTime;
       const a = THREE.MathUtils.degToRad(0.3);
       const d = tmp.distanceTo(camera.position);

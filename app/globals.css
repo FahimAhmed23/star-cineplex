@@ -249,25 +249,54 @@ body {
   );
 }
 
-/* Hero → Now Showing sheet (§8.3). --p (0..1) is set on the sticky hero wrapper by ScrollTrigger:
-   synopsis/buttons fade first (gone by p≈0.3), then eyebrow + title (gone by p=0.5); everything rises 40px;
-   the "Tonight at" strip is gone by p=0.3; the hall dims to 60% black and scales to 0.96. */
+/* §8.3 "Into the hall" scroll story. --p (0..1) is set on the pinned story section by ScrollTrigger.
+   Beat 1 (p 0 → 0.15): synopsis/buttons/strip leave first, then eyebrow + title; everything drifts up 24px. */
 .hero-p-early {
-  opacity: clamp(0, calc(1 - var(--p, 0) * 3.4), 1);
-  transform: translateY(max(-40px, calc(var(--p, 0) * -80px)));
+  opacity: clamp(0, calc(1 - var(--p, 0) * 10), 1);
+  transform: translateY(max(-24px, calc(var(--p, 0) * -240px)));
 }
 .hero-p-late {
-  opacity: clamp(0, calc(1 - (var(--p, 0) - 0.15) * 2.9), 1);
-  transform: translateY(max(-40px, calc(var(--p, 0) * -80px)));
+  opacity: clamp(0, calc(1 - (var(--p, 0) - 0.05) * 10), 1);
+  transform: translateY(max(-24px, calc(var(--p, 0) * -160px)));
 }
 .hero-p-strip {
-  opacity: clamp(0, calc(1 - var(--p, 0) * 3.4), 1);
+  opacity: clamp(0, calc(1 - var(--p, 0) * 10), 1);
 }
 .hero-p-dim {
-  opacity: calc(var(--p, 0) * 0.6);
+  opacity: 0;
 }
 .hero-p-scale {
-  transform: scale(calc(1 - var(--p, 0) * 0.04));
+  transform: none;
+}
+/* Beat 2: the facts row fades in under the giant title, then leaves before the cards rise */
+.story-facts {
+  opacity: clamp(0, min(calc((var(--p, 0) - 0.18) * 8.4), calc((0.48 - var(--p, 0)) * 10)), 1);
+}
+/* Beat 3: headline block top-left */
+.story-head {
+  opacity: clamp(0, calc((var(--p, 0) - 0.5) * 7.2), 1);
+  transform: translateY(clamp(0px, calc((0.64 - var(--p, 0)) * 170px), 24px));
+}
+/* Beat 4: each card rises from below the floor; --s = its start, --d = how long it takes (parallax) */
+.story-card {
+  --k: clamp(0, calc((var(--p, 0) - var(--s)) / var(--d)), 1);
+  opacity: clamp(0, calc(var(--k) * 2.5), 1);
+  transform: translateY(calc((1 - var(--k)) * 115%));
+}
+.story-shade {
+  opacity: clamp(0, calc((var(--p, 0) - 0.48) * 5), 1);
+}
+
+/* Lenis smooth scrolling (§4) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
 }
 
 /* ───────────────────────── MovieCard (§8.4) ───────────────────────── */

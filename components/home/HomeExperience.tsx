@@ -4,13 +4,16 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Navbar } from "@/components/nav/Navbar";
+import { scrollToY, startSmoothScroll } from "@/lib/smooth-scroll";
 import { useUi } from "@/lib/store";
+import { STORY } from "@/lib/story";
 import type { Hall, Movie } from "@/lib/types";
 import { ComingSoon } from "./ComingSoon";
 import { HallHero, type HeroMovie } from "./HallHero";
 import { NowShowing } from "./NowShowing";
 import { OpeningSequence } from "./OpeningSequence";
 import { PosterTransition, boxOf, fullScreen, type Box } from "./PosterTransition";
+import { StoryOverlay } from "./StoryOverlay";
 import type { ShowLite } from "./TonightStrip";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -30,12 +33,15 @@ type Flight =
   | { kind: "shrink"; poster: string; to: Box };
 
 /**
- * Home (CLAUDE.md §8): opening → navbar + 3D hall hero (sticky) → the Now Showing sheet slides over it (§8.3)
- * → Coming Soon. Play Trailer on any card opens the Trailer view (§8.7) at /?trailer=<slug>.
- * Moments, Film Reel and Footer arrive in Phase 4.
+ * Home (CLAUDE.md §8): opening → navbar + 3D hall hero → the "Into the hall" scroll story (§8.3: the hero
+ * pins, the film title stands in the room, the camera walks in, the first Now Showing row rises)
+ * → the rest of Now Showing → Coming Soon. Play Trailer on any card opens the Trailer view (§8.7).
  */
 export function HomeExperience({ movies, allMovies, ...hero }: Props) {
-  const heroWrap = useRef<HTMLDivElement>(null);
+  const story = useRef<HTMLElement>(null);
+  const after = useRef<HTMLDivElement>(null);
+  // reduced motion: no pin, no camera walk, Now Showing as a normal section (decided on the client)
+  const [storyMode, setStoryMode] = useState(true);
   const [trailer, setTrailer] = useState<HeroMovie | null>(null);
   const [trailerSound, setTrailerSound] = useState(false);
   const [flight, setFlight] = useState<Flight | null>(null);
@@ -46,26 +52,44 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
   const nowShowing = allMovies.filter((m) => m.status === "now-showing");
   const comingSoon = allMovies.filter((m) => m.status === "coming-soon");
 
-  // ── §8.3 hero → Now Showing: the hero stays pinned, the next section slides over it like a sheet ──
+  useEffect(() => startSmoothScroll(), []);
+
+  // ── §8.3 the scroll story: pin the hero for ~260vh; progress p drives the 3D (via the store) and the DOM (--p) ──
   useLayoutEffect(() => {
-    const wrap = heroWrap.current;
-    const next = document.getElementById("now-showing");
-    if (!wrap || !next) return;
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; // no pinning, normal scroll
+    const el = story.current;
+    const next = after.current;
+    if (!el || !next) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStoryMode(false);
+      return;
+    }
+    const apply = (p: number) => {
+      el.style.setProperty("--p", p.toFixed(4));
+      useUi.setState({ heroScroll: p });
+    };
     const st = ScrollTrigger.create({
-      trigger: next,
-      start: "top bottom",
-      end: "top top",
+      trigger: el,
+      start: "top top",
+      end: () => `+=${Math.round(innerHeight * STORY.length)}`,
+      pin: true,
+      pinSpacing: true,
       scrub: true,
-      onUpdate: (self) => {
-        const p = self.progress;
-        wrap.style.setProperty("--p", p.toFixed(4));
-        const covered = p > 0.995;
-        const s = useUi.getState();
-        useUi.setState({ heroScroll: p, ...(s.heroCovered !== covered ? { heroCovered: covered } : null) });
-      },
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => apply(self.progress),
+      onRefresh: (self) => useUi.setState({ storyEnd: self.end }),
     });
-    return () => st.kill();
+    // the hall has fully scrolled away once the next section reaches the top: pause the trailer + 3D loop
+    const off = ScrollTrigger.create({
+      trigger: next,
+      start: "top top",
+      onToggle: (self) => useUi.setState({ heroCovered: self.isActive }),
+    });
+    return () => {
+      st.kill();
+      off.kill();
+      apply(0);
+    };
   }, []);
 
   // ── §8.7 Trailer view: URL + browser Back ──
@@ -82,7 +106,7 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
         const mm = bySlug(s);
         if (mm) {
           setTrailer(mm);
-          window.scrollTo({ top: 0 });
+          scrollToY(0);
         }
       } else closeTrailer(false);
     };
@@ -119,13 +143,13 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
       <OpeningSequence />
       <Navbar revealWithIntro />
       <main>
-        {/* pinned hero; the sections below have a solid background and a higher z-index */}
-        <div ref={heroWrap} className="sticky top-0 motion-reduce:relative" style={{ ["--p" as string]: 0 }}>
+        {/* pinned by ScrollTrigger for the scroll story; --p (0..1) drives the DOM layers */}
+        <section ref={story} id="home-story" className="relative h-[100svh] min-h-[640px] overflow-hidden bg-night" style={{ ["--p" as string]: 0 }}>
           <HallHero movies={movies} {...hero} trailer={trailer} trailerSound={trailerSound} onBack={onBack} />
-        </div>
-        {/* one opaque sheet for everything after the hero: no sub-pixel seams where the pinned hero could show */}
-        <div className="relative z-10 bg-night">
-          <NowShowing movies={nowShowing} onPlayTrailer={openTrailer} />
+          {storyMode && <StoryOverlay movies={nowShowing} onPlayTrailer={openTrailer} />}
+        </section>
+        <div ref={after} className="relative z-10 bg-night">
+          <NowShowing movies={nowShowing} onPlayTrailer={openTrailer} skip={storyMode ? 4 : 0} />
           <ComingSoon movies={comingSoon} onPlayTrailer={openTrailer} />
         </div>
       </main>
@@ -139,7 +163,7 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
           fadeOut
           onArrive={() => {
             // under the cover: jump to the top and switch the hero to this film
-            window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+            scrollToY(0);
             setTrailerSound(true);
             setTrailer(flight.movie);
             history.pushState({ trailer: flight.movie.slug }, "", `/?trailer=${flight.movie.slug}`);
@@ -158,7 +182,7 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
           onDone={() => {
             const { slug, poster, scroll } = flight;
             setTrailer(null);
-            window.scrollTo({ top: scroll, behavior: "instant" as ScrollBehavior });
+            scrollToY(scroll);
             // wait for layout at the restored position, then shrink into the card (or just fade if it's gone)
             requestAnimationFrame(() =>
               requestAnimationFrame(() => {
