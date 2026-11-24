@@ -49,7 +49,7 @@ Out of scope (mention as "future work" only): individual branch pages, a separat
 - **Next.js (App Router) + TypeScript**
 - **React Three Fiber** + **@react-three/drei** for all 3D
 - **@react-three/postprocessing** for bloom/glow
-- **GSAP + ScrollTrigger** for timelines and scroll, with **Lenis** smooth scrolling (opening sequence, camera moves, the §8.3 scroll story,
+- **GSAP + ScrollTrigger** for timelines and scroll (opening sequence, camera moves, hero → section transition,
   pinned film reel, Moments parallax); **Framer Motion** for UI transitions (cards, panels, ticket print)
 - **Tailwind CSS** with the design tokens in §5 defined in `tailwind.config` / CSS variables
 - Fonts via `next/font/google` (Fraunces with SOFT/WONK/opsz axes, Outfit, Anek Bangla, IBM Plex Mono); self-hosted, `display: swap`
@@ -454,67 +454,24 @@ structure, move it into the 3D hall).
 
 ---
 
-### 8.3 Scroll story — "Into the hall" (hero → Now Showing)
+### 8.3 Scroll transition — hero → Now Showing
 
-**References:** `references/forge-gate-scroll/` — 7 frames + `forge-gate-contact-sheet.jpg` from the "Forge Gate"
-scroll animation on motionsites.ai (read the frames in order, 01 → 07). Take the **motion and layering**, not the
-look: no uppercase headlines, no fire, our hall instead of their gate.
+**References:** `references/scroll-and-card-hover-reference.webm` (watch 0:02–0:05) ·
+`references/scroll-hero-to-section-frames.png` (6 frames of that moment, read left→right, top→bottom).
 
-**The idea:** the user scrolls *into* the cinema. The hero's movie title grows huge and stands inside the room,
-behind the front-row seats; then the camera walks down the aisle while the Now Showing cards rise up from the floor.
+The hero **stays pinned** while the next section **slides up over it like a sheet**.
 
-**Mechanics**
-- The hero section **pins** for **~260vh** of scroll (GSAP ScrollTrigger, `pin: true`, `scrub: 0.8`). Scroll
-  progress `p` = 0 → 1 drives the R3F camera, the 3D title and the DOM layers from one timeline.
-- Smooth scrolling with **Lenis** (synced to ScrollTrigger) so the scrub feels like a film, not steps.
-- Everything is scrubbed: scrolling back plays it in reverse. The trailer keeps playing on the screen throughout.
-
-**Beat 1 — the hero hands over (p 0 → 0.15)** · frame 01–02
-- Hero info (eyebrow, title, meta, synopsis, buttons) and the "Tonight at" strip fade out and drift up 24px
-  (synopsis and buttons first, the title last).
-- The navbar stays.
-
-**Beat 2 — the title enters the room (p 0.10 → 0.40)** · frame 03
-- The current trailer's movie title appears as **giant 3D text inside the hall**: Fraunces (§5 settings), ~2.4m
-  tall in world units, `--paper` colour with a faint warm emissive, placed **between the screen and the front rows**.
-  Use drei `<Text>` (troika) with the Fraunces font file, so the **front-row seat backs naturally cover the
-  bottom of the letters** — the depth effect from the reference (their rocks = our dark seat backs).
-- It rises from below the seat line (y −1.5m → 0) and may run off both edges of the viewport, like "Embers".
-- At the bottom of the viewport, a quiet row of four facts fades in (Outfit 14px, number in `IBM Plex Mono`,
-  `--muted`), like the reference's 01–04 row:
-  `01  9 branches across Bangladesh` · `02  Pick your seat in 3D` · `03  Pay with bKash, Nagad or card` · `04  No online booking fee`
-
-**Beat 3 — walk in (p 0.40 → 0.75)** · frames 04–05
-- The giant title **slides out to the left** (x → −1.2 × its width) and fades.
-- The **camera walks down the side aisle**: dollies forward ~6 rows, drops to seated eye height and turns ~12°
-  towards the screen centre, ending slightly off-axis (like frame 06). `--ease-in-out` feel through the scrub.
-- The screen dims to ~70% brightness so the UI reads; the room light from the trailer keeps changing.
-- A headline block appears **top-left** (max-width 760px, so the headline stays on one line; copy line max 520px):
-  - "Now showing in theaters" (`display-m`, Fraunces, sentence case)
-  - one line of copy (Outfit 16px, `--muted`): "Every film playing this week, at every Star Cineplex."
-  - a small text link with an arrow icon: "See full schedule" → `/book`
-
-**Beat 4 — the cards rise (p 0.55 → 1)** · frames 05–07
-- The first **4 Now Showing `MovieCard`s (§8.4)** rise from below the viewport into one row along the bottom,
-  one after another (each card starts 0.06 of `p` after the previous), `translateY 110% → 0`, opacity 0 → 1.
-- Each card moves at a slightly different speed while rising (parallax 0.9×–1.1×) so the row feels layered,
-  then they settle aligned. Card width `min(302px, 36vh)` (height ≤ 54vh, so the row clears the headline at 1280×720), 2:3 ratio, 24px gap, 1280px container.
-- The cards sit over the hall's floor with a soft dark gradient behind them (bottom 40% of the viewport).
-
-**Handing over to the rest of the page (p = 1 → unpin)**
-- The pin releases and the page scrolls normally. The hall scrolls up and fades into `--night` through a
-  gradient, and the **rest of the Now Showing section (§8.5)** continues directly under the card row: the
-  "Show all (N)" button, then Coming Soon.
-- Once the hall is fully off-screen, **pause the trailer video and the 3D render loop**; resume on scroll back.
-
-**Rules**
-- Only transforms and opacity animate in the DOM; the camera and the 3D text animate in the R3F frame loop.
-- If the user clicks a "Tonight at" chip or a hero button before scrolling, nothing here interferes.
-- **Reduced motion:** no pin and no camera move. The hero stays static, the giant title is skipped, and the
-  Now Showing section scrolls in normally with a simple fade.
-- **Mobile (§11):** no pinned 3D journey. The hero uses its video loop; the giant title is a large Fraunces line
-  over the video with a pre-rendered **seat-backs PNG** as the foreground layer (same depth trick, no 3D),
-  and the cards scroll in normally.
+- The hero is `position: sticky; top: 0; height: 100vh`. The Now Showing section comes after it with a solid
+  `--night` background and a higher z-index, so it covers the hero as the user scrolls.
+- Scroll progress `p` = 0 → 1 over the first 100vh of scroll (GSAP ScrollTrigger, `scrub: true`):
+  - Hero info (eyebrow, title, meta, synopsis, buttons): opacity 1 → 0 and `translateY 0 → -40px`, finished by `p = 0.5`.
+    The synopsis and buttons fade first, then the title (as in the reference frames).
+  - "Tonight at" strip: fades out by `p = 0.3`.
+  - The 3D hall dims: a black overlay 0 → 60% and the screen brightness 100% → 35%; slight scale 1 → 0.96.
+  - The Now Showing section rises from below with its title leading.
+- When the hero is fully covered (`p = 1`), **pause the trailer video and the 3D render loop** (performance). Resume when scrolling back.
+- Scrolling back up plays everything in reverse.
+- Reduced motion: no pinning; the sections scroll normally with a simple fade.
 
 ### 8.4 Shared component — `MovieCard`
 
@@ -549,16 +506,16 @@ poster ratio 2:3 (~450px tall). Corner radius 24px (`--radius-card-md`).
 
 ### 8.5 Now Showing in Theaters
 
-- **The header and the first row of 4 cards are delivered by the §8.3 scroll story** (headline top-left over the
-  hall, cards rising into one row). This section continues straight under that row on `--night`, container 1280px.
-- **Grid of `MovieCard`s, 4 per row.** Initially show **4 cards** (the first row only, from §8.3).
+- Section background `--night`. Container 1280px, padding-top 120px.
+- **Header: the title only** — "Now Showing in Theaters", centred, `display-m` (Fraunces). No eyebrow, no pill, no subtitle.
+- **Grid of `MovieCard`s, 4 per row.** Initially show **4 cards** (the first row only).
 - Below the grid, centred: a **"Show all" button** (pill, outlined white, 14px; inspired by bKash's centred "See all"),
   with the total count, e.g. `Show all (12) ↓`.
   - Click: the grid **expands in place** to reveal all remaining movies (height animates 500ms `--ease-in-out`;
     new cards fade up with a 60ms stagger). The button becomes `Show less ↑`.
   - `Show less` collapses back to 4 cards and scrolls the section title back into view.
   - If there are 4 or fewer movies, hide the button.
-- Cards revealed by "Show all" fade up 24px with a 60ms stagger (the first row already rose in §8.3).
+- Cards enter on first scroll into view: fade up 24px, 80ms stagger.
 
 ### 8.6 Coming Soon
 
@@ -588,7 +545,7 @@ then scrolling down brings the user back to the sections.
   - The carousel dashes are hidden and auto-advance is off (it's locked to this movie).
   - A small **"← Back"** chip at the top-left of the hero returns to the exact scroll position the user came from (reverse transition).
 - URL updates to `/?trailer=<movie-slug>` with `history.pushState`, so it's shareable and the browser Back button works like Back.
-- **Scrolling down** works exactly like the normal home page: the §8.3 "Into the hall" scroll story, then Now Showing, Coming Soon, …
+- **Scrolling down** works exactly like the normal home page: the §8.3 sheet transition, then Now Showing, Coming Soon, …
 - When the trailer ends: show "Replay" and "Buy Tickets" on the screen area.
 
 ### 8.8 "Moments made at Star Cineplex" (glimpse section)
@@ -997,9 +954,8 @@ hero info below, "Tonight at" chips as a swipeable row, the navbar reduced to lo
 | `references/hero-current-starcineplex.png` | §8.2 hero | Content structure: eyebrow, title, meta chips, synopsis, two buttons, branch count, carousel dashes, "Tonight at" ticket chips. |
 | `references/navbar-notch-tab.png` | §7 navbar | The notch-tab shape hanging from the top edge, compact centred layout, white pill CTA. Not the blue background or the "Supaste" content. |
 | `references/navbar-current-starcineplex.png` | §7 navbar | The "before": the full list of information the navbar must keep (phone, Branches, My tickets, EN/বাংলা, 6 links, Buy Tickets). Not its two-row layout. |
-| `references/scroll-and-card-hover-reference.webm` | §8.4 | Screen recording: the card hover (0:05–0:12). Its scroll transition (0:02–0:05) is **superseded** by §8.3. Claude Code can't watch video. |
-| `references/scroll-hero-to-section-frames.png` | — | **Superseded** (old sheet transition, built in Phase 3 and replaced by §8.3 "Into the hall"). Kept for the case study only. |
-| `references/forge-gate-scroll/01…07-*.jpg` + `forge-gate-contact-sheet.jpg` | §8.3 | Frames of the Forge Gate scroll story (motionsites.ai): scene only → UI builds → giant word behind the foreground → word exits, headline swaps → camera turns, cards rise → cards row. Copy the motion and layering, not the look. |
+| `references/scroll-and-card-hover-reference.webm` | §8.3, §8.4 | Screen recording: the hero-to-section scroll transition (0:02–0:05) and the card hover (0:05–0:12). Claude Code can't watch video; use the frame images below. |
+| `references/scroll-hero-to-section-frames.png` | §8.3 | 6 frames of the scroll transition: the hero stays pinned and fades while the next section slides up over it. Not the red "CINEMAX" branding. |
 | `references/card-hover-reference.png` | §8.4 | Card hover feel: scale/lift, darkened poster, info inside the card. Not its rating position (ours is top-left) or its red play icon. |
 | `references/card-hover-info-current-starcineplex.png` | §8.4 | The info to show on hover (certificate, runtime, language, genres, Play Trailer). Not the popup-outside-the-card layout. |
 | `references/glimpse-collage-scroll-reference.webm` | §8.8 | Scattered photo collage with parallax drift on a light background. **Not** the ending where one image expands to fill the screen. |
@@ -1056,7 +1012,7 @@ Build in this order. Finish, run and check each phase before starting the next; 
 | 0 | Project setup: Next.js, Tailwind tokens (§5), fonts, Solar icons, locales, button component, data files (`halls.json` from §6, demo `movies.json`, `showtimes.json`, `branches.json`) | Tokens, fonts and buttons render on a test page; data validates (Hall 1 = 248 seats, Hall 5 = 113) |
 | 1 | **3D hall engine**: seat/door/silhouette models (Blender scripts → compressed `.glb`, §4), hall built from the grid patterns, seat models per class, lighting, screen with video texture, seated silhouettes, camera rig | Hall 1 and VIP Hall 5 render correctly from data at 60fps on a laptop |
 | 2 | Navbar (§7) + opening sequence (§8.1) + hero with trailer carousel and "Tonight at" strip (§8.2) | Opening → hero works end to end; skip works; plays once per session |
-| 3 | "Into the hall" scroll story (§8.3, incl. 3D title + camera walk), `MovieCard` (§8.4), Now Showing (§8.5), Coming Soon (§8.6), Trailer view (§8.7) | All card states and the trailer view work, including Back and the URL |
+| 3 | Scroll transition (§8.3), `MovieCard` (§8.4), Now Showing (§8.5), Coming Soon (§8.6), Trailer view (§8.7) | All card states and the trailer view work, including Back and the URL |
 | 4 | Moments (§8.8), Film Reel (§8.9), Footer (§8.10) | Light/dark transitions feel smooth; reel pins and releases correctly |
 | 5 | Booking: §9.2–9.3 (showtime + "Choose your experience"), cinema doors (§9.4) | Every entry point (§9.1) lands correctly |
 | 6 | Seat selection (§9.5): hover popup, select, view from seat, 2D map, best available, seat-gap hint | Selection stays in sync between 3D and 2D; keyboard works in 2D |
