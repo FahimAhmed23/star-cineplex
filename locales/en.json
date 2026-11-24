@@ -50,7 +50,10 @@
     "comingSoonTitle": "Coming Soon",
     "momentsTitle": "Moments made at Star Cineplex",
     "reelTitle": "One Star. Nine homes.",
-    "reelSub": "Star Cineplex across Bangladesh"
+    "reelSub": "Star Cineplex across Bangladesh",
+    "reelLines": {
+      "bashundhara-city": "Where it all began, 2004."
+    }
   },
   "booking": {
     "stepShowtime": "Showtime",
@@ -135,5 +138,16 @@
   "trailer": {
     "back": "Back",
     "ended": "Trailer ended"
+  },
+  "about": {
+    "title": "About this project",
+    "close": "Close",
+    "note": "An unofficial concept redesign of starcineplex.com — a portfolio case study by Fahim Ahmed, exploring a 3D seat-booking experience. Not affiliated with Star Cineplex. Prices, halls and showtimes are demo data.",
+    "creditsTitle": "Credits",
+    "credit1": "Icons: Solar by 480 Design (CC BY 4.0)",
+    "credit2": "Fonts: Fraunces, Outfit, Anek Bangla, IBM Plex Mono (SIL OFL)",
+    "credit3": "Button hover adapted from Uiverse.io by thisSasha (MIT)",
+    "credit4": "Posters and trailers belong to their studios; event photos: Star Cineplex",
+    "credit5": "Social icons: Simple Icons (CC0)"
   }
 }

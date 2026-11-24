@@ -7,6 +7,9 @@ import { Navbar } from "@/components/nav/Navbar";
 import { useUi } from "@/lib/store";
 import type { Hall, Movie } from "@/lib/types";
 import { ComingSoon } from "./ComingSoon";
+import { FilmReel } from "./FilmReel";
+import { Footer } from "./Footer";
+import { Moments } from "./Moments";
 import { HallHero, type HeroMovie } from "./HallHero";
 import { NowShowing } from "./NowShowing";
 import { OpeningSequence } from "./OpeningSequence";
@@ -32,7 +35,7 @@ type Flight =
 /**
  * Home (CLAUDE.md §8): opening → navbar + 3D hall hero (sticky) → the Now Showing sheet slides over it (§8.3)
  * → Coming Soon. Play Trailer on any card opens the Trailer view (§8.7) at /?trailer=<slug>.
- * Moments, Film Reel and Footer arrive in Phase 4.
+ * → Moments (§8.8, the lights come up) → the Film Reel of branches (§8.9) → Footer (§8.10).
  */
 export function HomeExperience({ movies, allMovies, ...hero }: Props) {
   const heroWrap = useRef<HTMLDivElement>(null);
@@ -127,6 +130,9 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
         <div className="relative z-10 bg-night">
           <NowShowing movies={nowShowing} onPlayTrailer={openTrailer} />
           <ComingSoon movies={comingSoon} onPlayTrailer={openTrailer} />
+          <Moments />
+          <FilmReel />
+          <Footer />
         </div>
       </main>
 

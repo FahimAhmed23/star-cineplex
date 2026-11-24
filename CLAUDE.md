@@ -603,8 +603,8 @@ Starting layout (desktop; `x` = % of viewport width, `y` = vh from the section t
 **Purpose:** a pure brand showcase of the 9 branches. **No functional goal:** no map, no "near me", no showtimes,
 no buttons. It should make people feel "Star Cineplex is everywhere, and it's mine."
 
-**Theme — "lights down again":** as the section enters, the background transitions back from `--paper` to
-`--night` (scroll-linked, ~40vh), closing the light "Moments" interlude.
+**Theme — "lights down again":** the Moments section fades from `--paper` back to `--night` over its last ~40vh
+(scroll-linked), so the reel starts on night with no visible edge, closing the light "Moments" interlude.
 
 **Header** (top-left of the pinned area, 1280px container)
 - Headline: **"One Star. Nine homes."** — `display-m` (Fraunces), white.
@@ -668,7 +668,7 @@ screen, and a seat is waiting for you. Dark theme (`--night`).
 - Full width, height ≈ 100vh on desktop; the image is `object-fit: cover`, anchored to the screen (centre top).
 
 **Content (on top of the image, centred, below the screen)**
-- Headline (`display-l`, Fraunces 800, `--paper`), two lines:
+- Headline (`display-l`, Fraunces 800, `--paper`, capped at `clamp(52px, 6.2vw, 104px)` so each line fits on one row), two lines:
   **"The best seat in the house / is waiting for you."**
   Bangla: **"হলের সেরা আসনটি আপনার অপেক্ষায়।"**
 - Line under it (Outfit 18px, `--muted`): "Pick your seat in under a minute."
