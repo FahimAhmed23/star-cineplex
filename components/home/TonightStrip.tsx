@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { branches } from "@/lib/data";
+import { branches, getHall } from "@/lib/data";
 import { demoDateFor, formatTime, localIso, nowHhmm } from "@/lib/demo-date";
+import { useDoors } from "@/lib/doors";
 import { useT } from "@/lib/i18n";
 import type { Format } from "@/lib/types";
 
@@ -56,6 +57,16 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [shows, branch, today]);
 
+  // a chip goes straight to seat selection, through the cinema doors (§9.1, §9.4)
+  const router = useRouter();
+  const go = useDoors((st) => st.go);
+  const enter = (s: ShowLite) => (e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return; // new tab: plain link
+    e.preventDefault();
+    const hall = getHall(s.id.replace(/-\d{8}-\d{4}$/, ""));
+    go(`/book/seats/${s.id}`, { hall: (hall?.name ?? "").toUpperCase(), line: `${title(s.movie)} · ${formatTime(s.time)}` }, router.push);
+  };
+
   const title = (slug: string) => {
     const m = titles[slug];
     return (lang === "bn" && m?.bn) || m?.en || slug;
@@ -94,11 +105,11 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
             {today && list.length === 0 && <li className="text-[14px] text-muted">{t("hero.noShowsTonight")}</li>}
             {list.map((s, i) => (
               <li key={s.id} className="shrink-0">
-                <Link href={`/book/seats/${s.id}`} className={`ticket-chip focus-ring ${i === 0 ? "ticket-chip--next" : ""}`}>
+                <a href={`/book/seats/${s.id}`} onClick={enter(s)} className={`ticket-chip focus-ring ${i === 0 ? "ticket-chip--next" : ""}`}>
                   <span className="ticket-chip__time">{formatTime(s.time)}</span>
                   <span className="ticket-chip__title">{title(s.movie)}</span>
                   <span className="ticket-chip__format">{s.format}</span>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

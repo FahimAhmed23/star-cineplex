@@ -83,7 +83,18 @@
     "classVip": "ভিআইপি",
     "hallPremium": "প্রিমিয়াম",
     "hallVip": "ভিআইপি",
-    "hallAtmos": "অ্যাটমস"
+    "hallAtmos": "অ্যাটমস",
+    "title": "টিকিট বুক করুন",
+    "steps": "বুকিংয়ের ধাপ",
+    "demoOnly": "ডেমো: আপাতত শুধু বসুন্ধরা সিটিতে বুক করা যাবে।",
+    "noShows": "এই দিনে কোনো শো নেই।",
+    "notPlaying": "এই দিনে এখানে {movie} চলছে না। অন্য ছবি বা দিন বেছে নিন।",
+    "hallsPlural": "হল {list}",
+    "seatsEach": "প্রতিটিতে {count}টি আসন",
+    "seats": "{count}টি আসন",
+    "priceRange": "৳{min}–{max}",
+    "semiNote": "একটি সেমি-রিক্লাইনার সারি আছে",
+    "pickShowtime": "শো-টাইম বেছে নিন"
   },
   "checkout": {
     "yourDetails": "আপনার তথ্য",

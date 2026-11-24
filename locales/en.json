@@ -83,7 +83,18 @@
     "classVip": "VIP",
     "hallPremium": "Premium",
     "hallVip": "VIP",
-    "hallAtmos": "Atmos"
+    "hallAtmos": "Atmos",
+    "title": "Book your tickets",
+    "steps": "Booking steps",
+    "demoOnly": "Demo: only Bashundhara City can be booked for now.",
+    "noShows": "No shows on this day.",
+    "notPlaying": "{movie} isn't playing here on this day. Pick another film or day.",
+    "hallsPlural": "Halls {list}",
+    "seatsEach": "{count} seats each",
+    "seats": "{count} seats",
+    "priceRange": "৳{min}–{max}",
+    "semiNote": "Includes a Semi-Recliner row",
+    "pickShowtime": "Pick a showtime"
   },
   "checkout": {
     "yourDetails": "Your details",

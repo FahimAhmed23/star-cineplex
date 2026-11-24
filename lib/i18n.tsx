@@ -6,7 +6,7 @@ import { persist } from "zustand/middleware";
 import en from "@/locales/en.json";
 import bn from "@/locales/bn.json";
 
-// §5 Language: EN / বাংলা, strings in /locales, choice remembered in localStorage, default English.
+// §5 Language: EN / বাংলা, strings in /locales (JSON), choice remembered in localStorage, default English.
 
 export type Lang = "en" | "bn";
 type Dict = typeof en;

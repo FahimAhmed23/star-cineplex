@@ -724,6 +724,8 @@ Routes: `/book` (step 1) · `/book/seats/[showId]` (step 2) · `/book/checkout` 
 ### 9.2 Step 1a — Branch · Date · Movie (`/book`)
 Dark theme, one page, top to bottom:
 1. **Branch:** horizontal row of 9 pill buttons (Dhaka branches first). Selected: purple fill.
+   **Demo scope (designer decision):** only Bashundhara City is bookable for now; the other 8 pills are shown
+   disabled with the note "Demo: only Bashundhara City can be booked for now."
 2. **Date:** strip of the next 7 days as chips (`Today`, `Tue 24`, `Wed 25` …).
 3. **Movie:** a row of small poster cards (2:3, ~140px wide) for the movies showing at that branch on that date.
    Selected: purple outline + slight lift. If the movie was pre-filled, it's already selected and scrolled into view.
@@ -736,7 +738,7 @@ on this date** (hide hall types with no shows):
 
 | Card | Halls | Seat classes & prices (BDT, by time band) | 3D seat model |
 |------|-------|------------------------------------------|---------------|
-| **VIP** | Hall 5 · 113 seats | VIP 650–850 | Wide plush recliner, deep purple leather, side table |
+| **VIP** | Hall 5 · 113 seats | VIP 650–850 | Wide plush recliner in the hall's own leather colour (Bashundhara: oxblood `#6B1E24`), side table |
 | **Premium** | Halls 1–3 · 248 seats each | Premium 400–550 · Semi-Recliner (row E) 500–650 | Classic cinema seat with cup holders; small note "includes a Semi-Recliner row" |
 | **Atmos** | Hall 6 · 231 seats | Premium 600–750 | Premium seat with faint glowing sound-wave rings around it (Dolby Atmos) |
 

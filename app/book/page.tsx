@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Navbar } from "@/components/nav/Navbar";
+import { BookingStepOne, type HallInfo, type ShowSlot } from "@/components/booking/BookingStepOne";
+import { halls } from "@/lib/data";
+import { buildSeats } from "@/lib/halls";
+import { loadShowtimes } from "@/lib/showtimes.server";
 
 export const metadata: Metadata = { title: "Showtimes · Star Cineplex — Concept Redesign" };
 
-// Placeholder so the navbar / hero links land somewhere during review. The real page is Phase 5 (§9.2–9.3).
+/** Step 1 (CLAUDE.md §9.2–9.3). Booked-seat lists stay on the server; the page only gets counts. */
 export default async function BookPage({ searchParams }: { searchParams: Promise<{ movie?: string }> }) {
   const { movie } = await searchParams;
-  return (
-    <>
-      <Navbar />
-      <main className="grid min-h-[100svh] place-items-center px-8 text-center">
-        <div>
-          <p className="display-s mb-4">showtimes are coming.</p>
-          <p className="text-muted">Built in Phase 5{movie ? ` — will open with “${movie}” selected` : ""}.</p>
-          <Link href="/" className="mt-6 inline-block text-purple-light underline underline-offset-4">Back to home</Link>
-        </div>
-      </main>
-    </>
+  const showtimes = await loadShowtimes();
+  const slots: ShowSlot[] = showtimes.map((s) => ({
+    id: s.id,
+    branch: s.branch,
+    hall: s.hall,
+    movie: s.movie,
+    date: s.date,
+    time: s.time,
+    format: s.format,
+    booked: s.bookedSeats.length,
+  }));
+  const hallInfo: Record<string, HallInfo> = Object.fromEntries(
+    halls.map((h) => [h.id, { id: h.id, name: h.name, type: h.type, branch: h.branch, capacity: buildSeats(h).length, prices: h.prices }]),
   );
+  return <BookingStepOne slots={slots} halls={hallInfo} initialMovie={movie ?? null} />;
 }

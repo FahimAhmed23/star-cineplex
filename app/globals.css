@@ -919,3 +919,233 @@ body {
       0 18px 40px -18px rgb(127 62 152 / 0.45);
   }
 }
+
+
+/* ───────────────────────── Booking — step 1 (§9.2–9.3) ───────────────────────── */
+.pick-pill {
+  flex: none;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  background: rgb(255 255 255 / 0.04);
+  color: rgb(255 255 255 / 0.85);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.pick-pill:hover:not(:disabled) {
+  border-color: rgb(255 255 255 / 0.32);
+}
+.pick-pill.is-on {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+}
+.pick-pill:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.poster-pick__frame {
+  outline: 2px solid transparent;
+  outline-offset: 3px;
+  transition: transform 0.25s var(--ease-out), outline-color 0.2s;
+}
+.poster-pick:hover .poster-pick__frame {
+  transform: translateY(-3px);
+}
+.poster-pick.is-on .poster-pick__frame {
+  outline-color: var(--purple-light);
+  transform: translateY(-4px);
+}
+.experience-card {
+  border-radius: var(--radius-card-md);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.03);
+  transition: border-color 0.3s, transform 0.3s var(--ease-out);
+}
+.experience-card.is-hover {
+  border-color: rgb(183 132 214 / 0.45);
+  transform: translateY(-4px);
+}
+.show-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  font-size: 14px;
+  color: #fff;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s var(--ease-out);
+}
+.show-chip:hover:not(:disabled) {
+  background: var(--purple);
+  border-color: var(--purple);
+  transform: translateY(-2px);
+}
+.show-chip:hover:not(:disabled) .text-muted {
+  color: rgb(255 255 255 / 0.8);
+}
+.show-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+.show-chip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  margin-right: 2px;
+}
+.show-chip__dot--available { background: #3fbf7f; }
+.show-chip__dot--filling { background: #f5b72e; }
+.show-chip__dot--sold { background: #e5484d; }
+
+/* ───────────────────────── The cinema doors (§9.4) ───────────────────────── */
+.doors {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  perspective: 1200px;
+  pointer-events: auto;
+}
+.doors__light {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(40% 70% at 50% 55%, rgb(255 205 140 / 0.9), rgb(255 160 80 / 0.35) 45%, transparent 75%);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+}
+.doors__door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.35), transparent 12%, transparent 88%, rgb(0 0 0 / 0.35)),
+    repeating-linear-gradient(90deg, transparent 0 54px, rgb(0 0 0 / 0.32) 54px 55px, rgb(255 255 255 / 0.07) 55px 56px),
+    linear-gradient(180deg, #4b1d5e, #3a1549 55%, #2a0f36);
+  box-shadow: inset 0 0 0 10px #160a1c, inset 0 0 60px rgb(0 0 0 / 0.5);
+  backface-visibility: hidden;
+  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.doors__door--left {
+  left: 0;
+  transform-origin: left center;
+  transform: translateX(-100%);
+}
+.doors__door--right {
+  right: 0;
+  transform-origin: right center;
+  transform: translateX(100%);
+}
+.doors__porthole {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: clamp(80px, 9vw, 130px);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 9999px;
+  border: 8px solid #b8893a;
+  box-shadow: 0 0 0 2px #6e4e1c, inset 0 0 18px rgb(0 0 0 / 0.6);
+  background: radial-gradient(circle at 50% 60%, #ffd598, #c2702c 55%, #5a2a10);
+}
+.doors__plate {
+  position: absolute;
+  top: 46%;
+  width: 18px;
+  height: clamp(110px, 18vh, 170px);
+  border-radius: 6px;
+  background: linear-gradient(90deg, #8a6424, #e0b35c 45%, #8a6424);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.5);
+}
+.doors__door--left .doors__plate { right: 48px; }
+.doors__door--right .doors__plate { left: 48px; }
+.doors__sign {
+  position: absolute;
+  top: 7vh;
+  left: 50%;
+  translate: -50% 0;
+  min-width: 260px;
+  padding: 14px 28px 12px;
+  border-radius: 10px;
+  background: #120a16;
+  border: 1px solid rgb(255 213 152 / 0.25);
+  text-align: center;
+  opacity: 0;
+}
+.doors__hall {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #ffd598;
+  text-shadow: 0 0 12px rgb(255 190 110 / 0.8), 0 0 28px rgb(255 160 80 / 0.5);
+}
+.doors__line {
+  margin-top: 4px;
+  font-size: 14px;
+  color: rgb(255 255 255 / 0.75);
+}
+/* closing: slide in and meet in the centre */
+.doors--closing .doors__door,
+.doors--holding .doors__door,
+.doors--fading .doors__door {
+  transform: none;
+}
+/* holding: the sign flickers on */
+.doors--holding .doors__sign,
+.doors--fading .doors__sign {
+  animation: doors-sign 0.45s steps(1) forwards;
+}
+@keyframes doors-sign {
+  0% { opacity: 0.2; }
+  20% { opacity: 0.9; }
+  35% { opacity: 0.3; }
+  55% { opacity: 1; }
+  70% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+/* opening: swing inward from the outer hinges, warm light through the gap */
+.doors--opening .doors__door {
+  transition: transform 1s var(--ease-in-out);
+}
+.doors--opening .doors__door--left {
+  transform: rotateY(-100deg);
+}
+.doors--opening .doors__door--right {
+  transform: rotateY(100deg);
+}
+.doors--opening .doors__light {
+  opacity: 1;
+  transition: opacity 0.25s ease-out;
+}
+.doors--opening .doors__sign {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.doors--opening {
+  animation: doors-out 1s var(--ease-in-out) forwards;
+}
+@keyframes doors-out {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.doors--opening .doors__light {
+  animation: doors-light 1s ease-out forwards;
+}
+@keyframes doors-light {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* reduced motion: the closed doors just fade */
+.doors--fading {
+  animation: doors-fade 0.4s ease-out forwards;
+}
+@keyframes doors-fade {
+  to { opacity: 0; }
+}

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { fontVariables } from "./fonts";
+import { CinemaDoors } from "@/components/booking/CinemaDoors";
 import { LanguageSync } from "@/lib/i18n";
 
 export const metadata: Metadata = {
@@ -19,6 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LanguageSync />
         {children}
+        {/* §9.4: lives above every route, so it stays put while the page changes underneath */}
+        <CinemaDoors />
       </body>
     </html>
   );
