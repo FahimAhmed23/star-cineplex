@@ -874,6 +874,9 @@ together in one row), selects them, and flies the camera to show them.
 - **Timer runs out:** a friendly modal — *"Your seats were released"* — with **Pick seats again**, which reopens
   §9.5 for the same showtime.
 
+**Demo controls (built in Phase 7, for the case study):** a mobile number ending in `0000`, or Alt-click on Pay,
+makes the payment fail; `&hold=20` on the checkout URL shortens the seat hold to 20 seconds.
+
 ### 9.8 Your ticket — confirmation (`/book/ticket/[bookingId]`)
 The reward moment.
 - **Ticket "printing" animation (~1.2s):** the ticket slides out from a slot at the top of the card area, like a

@@ -269,7 +269,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       </div>
 
       {view === "2d" && (
-        <div className="absolute inset-x-0 top-[250px] bottom-[120px] overflow-auto px-8">
+        <div className="absolute inset-x-0 top-[248px] bottom-[120px] overflow-auto px-8">
           <SeatMap2D hall={hall} seats={layout.seats} booked={booked} selected={selected} onToggle={toggle} price={price} />
         </div>
       )}
@@ -342,7 +342,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
 
       {/* §9.9 a seat was taken while choosing */}
       {takenNote && (
-        <div role="alert" className="absolute inset-x-0 top-[250px] z-20 flex justify-center">
+        <div role="alert" className="absolute inset-x-0 top-[248px] z-20 flex justify-center">
           <div className="glass flex items-center gap-3 rounded-pill border border-white/10 py-2 pr-2 pl-4 text-[14px] text-white">
             <Icon name="info" size={18} className="text-gold" />
             {t(taken.length > 1 ? "booking.justTakenMany" : "booking.justTaken", { seat: taken.join(", ") })}

@@ -224,7 +224,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                 <motion.div variants={item} className="mb-6 flex flex-wrap gap-3">
                   {soon ? (
                     // Coming Soon in the trailer view: a non-clickable release badge instead of Buy Tickets (§8.6)
-                    <span className="inline-flex items-center gap-2 rounded-pill border border-white/25 px-[22px] py-[14px] text-[15px] font-semibold text-white">
+                    <span className="inline-flex items-center gap-2 rounded-pill border border-white/25 px-6 py-[14px] text-[15px] font-semibold text-white">
                       <Icon name="calendar" size={20} />
                       {t("common.releasing", { date: releaseLabel(movie.releaseDate, lang) })}
                     </span>

@@ -297,7 +297,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
               </div>
               {view && (
                 <figure className="mt-5">
-                  <img src={view} alt={t("checkout.viewAlt", { seat: seatIds[0] })} className="aspect-[16/9] w-full rounded-[12px] object-cover" />
+                  <img src={view} alt={t("checkout.viewAlt", { seat: seatIds[0] })} className="aspect-[16/9] w-full rounded-[8px] object-cover" />
                   <figcaption className="mt-2 text-[12px] text-ink/65">{t("checkout.viewCaption", { seat: seatIds[0] })}</figcaption>
                 </figure>
               )}

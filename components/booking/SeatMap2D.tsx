@@ -44,7 +44,7 @@ export function SeatMap2D({ hall, seats, booked, selected, onToggle, price }: {
   return (
     <div className="mx-auto w-max py-6">
       <div className="mx-auto mb-10 h-2 w-[70%] rounded-pill bg-gradient-to-r from-transparent via-white/70 to-transparent shadow-[0_8px_30px_rgb(255_255_255/0.25)]" />
-      <p className="-mt-8 mb-8 text-center text-[12px] tracking-wide text-muted">{t("booking.screen")}</p>
+      <p className="-mt-8 mb-8 text-center text-[12px] text-muted">{t("booking.screen")}</p>
       <div role="grid" aria-label={t("booking.seatMap")} className="flex flex-col gap-2">
         {grid.map((r) => (
           <div key={r.row} role="row" className="flex items-center gap-2">
