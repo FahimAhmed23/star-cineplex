@@ -122,8 +122,9 @@ themes). The **UI stays in the Star purple brand** everywhere (popups, chips, bu
   Booked `#26222B`, Selected `#F5B72E`.
 
 ### Theme rule
-- **Dark theme** for immersive/browsing areas (opening, home hero, 3D hall, seat selection).
-- **Light theme** (`--paper`) for transactional areas (checkout, ticket).
+- **Dark theme** for immersive areas (opening, home hero, Moments, Film Reel, footer, 3D hall, seat selection).
+- **Light theme** (`--paper`) for browsing and transactional areas: **Now Showing and Coming Soon** (designer
+  decision), checkout, ticket.
 - Transition between them with a soft fade, never a hard cut.
 
 ### Typography
@@ -506,7 +507,7 @@ poster ratio 2:3 (~450px tall). Corner radius 24px (`--radius-card-md`).
 
 ### 8.5 Now Showing in Theaters
 
-- Section background `--night`. Container 1280px, padding-top 120px.
+- Section background **`--paper` (light theme)**, title in `--ink`, "Show all" button as the light secondary (ink outline → purple fill). Container 1280px, padding-top 120px.
 - **Header: the title only** — "Now Showing in Theaters", centred, `display-m` (Fraunces). No eyebrow, no pill, no subtitle.
 - **Grid of `MovieCard`s, 4 per row.** Initially show **4 cards** (the first row only).
 - Below the grid, centred: a **"Show all" button** (pill, outlined white, 14px; inspired by bKash's centred "See all"),
@@ -520,7 +521,8 @@ poster ratio 2:3 (~450px tall). Corner radius 24px (`--radius-card-md`).
 ### 8.6 Coming Soon
 
 **Same layout and the same `MovieCard` as Now Showing**, with these differences:
-- Title: "Coming Soon", centred, same style.
+- Title: "Coming Soon", centred, same style. **Light theme** like Now Showing: `--paper` background, `--ink` title,
+  white slider arrows with a soft shadow, ink dots.
 - **Auto-sliding row instead of a grid:** 4 cards visible, the row **slides one card to the left every 3.5s**
   (slide 700ms, `--ease-in-out`), looping infinitely.
   - Pause auto-slide while hovering or focusing a card, and while the section is off-screen. Resume 1s after the mouse leaves.
@@ -556,15 +558,14 @@ where one image expands to full screen; nothing in this section opens or expands
 
 **Goal:** an emotional, purely visual section that makes people feel connected to Star Cineplex. Nothing is clickable.
 
-**Theme — "the lights come up":** this is the only **light** section on the home page.
-As the section enters the viewport, the page background transitions from `--night` to `--paper` (scroll-linked
-over ~40vh), so it feels like the house lights coming up after the film.
+**Theme — "the lights go down":** a **dark** section (designer decision). Its background starts as a soft
+`--paper` → `--night` gradient over the first ~45vh, so the light Coming Soon section above melts into the dark.
 
 **Pinned centre lockup**
 - The section is ~260vh tall. A centre lockup is `position: sticky` in the middle of the viewport for the whole section:
-  - Star Cineplex logo (`/public/brand/logo.png`, the purple + grey version — it reads well on `--paper`), ~200px wide
+  - Star Cineplex logo (`/public/brand/logo-white.png`, on the dark background), ~200px wide
   - 24px below it, the headline: **"Moments made at Star Cineplex"** — `display-m` (Fraunces), 
-    `--ink`, centred, max 2 lines
+    `--paper`, centred, max 2 lines
 - The lockup fades + rises in (opacity 0→1, `translateY 20px→0`, 700ms) when the section reaches the viewport
   centre, and fades out as the section leaves.
 
@@ -576,7 +577,7 @@ over ~40vh), so it feels like the house lights coming up after the film.
 - **Keep the centre column free:** no tile may overlap `x 34%–66%` of the viewport, so the pinned headline is
   never covered and always readable.
 - Each tile fades in and scales `0.96 → 1` (600ms) as it enters the viewport. Corner radius 6px, no borders,
-  soft shadow `0 10px 30px rgba(35,31,32,.12)`.
+  soft shadow `0 14px 40px rgba(0,0,0,.45)`.
 - **No hover effects, no click, no expand.**
 
 Starting layout (desktop; `x` = % of viewport width, `y` = vh from the section top; tune visually after building):
@@ -603,8 +604,7 @@ Starting layout (desktop; `x` = % of viewport width, `y` = vh from the section t
 **Purpose:** a pure brand showcase of the 9 branches. **No functional goal:** no map, no "near me", no showtimes,
 no buttons. It should make people feel "Star Cineplex is everywhere, and it's mine."
 
-**Theme — "lights down again":** the Moments section fades from `--paper` back to `--night` over its last ~40vh
-(scroll-linked), so the reel starts on night with no visible edge, closing the light "Moments" interlude.
+**Theme:** dark, continuing straight on from Moments (`--night`).
 
 **Header** (top-left of the pinned area, 1280px container)
 - Headline: **"One Star. Nine homes."** — `display-m` (Fraunces), white.

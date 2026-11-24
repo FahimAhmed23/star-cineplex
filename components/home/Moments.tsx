@@ -23,8 +23,8 @@ const TILES = [
 ] as const;
 
 /**
- * "Moments made at Star Cineplex" (CLAUDE.md §8.8): the only light section on the home page — the house
- * lights come up (night → paper as it enters). A pinned logo + headline in the middle, real premiere photos
+ * "Moments made at Star Cineplex" (CLAUDE.md §8.8): a dark section — the lights go down after the light
+ * Now Showing / Coming Soon sections (its top is a soft paper → night gradient, so there is no hard edge). A pinned logo + headline in the middle, real premiere photos
  * drifting past at different speeds on both sides; the centre column (34–66%) stays free. Nothing is clickable.
  */
 export function Moments() {
@@ -37,25 +37,6 @@ export function Moments() {
     const el = section.current;
     if (!el) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // house lights: --t 0 → 1 while the section top travels the bottom 40vh of the viewport
-    const lights = ScrollTrigger.create({
-      trigger: el,
-      start: "top bottom",
-      end: "top 60%",
-      scrub: true,
-      onUpdate: (self) => el.style.setProperty("--t", self.progress.toFixed(3)),
-      onLeaveBack: () => el.style.setProperty("--t", "0"),
-    });
-    // lights down again before the Film Reel (§8.9): --t2 0 → 1 while the section bottom travels the last 40vh,
-    // so the reel starts on night with no visible edge
-    const lightsDown = ScrollTrigger.create({
-      trigger: el,
-      start: "bottom bottom",
-      end: "bottom 60%",
-      scrub: true,
-      onUpdate: (self) => el.style.setProperty("--t2", self.progress.toFixed(3)),
-    });
 
     // the lockup fades in once the section reaches the middle of the viewport, out as it leaves
     const lockup = ScrollTrigger.create({
@@ -88,8 +69,6 @@ export function Moments() {
     tiles.current.forEach((tile) => tile && io.observe(tile.firstElementChild!));
 
     return () => {
-      lights.kill();
-      lightsDown.kill();
       lockup.kill();
       parallax?.kill();
       io.disconnect();
@@ -101,8 +80,8 @@ export function Moments() {
       {/* pinned centre lockup */}
       <div className="pointer-events-none sticky top-0 z-10 flex h-[100svh] items-center justify-center">
         <div className={`moments-lockup flex flex-col items-center px-6 text-center ${lockupOn ? "is-on" : ""}`}>
-          <Image src="/brand/logo.png" alt="Star Cineplex" width={1200} height={499} className="mb-6 h-auto w-[200px]" />
-          <h2 id="moments-title" className="display-m max-w-[11ch] text-ink">
+          <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="mb-6 h-auto w-[200px]" />
+          <h2 id="moments-title" className="display-m max-w-[11ch] text-paper">
             {t("home.momentsTitle")}
           </h2>
         </div>

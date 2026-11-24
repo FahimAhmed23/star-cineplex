@@ -70,9 +70,9 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   };
 
   return (
-    <section id="now-showing" aria-labelledby="now-showing-title" className="relative z-10 scroll-mt-24 bg-night pt-[120px] pb-24 [overflow-anchor:none]">
+    <section id="now-showing" aria-labelledby="now-showing-title" className="theme-light relative z-10 scroll-mt-24 pt-[120px] pb-24 [overflow-anchor:none]">
       <div className="mx-auto max-w-[1280px] px-8">
-        <h2 id="now-showing-title" ref={titleRef} className="display-m mb-14 scroll-mt-32 text-center text-white">
+        <h2 id="now-showing-title" ref={titleRef} className="display-m mb-14 scroll-mt-32 text-center text-ink">
           {t("home.nowShowingTitle")}
         </h2>
 
@@ -117,7 +117,7 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
 
         {hasMore && (
           <div className="mt-8 flex justify-center">
-            <button type="button" onClick={toggle} className="btn btn-secondary btn-sm" aria-expanded={expanded} aria-controls="now-showing-grid">
+            <button type="button" onClick={toggle} className="btn btn-secondary btn-secondary-light btn-sm" aria-expanded={expanded} aria-controls="now-showing-grid">
               {expanded ? t("common.showLess") : t("common.showAll", { count: movies.length })}
               <Icon name={expanded ? "altArrowUp" : "chevronDown"} size={18} />
             </button>

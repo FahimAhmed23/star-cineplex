@@ -13,8 +13,7 @@ gsap.registerPlugin(ScrollTrigger);
 const LEAKS = ["0% 0%", "100% 0%", "0% 100%", "100% 100%", "50% 0%", "0% 50%", "100% 50%", "50% 100%", "0% 0%"];
 
 /**
- * Branches — "The Film Reel" (CLAUDE.md §8.9): the lights have gone down again (Moments fades back to night
- * as it ends), the section pins and
+ * Branches — "The Film Reel" (CLAUDE.md §8.9): continues on night after Moments; the section pins and
  * vertical scroll pulls a 35mm strip right → left: one frame per branch, then an end frame with the logo.
  * The frame nearest the centre is bright and full size; the others dim to 50% and 0.96. Pure showcase.
  */

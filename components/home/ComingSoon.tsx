@@ -96,9 +96,9 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   const offset = -pos * (cardW + GAP);
 
   return (
-    <section ref={section} id="coming-soon" aria-labelledby="coming-soon-title" className="relative z-10 scroll-mt-24 bg-night pt-[120px] pb-32">
+    <section ref={section} id="coming-soon" aria-labelledby="coming-soon-title" className="theme-light relative z-10 scroll-mt-24 pt-[120px] pb-32">
       <div className="mx-auto max-w-[1280px] px-8">
-        <h2 id="coming-soon-title" className="display-m mb-14 text-center text-white">
+        <h2 id="coming-soon-title" className="display-m mb-14 text-center text-ink">
           {t("home.comingSoonTitle")}
         </h2>
 
@@ -140,7 +140,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
               <button
                 type="button"
                 onClick={() => manual(() => go(-1))}
-                className="focus-ring glass absolute top-1/2 -left-5 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-pill border border-white/10 text-white transition-colors hover:bg-white/15"
+                className="focus-ring absolute top-1/2 -left-5 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-pill border border-ink/10 bg-white text-ink shadow-[0_8px_24px_rgb(35_31_32/0.14)] transition-colors hover:bg-paper"
                 aria-label={t("cards.previous")}
               >
                 <Icon name="altArrowLeft" size={20} />
@@ -148,7 +148,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
               <button
                 type="button"
                 onClick={() => manual(() => go(1))}
-                className="focus-ring glass absolute top-1/2 -right-5 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-pill border border-white/10 text-white transition-colors hover:bg-white/15"
+                className="focus-ring absolute top-1/2 -right-5 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-pill border border-ink/10 bg-white text-ink shadow-[0_8px_24px_rgb(35_31_32/0.14)] transition-colors hover:bg-paper"
                 aria-label={t("cards.next")}
               >
                 <Icon name="altArrowRight" size={20} />
@@ -171,7 +171,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
                 >
                   {/* one 24px pill, scaled down to a dot when inactive (scale, not width) */}
                   <span
-                    className={`block h-1.5 w-6 rounded-pill transition-[scale,background-color] duration-300 ease-out ${i === active ? "scale-x-100 bg-purple-light" : "scale-x-25 bg-white/30"}`}
+                    className={`block h-1.5 w-6 rounded-pill transition-[scale,background-color] duration-300 ease-out ${i === active ? "scale-x-100 bg-purple-light" : "scale-x-25 bg-ink/20"}`}
                   />
                 </button>
               </li>

@@ -673,6 +673,11 @@ body {
   font-size: 13px;
 }
 /* Primary on light theme (Pay, Save ticket): purple → white fill, purple border, text and icon */
+/* Secondary on light sections (§8.5–8.6): ink outline → purple fill */
+.btn-secondary-light {
+  --btn-fg: var(--ink);
+  --btn-border: rgb(35 31 32 / 0.25);
+}
 .btn-primary-light {
   --btn-border: var(--purple);
   --btn-fill: #fff;
@@ -714,9 +719,10 @@ body {
 }
 
 
-/* ───────────────────────── Moments (§8.8) — the house lights come up ───────────────────────── */
+/* ───────────────────────── Moments (§8.8) — the lights go down (paper → night) ───────────────────────── */
 .moments {
-  background: color-mix(in srgb, var(--paper) calc(min(var(--t, 0), 1 - var(--t2, 0)) * 100%), var(--night));
+  /* the light Coming Soon section above melts into night over the first ~45vh */
+  background: linear-gradient(to bottom, var(--paper) 0, var(--night) 45vh) no-repeat, var(--night);
 }
 .moments-lockup {
   opacity: 0;
@@ -729,7 +735,7 @@ body {
 }
 .moments-tile {
   border-radius: 6px;
-  box-shadow: 0 10px 30px rgb(35 31 32 / 0.12);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.45);
   opacity: 0;
   transform: scale(0.96);
   transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
@@ -902,5 +908,14 @@ body {
   .footer.is-on .footer-seat {
     animation: none;
     opacity: 0.55;
+  }
+}
+
+/* cards on the light Now Showing / Coming Soon sections: a softer, ink-tinted lift */
+@media (hover: hover) {
+  .theme-light .movie-card:hover .movie-card__frame {
+    box-shadow:
+      0 20px 44px rgb(35 31 32 / 0.24),
+      0 18px 40px -18px rgb(127 62 152 / 0.45);
   }
 }
