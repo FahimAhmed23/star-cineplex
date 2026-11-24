@@ -135,14 +135,5 @@
   "trailer": {
     "back": "Back",
     "ended": "Trailer ended"
-  },
-  "story": {
-    "headline": "Now showing in theaters",
-    "line": "Every film playing this week, at every Star Cineplex.",
-    "schedule": "See full schedule",
-    "fact1": "{count} branches across Bangladesh",
-    "fact2": "Pick your seat in 3D",
-    "fact3": "Pay with bKash, Nagad or card",
-    "fact4": "No online booking fee"
   }
 }
