@@ -24,6 +24,14 @@ export function formatTime(hhmm: string) {
   return `${h12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
 
+/** "Today" / "Tomorrow" (in the demo week) or "Wed 25 Nov" */
+export function showDateLabel(date: string, t: (k: string) => string) {
+  const now = new Date();
+  if (date === demoDateFor(localIso(now))) return t("common.today");
+  if (date === demoDateFor(localIso(new Date(now.getTime() + DAY)))) return t("common.tomorrow");
+  return new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
+
 export function nowHhmm(d = new Date()) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }

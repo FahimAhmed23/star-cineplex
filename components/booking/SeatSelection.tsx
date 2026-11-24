@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { getBranch, getHall, getMovie } from "@/lib/data";
 import { formatTime } from "@/lib/demo-date";
+import { saveSeatView, startHold } from "@/lib/booking";
 import { markDoorsReady } from "@/lib/doors";
 import { buildLayout, type PlacedSeat } from "@/lib/hall-layout";
 import { seatPrice } from "@/lib/halls";
@@ -28,7 +29,7 @@ const CLASS_KEY: Record<SeatClass, string> = { premium: "booking.classPremium", 
  * Step 2 — choose your seats inside the 3D hall (CLAUDE.md §9.5): overview camera, hover popup, select,
  * view from seat (look around), 2D map toggle, best available, single-seat gap hint, bottom bar with total.
  */
-export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string }) {
+export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: { show: Showtime; hallId: string; initialSeats?: string[]; taken?: string[] }) {
   const { t, lang } = useT();
   const router = useRouter();
   const hall = getHall(hallId)!;
@@ -41,7 +42,9 @@ export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string
   const [view, setView] = useState<"3d" | "2d">("3d");
   const [mode, setMode] = useState<CameraMode>("overview");
   const [seatId, setSeatId] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(initialSeats));
+  const [leaving, setLeaving] = useState(false);
+  const [takenNote, setTakenNote] = useState(taken.length > 0);
   const [hover, setHover] = useState<PlacedSeat | null>(null);
   const [pinned, setPinned] = useState<PlacedSeat | null>(null); // the popup stays while the pointer is on it
   const [highlight, setHighlight] = useState<string | null>(null);
@@ -140,9 +143,54 @@ export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string
     });
   };
 
+  // §9.6: Continue → (3D) a still from the first seat for the ticket, then the hall fades out to paper
   const goCheckout = () => {
-    const ids = selectedSeats.map((s) => s.id).join(",");
-    router.push(`/book/checkout?show=${encodeURIComponent(show.id)}&seats=${encodeURIComponent(ids)}`);
+    if (leaving || !selectedSeats.length) return;
+    const ids = selectedSeats.map((s) => s.id);
+    const first = ids[0];
+    setLeaving(true);
+    setPinned(null);
+    startHold(show.id, ids);
+    const go = () => router.push(`/book/checkout?show=${encodeURIComponent(show.id)}&seats=${encodeURIComponent(ids.join(","))}`);
+    if (view !== "3d") {
+      saveSeatView(show.id, null);
+      window.setTimeout(go, 600);
+      return;
+    }
+    setSeatId(first);
+    setMode("seat");
+    // grab a few frames once the camera has settled and keep the brightest (trailers have dark scenes)
+    const grab = () => {
+      const src = document.querySelector<HTMLCanvasElement>("[data-hall] canvas");
+      if (!src) return null;
+      const c = document.createElement("canvas");
+      c.width = 960;
+      c.height = 540;
+      const ctx = c.getContext("2d", { willReadFrequently: true })!;
+      const sh = Math.min(src.height, (src.width * 9) / 16); // centre-crop to 16:9
+      const sw = (sh * 16) / 9;
+      ctx.drawImage(src, (src.width - sw) / 2, (src.height - sh) / 2, sw, sh, 0, 0, c.width, c.height);
+      const d = ctx.getImageData(0, 0, c.width, c.height / 2, { colorSpace: "srgb" }).data; // upper half: the screen
+      let sum = 0;
+      for (let i = 0; i < d.length; i += 64) sum += d[i] + d[i + 1] + d[i + 2];
+      return { url: c.toDataURL("image/jpeg", 0.8), light: sum };
+    };
+    let best: { url: string; light: number } | null = null;
+    let tries = 0;
+    const sample = () => {
+      try {
+        const g = grab();
+        if (g && (!best || g.light > best.light)) best = g;
+      } catch {
+        /* a tainted or lost canvas: no still, the ticket shows without it */
+      }
+      if (++tries < 5) window.setTimeout(sample, 220);
+      else {
+        saveSeatView(show.id, best?.url ?? null);
+        window.setTimeout(go, 300);
+      }
+    };
+    window.setTimeout(sample, 1450);
   };
 
   const title = (lang === "bn" && movie.titleBn) || movie.title;
@@ -190,7 +238,7 @@ export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string
       <Navbar />
 
       {/* the hall */}
-      <div className={`absolute inset-0 transition-opacity duration-500 ${view === "3d" ? "opacity-100" : "pointer-events-none opacity-0"}`}>
+      <div data-hall className={`absolute inset-0 transition-opacity duration-500 ${view === "3d" ? "opacity-100" : "pointer-events-none opacity-0"}`}>
         <Hall3D
           className="!absolute inset-0"
           hall={hall}
@@ -276,7 +324,7 @@ export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string
       </div>
 
       {/* view from seat HUD */}
-      {seatView && view === "3d" && (
+      {seatView && view === "3d" && !leaving && (
         <div className="absolute inset-x-0 bottom-[132px] z-10 flex justify-center">
           <div className="glass flex items-center gap-4 rounded-pill border border-white/10 py-2 pr-2 pl-5">
             <span className="text-[15px] font-medium text-white">{t("booking.viewFrom", { seat: seatView.id })}</span>
@@ -291,6 +339,22 @@ export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string
           </div>
         </div>
       )}
+
+      {/* §9.9 a seat was taken while choosing */}
+      {takenNote && (
+        <div role="alert" className="absolute inset-x-0 top-[250px] z-20 flex justify-center">
+          <div className="glass flex items-center gap-3 rounded-pill border border-white/10 py-2 pr-2 pl-4 text-[14px] text-white">
+            <Icon name="info" size={18} className="text-gold" />
+            {t(taken.length > 1 ? "booking.justTakenMany" : "booking.justTaken", { seat: taken.join(", ") })}
+            <button type="button" onClick={() => setTakenNote(false)} className="focus-ring grid size-8 place-items-center rounded-pill hover:bg-white/10" aria-label={t("common.close")}>
+              <Icon name="closeSimple" size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* §9.6 leaving for checkout: the hall fades to paper */}
+      <div aria-hidden className={`pointer-events-none fixed inset-0 z-[60] bg-paper transition-opacity duration-[600ms] ${leaving && (view !== "3d" || mode === "seat") ? "" : "opacity-0"}`} style={{ transitionDelay: leaving && view === "3d" ? "1700ms" : "0ms" }} />
 
       {/* bottom bar */}
       <div className="absolute inset-x-0 bottom-0 z-10 p-4">
@@ -342,7 +406,7 @@ export function SeatSelection({ show, hallId }: { show: Showtime; hallId: string
               <p className="text-[12px] text-muted">{t("booking.total")}</p>
               <p className="text-[20px] font-semibold text-white tabular-nums">৳{total.toLocaleString("en-US")}</p>
             </div>
-            <Button disabled={selected.size === 0} onClick={goCheckout} icon="arrowRight">
+            <Button disabled={selected.size === 0} loading={leaving} onClick={goCheckout} icon="arrowRight">
               {t("common.continue")}
             </Button>
           </div>

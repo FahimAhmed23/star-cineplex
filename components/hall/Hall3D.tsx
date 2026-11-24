@@ -70,7 +70,7 @@ export default function Hall3D(props: Hall3DProps) {
       frameloop={active ? "always" : "never"}
       dpr={[1, Math.min(dpr, maxDpr)]}
       camera={{ fov: 42, near: 0.05, far: 200, position: [0, 3, 12] }}
-      gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
+      gl={{ antialias: true, powerPreference: "high-performance", alpha: false, preserveDrawingBuffer: true /* §9.6 seat-view still */ }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.05;
