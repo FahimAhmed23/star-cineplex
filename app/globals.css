@@ -768,8 +768,22 @@ body {
 
 /* ───────────────────────── Moments (§8.8) — the lights go down (paper → night) ───────────────────────── */
 .moments {
-  /* the light Coming Soon section above melts into night over the first ~45vh */
-  background: linear-gradient(to bottom, var(--paper) 0, var(--night) 45vh) no-repeat, var(--night);
+  /* the light Coming Soon section above melts into night over the first 90vh. The stops follow an
+     ease-in-out curve (smootherstep), so the light end and the dark end both settle in without a visible band */
+  background:
+    linear-gradient(in oklab to bottom,
+      rgb(250 249 245) 0vh,
+      rgb(248 247 243) 9vh,
+      rgb(236 235 231) 18vh,
+      rgb(210 209 207) 27vh,
+      rgb(173 172 170) 36vh,
+      rgb(128 127 128) 45vh,
+      rgb(84 82 85) 54vh,
+      rgb(47 45 48) 63vh,
+      rgb(21 19 24) 72vh,
+      rgb(9 7 12) 81vh,
+      rgb(7 5 10) 90vh) no-repeat,
+    var(--night);
 }
 .moments-lockup {
   opacity: 0;

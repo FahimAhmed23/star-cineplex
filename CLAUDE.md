@@ -607,22 +607,16 @@ where one image expands to full screen; nothing in this section opens or expands
   soft shadow `0 14px 40px rgba(0,0,0,.45)`.
 - **No hover effects, no click, no expand.**
 
-Starting layout (desktop; `x` = % of viewport width, `y` = vh from the section top; tune visually after building):
+**As built — lanes (no overlaps):** the tiles sit in four lanes, two on each side of the free centre column. Each lane
+has one parallax speed, so tiles in a lane never slide into each other, and lanes never share horizontal space, so
+fast tiles pass slow ones side by side. Left outer x 2–18vw (speed 0.85) · left inner x 21–32vw (1.25) · right inner
+x 67–79vw (1.3) · right outer x 82–98vw (0.9). Exact tiles in `components/home/Moments.tsx`. Translations are rounded
+to whole pixels so the photos stay sharp.
+- Top fade: paper → night over the first **90vh** on an ease-in-out (smootherstep) curve, interpolated in OKLab.
+- Lockup logo: the brand-colour logo for dark backgrounds (`/public/brand/logo-brand-dark.png`: purple STAR, paper
+  "Cineplex"), made from `references/Logo_of_Star_Cineplex.png`.
 
-| # | Photo | Crop | Focal point | Width | x | y | Speed |
-|---|-------|------|-------------|-------|---|---|-------|
-| 1 | `FB_IMG_1795416225897` (cosplay sword fight) | 3:2 | centre | 22vw | 4% | 10vh | 1.0 |
-| 2 | `FB_IMG_1795416392477` (Spider-Man + guests) | 4:5 | Spider-Man (60% 70%) | 14vw | 72% | 4vh | 1.3 |
-| 3 | `FB_IMG_1795416234879` (crowd at the event) | 3:4 | left group (30% 50%) | 16vw | 80% | 46vh | 0.8 |
-| 4 | `FB_IMG_1795416242292` (group on red carpet) | 4:3 | centre | 20vw | 8% | 62vh | 1.2 |
-| 5 | `FB_IMG_1795416383172` (full guest lineup) | 16:9 | centre | 24vw | 70% | 92vh | 1.0 |
-| 6 | `FB_IMG_1795416225897` | 3:4 | red ninja, left (15% 50%) | 12vw | 2% | 110vh | 1.4 |
-| 7 | `FB_IMG_1795416392477` | 1:1 | guest in grey suit (75% 45%) | 13vw | 18% | 140vh | 0.7 |
-| 8 | `FB_IMG_1795416234879` | 3:2 | centre | 20vw | 76% | 150vh | 1.2 |
-| 9 | `FB_IMG_1795416242292` | 3:4 | the women in the centre (55% 50%) | 14vw | 6% | 175vh | 0.9 |
-| 10 | `FB_IMG_1795416383172` | 1:1 | Spider-Man crouching (50% 75%) | 15vw | 74% | 200vh | 1.3 |
-
-- Images: export to WebP, max 1200px wide, lazy-loaded; move them from `references/` to `/public/moments/`.
+- Images: export to WebP from the 2048px originals at quality 92 (next/image serves them at `quality={90}`), lazy-loaded; move them from `references/` to `/public/moments/`.
 - Reduced motion: no parallax — tiles sit still in the same layout and simply fade in.
 - Mobile: headline pinned near the top; tiles in two loose staggered columns below it with gentle parallax (0.9–1.1).
 

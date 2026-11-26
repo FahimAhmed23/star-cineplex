@@ -9,18 +9,25 @@ import { RevealText } from "@/components/ui/RevealText";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** §8.8 tile layout (desktop): x = % of viewport width, y = vh from the section top, speed = parallax factor. */
+/**
+ * §8.8 tile layout (desktop): x = % of viewport width, y = vh from the section top, speed = parallax factor.
+ * Tiles sit in four lanes (two each side of the free centre column). Every lane has ONE speed, so tiles in a
+ * lane never slide into each other, and the lanes never share horizontal space, so faster tiles pass slower
+ * ones side by side instead of on top of them.
+ *   left outer  x 2–18  · speed 0.85      left inner  x 21–32 · speed 1.25
+ *   right inner x 67–79 · speed 1.3       right outer x 82–98 · speed 0.9
+ */
 const TILES = [
-  { src: "cosplay-duel", ratio: "3 / 2", focus: "50% 50%", w: 22, x: 4, y: 10, speed: 1.0 },
-  { src: "spiderman-guests", ratio: "4 / 5", focus: "60% 70%", w: 14, x: 72, y: 4, speed: 1.3 },
-  { src: "event-crowd", ratio: "3 / 4", focus: "30% 50%", w: 16, x: 80, y: 46, speed: 0.8 },
-  { src: "red-carpet-group", ratio: "4 / 3", focus: "50% 50%", w: 20, x: 8, y: 62, speed: 1.2 },
-  { src: "guest-lineup", ratio: "16 / 9", focus: "50% 50%", w: 24, x: 70, y: 92, speed: 1.0 },
-  { src: "cosplay-duel", ratio: "3 / 4", focus: "15% 50%", w: 12, x: 2, y: 110, speed: 1.4 },
-  { src: "spiderman-guests", ratio: "1 / 1", focus: "75% 45%", w: 13, x: 18, y: 140, speed: 0.7 },
-  { src: "event-crowd", ratio: "3 / 2", focus: "50% 50%", w: 20, x: 76, y: 150, speed: 1.2 },
-  { src: "red-carpet-group", ratio: "3 / 4", focus: "55% 50%", w: 14, x: 6, y: 175, speed: 0.9 },
-  { src: "guest-lineup", ratio: "1 / 1", focus: "50% 75%", w: 15, x: 74, y: 200, speed: 1.3 },
+  { src: "cosplay-duel", ratio: "3 / 2", focus: "50% 50%", w: 16, x: 2, y: 10, speed: 0.85 },
+  { src: "red-carpet-group", ratio: "4 / 3", focus: "50% 50%", w: 16, x: 2, y: 80, speed: 0.85 },
+  { src: "guest-lineup", ratio: "1 / 1", focus: "50% 75%", w: 16, x: 2, y: 160, speed: 0.85 },
+  { src: "cosplay-duel", ratio: "3 / 4", focus: "15% 50%", w: 11, x: 21, y: 44, speed: 1.25 },
+  { src: "spiderman-guests", ratio: "1 / 1", focus: "75% 45%", w: 11, x: 21, y: 150, speed: 1.25 },
+  { src: "spiderman-guests", ratio: "4 / 5", focus: "60% 70%", w: 12, x: 67, y: 6, speed: 1.3 },
+  { src: "red-carpet-group", ratio: "3 / 4", focus: "55% 50%", w: 12, x: 67, y: 125, speed: 1.3 },
+  { src: "event-crowd", ratio: "3 / 4", focus: "30% 50%", w: 16, x: 82, y: 34, speed: 0.9 },
+  { src: "guest-lineup", ratio: "16 / 9", focus: "50% 50%", w: 16, x: 82, y: 120, speed: 0.9 },
+  { src: "event-crowd", ratio: "3 / 2", focus: "50% 50%", w: 16, x: 82, y: 185, speed: 0.9 },
 ] as const;
 
 /**
@@ -57,7 +64,7 @@ export function Moments() {
           onUpdate: (self) => {
             const d = self.scroll() - self.start - innerHeight;
             tiles.current.forEach((tile, i) => {
-              if (tile) tile.style.transform = `translate3d(0, ${(-(TILES[i].speed - 1) * d).toFixed(1)}px, 0)`;
+              if (tile) tile.style.transform = `translate3d(0, ${Math.round(-(TILES[i].speed - 1) * d)}px, 0)`;
             });
           },
         });
@@ -81,7 +88,7 @@ export function Moments() {
       {/* pinned centre lockup */}
       <div className="pointer-events-none sticky top-0 z-10 flex h-[100svh] items-center justify-center">
         <div className={`moments-lockup flex flex-col items-center px-6 text-center ${lockupOn ? "is-on" : ""}`}>
-          <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="mb-6 h-auto w-[200px]" />
+          <Image src="/brand/logo-brand-dark.png" alt="Star Cineplex" width={1200} height={499} className="mb-6 h-auto w-[200px]" />
           <h2 id="moments-title" className="display-m max-w-[11ch] text-paper">
             <RevealText text={t("home.momentsTitle")} show={lockupOn} delay={0.25} />
           </h2>
@@ -105,6 +112,7 @@ export function Moments() {
                 alt=""
                 fill
                 sizes={`${tile.w}vw`}
+                quality={90}
                 className="object-cover"
                 style={{ objectPosition: tile.focus }}
               />
