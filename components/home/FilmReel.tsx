@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 import { branches } from "@/lib/data";
 import { useT } from "@/lib/i18n";
+import { RevealText } from "@/components/ui/RevealText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -90,9 +91,9 @@ export function FilmReel() {
     >
       <header className="relative z-10 mx-auto w-full max-w-[1280px] px-8 pt-[max(112px,13vh)]">
         <h2 id="reel-title" className="display-m text-white">
-          {t("home.reelTitle")}
+          <RevealText text={t("home.reelTitle")} />
         </h2>
-        <p className="mt-3 text-[16px] text-muted">{t("home.reelSub")}</p>
+        <RevealText as="p" className="mt-3 block text-[16px] text-muted" text={t("home.reelSub")} delay={0.35} stagger={0.04} />
       </header>
 
       {/* the 35mm strip */}

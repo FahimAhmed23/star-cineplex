@@ -12,6 +12,7 @@ import type { Hall, Movie } from "@/lib/types";
 import { releaseLabel } from "./MovieCard";
 import { PhoneHall } from "./PhoneHall";
 import { TonightStrip, type ShowLite } from "./TonightStrip";
+import { RevealText, revealDuration } from "@/components/ui/RevealText";
 
 const Hall3D = dynamic(() => import("@/components/hall/Hall3D"), { ssr: false });
 
@@ -117,6 +118,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
   // (when a trailer ends the screen dims to 25%, so Replay / Buy Tickets read clearly on it)
   const brightness = !revealed ? 0.1 : dipping ? 0 : ended ? 0.25 : 1;
 
+  const TITLE_DELAY = 0.15; // after the eyebrow
   const item = {
     hidden: { opacity: 0, y: reduced ? 0 : 16 },
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
@@ -208,17 +210,22 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                   <Icon name="star" size={16} />
                   {soon ? t("home.comingSoonTitle") : t("hero.eyebrow")}
                 </motion.p>
-                <motion.h1
-                  variants={item}
+                {/* the title lands word by word (designer reference: Aave), then the rest follows */}
+                <RevealText
+                  as="h1"
+                  text={title}
+                  show
+                  delay={TITLE_DELAY}
                   lang={isBnTitle ? "bn" : "en"} /* English titles keep Fraunces in Bangla mode */
                   className="display-xl mb-4 !font-bold text-white md:mb-5" /* hero film title at 700 (designer) */
                   // display-xl, also capped by viewport height so title + buttons fit above the strip at 1280×720
                   style={{ fontSize: phone ? (long ? "clamp(30px, 8.5vw, 40px)" : "clamp(40px, 12vw, 56px)") : long ? "min(clamp(56px, 6vw, 96px), 9.5vh)" : "min(clamp(72px, 10vw, 150px), 14vh)" }}
-                >
-                  {title}
-                </motion.h1>
+                />
               </div>
-              <div className="hero-p-early">
+              <motion.div
+                className="hero-p-early"
+                variants={{ show: { transition: { delayChildren: reduced ? 0 : revealDuration(title, TITLE_DELAY) - 0.15, staggerChildren: 0.1 } } }}
+              >
                 <motion.ul variants={item} className="mb-5 flex max-md:text-[13px] flex-wrap items-center gap-x-2.5 gap-y-2 text-[14px] font-medium text-white/85" aria-label="Details">
                   <li>{movie.releaseDate.slice(0, 4)}</li>
                   <Dot />
@@ -265,7 +272,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                     {t("hero.playingAcross", { count: movie.branchCount })}
                   </motion.p>
                 )}
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

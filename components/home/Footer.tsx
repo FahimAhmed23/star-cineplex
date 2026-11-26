@@ -11,6 +11,7 @@ import { useT } from "@/lib/i18n";
 import { AboutPanel } from "./AboutPanel";
 import { useMyTickets } from "@/components/nav/MyTickets";
 import { usePanels } from "@/lib/panels";
+import { RevealText, revealDuration } from "@/components/ui/RevealText";
 
 const PHONE = "09617660660";
 /** Brand marks from Simple Icons (CC0). Links are placeholders until the official pages are confirmed (§8.10). */
@@ -97,17 +98,14 @@ export function Footer() {
       {/* headline over the seats */}
       <div className="relative z-10 mx-auto -mt-[15vw] max-w-[1200px] px-8 text-center">
         <h2 className="footer-title display-l text-paper" style={{ fontSize: "clamp(52px, 6.2vw, 104px)" }}>
-          <span className="footer-line block" style={{ ["--i" as string]: 0 }}>
-            {t("footer.headline1")}
-          </span>
-          <span className="footer-line block" style={{ ["--i" as string]: 1 }}>
-            {t("footer.headline2")}
-          </span>
+          {/* words land one after another once the projector has lit the screen (1.1s) */}
+          <RevealText className="block" text={t("footer.headline1")} show={on} delay={1.1} />
+          <RevealText className="block" text={t("footer.headline2")} show={on} delay={revealDuration(t("footer.headline1"), 1.1) - 0.2} />
         </h2>
-        <p className="footer-line mt-6 text-[18px] text-muted" style={{ ["--i" as string]: 2 }}>
+        <p className="footer-line mt-6 text-[18px] text-muted" style={{ transitionDelay: `${revealDuration(t("footer.headline2"), revealDuration(t("footer.headline1"), 1.1) - 0.2)}s` }}>
           {t("footer.sub")}
         </p>
-        <div className="footer-line mt-8 flex justify-center" style={{ ["--i" as string]: 3 }}>
+        <div className="footer-line mt-8 flex justify-center" style={{ transitionDelay: `${revealDuration(t("footer.headline2"), revealDuration(t("footer.headline1"), 1.1) - 0.2) + 0.12}s` }}>
           <ButtonLink href="/book" icon="ticket">
             {t("common.buyTickets")}
           </ButtonLink>

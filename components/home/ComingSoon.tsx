@@ -6,6 +6,8 @@ import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n";
 import type { Movie } from "@/lib/types";
 import { MovieCard } from "./MovieCard";
+import { RevealText } from "@/components/ui/RevealText";
+import { riseIn } from "@/lib/reveal";
 
 const VISIBLE = 4;
 const INTERVAL = 3500; // slide one card left every 3.5s
@@ -105,7 +107,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
     <section ref={section} id="coming-soon" aria-labelledby="coming-soon-title" className="theme-light relative z-10 scroll-mt-24 pt-[120px] pb-32">
       <div className="mx-auto max-w-[1280px] px-8">
         <h2 id="coming-soon-title" className="display-m mb-14 text-center text-ink">
-          {t("home.comingSoonTitle")}
+          <RevealText text={t("home.comingSoonTitle")} />
         </h2>
 
         <div
@@ -133,7 +135,14 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
                 const inView = i >= pos && i < pos + visible;
                 return (
                   <li key={`${m.slug}-${i}`} className="shrink-0" style={{ width: cardW }} aria-hidden={!inView || undefined}>
-                    <MovieCard movie={m} variant="soon" onPlayTrailer={onPlayTrailer} inert={!inView} />
+                    {i < visible ? (
+                      // the first four rise in once, after the title (designer reference: Aave)
+                      <motion.div {...riseIn(i, { reduced })}>
+                        <MovieCard movie={m} variant="soon" onPlayTrailer={onPlayTrailer} inert={!inView} />
+                      </motion.div>
+                    ) : (
+                      <MovieCard movie={m} variant="soon" onPlayTrailer={onPlayTrailer} inert={!inView} />
+                    )}
                   </li>
                 );
               })}

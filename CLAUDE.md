@@ -234,6 +234,13 @@ comment in the button's CSS/component: `/* Hover effect adapted from Uiverse.io 
 - `--ease-in-out`: `cubic-bezier(0.65, 0, 0.35, 1)` — camera moves, splits
 - Durations: micro 150–200ms · UI 400–700ms · cinematic 1.2–2.5s
 - Respect `prefers-reduced-motion`: replace movement with simple fades.
+- **Headline reveal** (designer reference, Nov 26: the Aave site; `components/ui/RevealText.tsx`): every display
+  headline lands word by word, each word rising 0.3em out of an 8px blur, 70ms apart, 850ms each, once. Used on the
+  hero film title (replays on each carousel change; meta, synopsis and buttons follow once it has landed), section
+  titles (Now Showing, Coming Soon, Moments, Film Reel + its sub-line, footer lines after the projector start) and
+  the booking titles. Screen readers get the line once.
+- **Card rise** (`lib/reveal.ts`): card groups rise 56px from scale 0.97, 1s, 90ms apart, starting ~0.25s after
+  their headline: Now Showing first row, the first four Coming Soon cards, the "Choose your experience" cards.
 
 ---
 

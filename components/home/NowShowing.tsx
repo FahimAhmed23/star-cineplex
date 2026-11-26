@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { useT } from "@/lib/i18n";
 import type { Movie } from "@/lib/types";
 import { MovieCard } from "./MovieCard";
+import { RevealText } from "@/components/ui/RevealText";
 
 const FIRST_ROW = 4;
 
@@ -73,7 +74,7 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
     <section id="now-showing" aria-labelledby="now-showing-title" className="theme-light relative z-10 scroll-mt-24 pt-[120px] pb-24 [overflow-anchor:none]">
       <div className="mx-auto max-w-[1280px] px-8">
         <h2 id="now-showing-title" ref={titleRef} className="display-m mb-14 scroll-mt-32 text-center text-ink">
-          {t("home.nowShowingTitle")}
+          <RevealText text={t("home.nowShowingTitle")} />
         </h2>
 
         {/* clip to the first row until expanded; the lift on hover needs a little room around the cards */}
@@ -98,14 +99,15 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
               return (
                 <motion.div
                   key={m.slug}
-                  initial={{ opacity: 0, y: reduced ? 0 : 24 }}
-                  whileInView={extra ? undefined : { opacity: 1, y: 0 }}
+                  // first row: rises in after the title (designer reference: Aave); "Show all" rows: a quicker fade up
+                  initial={{ opacity: 0, y: reduced ? 0 : extra ? 24 : 56, scale: reduced || extra ? 1 : 0.97 }}
+                  whileInView={extra ? undefined : { opacity: 1, y: 0, scale: 1 }}
                   animate={extra ? (expanded ? { opacity: 1, y: 0 } : { opacity: 0, y: reduced ? 0 : 24 }) : undefined}
-                  viewport={{ once: true, amount: 0.3 }}
+                  viewport={{ once: true, amount: 0.25 }}
                   transition={{
-                    duration: 0.6,
+                    duration: extra ? 0.6 : 1,
                     ease: [0.22, 1, 0.36, 1],
-                    delay: extra ? (expanded ? (i - FIRST_ROW) * 0.06 + 0.1 : 0) : i * 0.08,
+                    delay: extra ? (expanded ? (i - FIRST_ROW) * 0.06 + 0.1 : 0) : 0.25 + i * 0.09,
                   }}
                 >
                   <MovieCard movie={m} variant="now" onPlayTrailer={onPlayTrailer} inert={extra && !expanded} />

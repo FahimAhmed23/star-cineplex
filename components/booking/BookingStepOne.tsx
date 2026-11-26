@@ -10,6 +10,7 @@ import { useT } from "@/lib/i18n";
 import type { HallType, PriceTable } from "@/lib/types";
 import { ExperienceCards } from "./ExperienceCards";
 import { Stepper } from "./Stepper";
+import { RevealText } from "@/components/ui/RevealText";
 
 export interface ShowSlot {
   id: string;
@@ -112,7 +113,9 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
       <Navbar />
       <main className="mx-auto max-w-[1280px] px-8 pt-[140px] pb-32">
         <Stepper step={1} />
-        <h1 className="display-m mt-8 mb-12 text-white">{t("booking.title")}</h1>
+        <h1 className="display-m mt-8 mb-12 text-white">
+          <RevealText text={t("booking.title")} show delay={0.1} />
+        </h1>
 
         {/* 1. Branch */}
         <section aria-labelledby="pick-branch" className="mb-10">

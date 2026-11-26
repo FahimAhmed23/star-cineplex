@@ -5,6 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
+import { RevealText } from "@/components/ui/RevealText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -82,7 +83,7 @@ export function Moments() {
         <div className={`moments-lockup flex flex-col items-center px-6 text-center ${lockupOn ? "is-on" : ""}`}>
           <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="mb-6 h-auto w-[200px]" />
           <h2 id="moments-title" className="display-m max-w-[11ch] text-paper">
-            {t("home.momentsTitle")}
+            <RevealText text={t("home.momentsTitle")} show={lockupOn} delay={0.25} />
           </h2>
         </div>
       </div>

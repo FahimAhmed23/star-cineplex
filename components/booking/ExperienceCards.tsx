@@ -13,6 +13,8 @@ import { useT } from "@/lib/i18n";
 import type { HallType } from "@/lib/types";
 import type { HallInfo, ShowSlot } from "./BookingStepOne";
 import { SeatTurntable } from "./SeatTurntable";
+import { RevealText } from "@/components/ui/RevealText";
+import { riseIn } from "@/lib/reveal";
 
 const ORDER: HallType[] = ["vip", "premium", "atmos"]; // §9.3 card order
 const MODEL = { vip: "vip", premium: "premium", atmos: "atmos" } as const;
@@ -68,18 +70,19 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
       className="relative mt-10 border-t border-white/10 pt-12"
     >
       <h2 id="experience-title" className="display-s mb-8 text-white">
-        {t("booking.chooseExperience")}
+        <RevealText text={t("booking.chooseExperience")} show delay={0.15} />
       </h2>
       <div className="grid gap-6 md:grid-cols-3">
-        {groups.map((g) => {
+        {groups.map((g, gi) => {
           const theme = g.typeHalls[0] ? hallTheme(getHall(g.typeHalls[0].id)!) : null;
           const vip = g.type === "vip";
           const color = vip ? (theme?.leather ?? "#6B1E24") : (theme?.seat ?? "#C0262D");
           const min = Math.min(...g.prices);
           const max = Math.max(...g.prices);
           return (
-            <article
+            <motion.article
               key={g.type}
+              {...riseIn(gi, { base: 0.35, reduced, inView: false })}
               className={`experience-card ${hover === g.type ? "is-hover" : ""}`}
               onMouseEnter={() => setHover(g.type)}
               onMouseLeave={() => setHover(null)}
@@ -124,7 +127,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                   })}
                 </ul>
               </div>
-            </article>
+            </motion.article>
           );
         })}
       </div>
