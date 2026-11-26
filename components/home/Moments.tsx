@@ -22,13 +22,12 @@ const TILES = [
   { src: "red-carpet-group", ratio: "4 / 3", focus: "50% 50%", w: 16, x: 2, y: 80, speed: 0.85 },
   { src: "guest-lineup", ratio: "1 / 1", focus: "50% 75%", w: 16, x: 2, y: 160, speed: 0.85 },
   { src: "cosplay-duel", ratio: "3 / 4", focus: "15% 50%", w: 11, x: 21, y: 44, speed: 1.25 },
-  { src: "guest-lineup", ratio: "3 / 4", focus: "30% 50%", w: 11, x: 21, y: 100, speed: 1.25 },
   { src: "spiderman-guests", ratio: "1 / 1", focus: "75% 45%", w: 11, x: 21, y: 150, speed: 1.25 },
   { src: "spiderman-guests", ratio: "4 / 5", focus: "60% 70%", w: 12, x: 67, y: 6, speed: 1.3 },
   { src: "cosplay-duel", ratio: "4 / 5", focus: "70% 50%", w: 12, x: 67, y: 66, speed: 1.3 },
-  { src: "red-carpet-group", ratio: "3 / 4", focus: "55% 50%", w: 12, x: 67, y: 125, speed: 1.3 },
   { src: "event-crowd", ratio: "3 / 4", focus: "30% 50%", w: 16, x: 82, y: 34, speed: 0.9 },
   { src: "guest-lineup", ratio: "16 / 9", focus: "50% 50%", w: 16, x: 82, y: 120, speed: 0.9 },
+  { src: "red-carpet-group", ratio: "3 / 4", focus: "55% 50%", w: 12, x: 84, y: 146, speed: 0.9 },
   { src: "event-crowd", ratio: "3 / 2", focus: "50% 50%", w: 16, x: 82, y: 185, speed: 0.9 },
 ] as const;
 
