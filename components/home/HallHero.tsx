@@ -216,8 +216,8 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                   text={title}
                   show
                   delay={TITLE_DELAY}
-                  lang={isBnTitle ? "bn" : "en"} /* English titles keep Fraunces in Bangla mode */
-                  className="display-xl mb-4 !font-bold text-white md:mb-5" /* hero film title at 700 (designer) */
+                  lang={isBnTitle ? "bn" : "en"} /* English titles keep Bricolage in Bangla mode */
+                  className="display-xl mb-4 text-white md:mb-5" /* hero film title at 700, like every title (designer) */
                   // display-xl, also capped by viewport height so title + buttons fit above the strip at 1280×720
                   style={{ fontSize: phone ? (long ? "clamp(30px, 8.5vw, 40px)" : "clamp(40px, 12vw, 56px)") : long ? "min(clamp(56px, 6vw, 96px), 9.5vh)" : "min(clamp(72px, 10vw, 150px), 14vh)" }}
                 />

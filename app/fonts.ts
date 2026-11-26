@@ -1,21 +1,20 @@
-import { Anek_Bangla, Fraunces, IBM_Plex_Mono, Outfit } from "next/font/google";
+import { Anek_Bangla, Bricolage_Grotesque, Geist, IBM_Plex_Mono } from "next/font/google";
 
 // All four are SIL OFL fonts, self-hosted by next/font at build time (§4, §5 Typography).
 
-/** Display — Fraunces variable with the SOFT / WONK / opsz axes (used at weight 800). */
-export const fraunces = Fraunces({
+/** Display — Bricolage Grotesque variable (opsz + wdth axes), titles at weight 700 (designer, Nov 26). */
+export const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  axes: ["SOFT", "WONK", "opsz"],
+  axes: ["opsz", "wdth"],
   display: "swap",
-  variable: "--font-fraunces",
+  variable: "--font-bricolage",
 });
 
-/** UI & body — Outfit 300–700. */
-export const outfit = Outfit({
+/** UI & body — Geist variable (100–900; the UI uses 400–600). */
+export const geist = Geist({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-outfit",
+  variable: "--font-geist",
 });
 
 /** Bangla — Anek Bangla 600–700 (variable font; 400 kept for long Bangla body copy). */
@@ -34,4 +33,4 @@ export const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
 });
 
-export const fontVariables = [fraunces, outfit, anekBangla, plexMono].map((f) => f.variable).join(" ");
+export const fontVariables = [bricolage, geist, anekBangla, plexMono].map((f) => f.variable).join(" ");

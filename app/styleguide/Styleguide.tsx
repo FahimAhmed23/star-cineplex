@@ -71,7 +71,7 @@ export function Styleguide() {
       </header>
 
       {/* Type */}
-      <Section title="Typography — Fraunces 800 (SOFT 100, WONK 0, opsz 144) · Outfit · Anek Bangla · IBM Plex Mono">
+      <Section title="Typography — Bricolage Grotesque 700 · Geist · Anek Bangla · IBM Plex Mono">
         <p className="eyebrow mb-4">
           <Icon name="star" size={16} />
           {t("hero.eyebrow")}
@@ -84,7 +84,7 @@ export function Styleguide() {
           <p className="body-l text-white/85">
             body-l 16/1.55 — A family&apos;s quiet life is tested as history moves through their home. The synopsis runs to three lines at most, then ends.
           </p>
-          <p className="body text-white/85">body 15/1.5 — Outfit for everything users click or read in detail.</p>
+          <p className="body text-white/85">body 15/1.5 — Geist for everything users click or read in detail.</p>
           <p className="text-ui">ui 14/600 — {t("common.buyTickets")} · {t("common.fullSchedule")}</p>
           <p className="caption text-muted">caption 12.5 — {t("footer.iconCredit")}</p>
           <p className="mono text-purple-light">E07 · E08 · SC-BDC1-7Q2K · 09:42</p>
