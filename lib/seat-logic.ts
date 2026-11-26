@@ -74,3 +74,97 @@ export function findGap(seats: Seat[], booked: Set<string>, selected: Set<string
   }
   return null;
 }
+
+// ── Group picking (reference video B): the selection is one block of N seats that moves together ──
+
+/** single empty seats a selection would leave stranded in its row (between taken seats / walls / aisles) */
+function strandedCount(rowSeats: Seat[], taken: Set<string>, pick: Set<string>) {
+  let n = 0;
+  rowSeats.forEach((s, i) => {
+    if (taken.has(s.id) || pick.has(s.id)) return;
+    const l = rowSeats[i - 1];
+    const r = rowSeats[i + 1];
+    const blocked = (x: Seat | undefined, side: -1 | 1) => !x || x.col !== s.col + side || taken.has(x.id) || pick.has(x.id);
+    if (blocked(l, -1) && blocked(r, 1)) n++;
+  });
+  return n;
+}
+
+/** runs of `n` free, side-by-side seats in one row (no aisle inside) */
+function freeRuns(rowSeats: Seat[], taken: Set<string>, n: number) {
+  const out: Seat[][] = [];
+  for (let i = 0; i + n <= rowSeats.length; i++) {
+    const run = rowSeats.slice(i, i + n);
+    if (run.some((s, k) => k > 0 && s.col !== run[k - 1].col + 1)) continue;
+    if (run.some((s) => taken.has(s.id))) continue;
+    out.push(run);
+  }
+  return out;
+}
+
+/**
+ * The block of `n` seats to drop at `target` (drag / tap): the free run in that row whose centre is nearest the
+ * target, preferring runs that don't strand a single seat; falls back to the next row up or down. null = no room.
+ */
+export function groupAround(seats: Seat[], taken: Set<string>, target: Seat, n: number): string[] | null {
+  const rows = rowsOf(seats);
+  const order = [...rows.values()].sort((a, b) => Math.abs(a[0].rowIndex - target.rowIndex) - Math.abs(b[0].rowIndex - target.rowIndex));
+  for (const row of order) {
+    if (Math.abs(row[0].rowIndex - target.rowIndex) > 1) break;
+    const runs = freeRuns(row, taken, n);
+    if (!runs.length) continue;
+    const score = (run: Seat[]) => {
+      const mid = (run[0].col + run[run.length - 1].col) / 2;
+      return Math.abs(mid - target.col) + strandedCount(row, taken, new Set(run.map((s) => s.id))) * 1.5;
+    };
+    runs.sort((a, b) => score(a) - score(b));
+    return runs[0].map((s) => s.id);
+  }
+  return null;
+}
+
+/** change the block size: grow next to the current seats (right, then left), else move the block; shrink from the end */
+export function resizeGroup(hall: Hall, seats: Seat[], taken: Set<string>, current: string[], n: number): string[] | null {
+  if (!current.length) return bestAvailable(hall, seats, taken, n) ?? spreadPick(hall, seats, taken, n);
+  if (n < current.length) return current.slice(0, n);
+  const byId = new Map(seats.map((s) => [s.id, s]));
+  const cur = current.map((id) => byId.get(id)!).sort((a, b) => a.col - b.col);
+  const row = rowsOf(seats).get(cur[0].row)!;
+  const pick = new Set(current);
+  let lo = row.indexOf(cur[0]);
+  let hi = row.indexOf(cur[cur.length - 1]);
+  while (pick.size < n) {
+    const r = row[hi + 1];
+    const l = row[lo - 1];
+    if (r && r.col === row[hi].col + 1 && !taken.has(r.id)) { pick.add(r.id); hi++; continue; }
+    if (l && l.col === row[lo].col - 1 && !taken.has(l.id)) { pick.add(l.id); lo--; continue; }
+    break;
+  }
+  if (pick.size === n) return row.slice(lo, hi + 1).map((s) => s.id);
+  const mid = cur[Math.floor(cur.length / 2)];
+  return groupAround(seats, taken, mid, n) ?? bestAvailable(hall, seats, taken, n) ?? spreadPick(hall, seats, taken, n);
+}
+
+/** last resort when no N seats sit together anywhere: the N free seats closest to the best spot */
+export function spreadPick(hall: Hall, seats: Seat[], taken: Set<string>, n: number): string[] | null {
+  const free = seats.filter((s) => !taken.has(s.id));
+  if (free.length < n) return null;
+  const width = hall.rows[0].pattern.length;
+  const idealRow = (hall.rows.length - 1) * 0.6;
+  return free
+    .map((s) => ({ s, d: Math.hypot((s.rowIndex - idealRow) * 1.4, s.col - (width - 1) / 2) }))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, n)
+    .map((x) => x.s.id);
+}
+
+/** "Row F · 07–09" style label for a block (or "F07, G08" when split) */
+export function groupLabel(seats: Seat[], ids: string[]) {
+  const byId = new Map(seats.map((s) => [s.id, s]));
+  const g = ids.map((id) => byId.get(id)!).filter(Boolean).sort((a, b) => a.rowIndex - b.rowIndex || a.col - b.col);
+  if (!g.length) return null;
+  const oneRow = g.every((s) => s.row === g[0].row);
+  if (!oneRow) return { row: null as string | null, seats: g.map((s) => s.id).join(", ") };
+  const nums = g.map((s) => s.id.slice(s.row.length)).sort((a, b) => +a - +b);
+  return { row: g[0].row, seats: nums.length > 1 ? `${nums[0]}–${nums[nums.length - 1]}` : nums[0] };
+}

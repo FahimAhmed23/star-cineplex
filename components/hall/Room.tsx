@@ -22,12 +22,14 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
   const mats = useMemo(
     () => ({
       wall: new THREE.MeshStandardMaterial({ color: look.walls, roughness: 0.9 }),
-      frontWall: new THREE.MeshStandardMaterial({ color: new THREE.Color(look.walls).multiplyScalar(0.75), roughness: 0.9 }),
+      frontWall: new THREE.MeshStandardMaterial({ color: look.accentPattern === "slats" ? "#050405" : new THREE.Color(look.walls).multiplyScalar(0.75), roughness: 0.9 }),
+      // warm wash from the LED lines on the fluted panels (no real lights: cheap on phones)
+      slat: new THREE.MeshStandardMaterial({ color: new THREE.Color(look.walls).multiplyScalar(1.35), roughness: 0.7, emissive: new THREE.Color("#5a3e24"), emissiveIntensity: 0.22 }),
       carpet: new THREE.MeshStandardMaterial({ color: look.carpet, roughness: 1 }),
       riser: new THREE.MeshStandardMaterial({ color: new THREE.Color(look.carpet).multiplyScalar(0.55), roughness: 1 }),
       ceiling: new THREE.MeshStandardMaterial({ color: "#0c0a10", roughness: 1 }),
       black: new THREE.MeshStandardMaterial({ color: "#050406", roughness: 0.8 }),
-      accent: lightMaterial(look.accentLight, 3.2),
+      accent: lightMaterial(look.accentLight, look.accentPattern === "slats" ? 4.2 : 3.2),
       step: lightMaterial(look.accentPattern === "sconces" ? "#ffb25e" : look.accentLight, 2.2),
       down: lightMaterial("#ffe2b0", 4),
     }),
@@ -109,7 +111,7 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
 
       {/* the screen itself (surface, trim, masking) lives in Screen.tsx */}
 
-      <Accents layout={layout} look={look} material={mats.accent} />
+      <Accents layout={layout} look={look} material={mats.accent} slat={mats.slat} />
     </group>
   );
 }
@@ -136,7 +138,7 @@ function Bar({ x, a, b, material, thickness = 0.035 }: { x: number; a: [number, 
   );
 }
 
-function Accents({ layout, look, material }: { layout: HallLayout; look: RoomLook; material: THREE.Material }) {
+function Accents({ layout, look, material, slat }: { layout: HallLayout; look: RoomLook; material: THREE.Material; slat: THREE.Material }) {
   const { room, tiers } = layout;
   const W = room.width;
   const z0 = room.zFront + 0.8;
@@ -155,6 +157,27 @@ function Accents({ layout, look, material }: { layout: HallLayout; look: RoomLoo
     const x = s * (W / 2 - 0.01);
     const key = (i: number | string) => `${s}-${i}`;
     switch (look.accentPattern) {
+      case "slats": {
+        // studio look (designer, Nov 26): fluted wall panels with warm LED lines from the floor to the ceiling
+        const step = 0.42;
+        const n = Math.floor(span / step);
+        for (let i = 0; i <= n; i++) {
+          const z = z0 + i * step;
+          const yb = floorAt(z);
+          const h = room.height - yb;
+          items.push(
+            <mesh key={key(`s${i}`)} material={slat} position={[x - s * 0.05, yb + h / 2, z + step / 2]}>
+              <boxGeometry args={[0.1, h, step * 0.62]} />
+            </mesh>,
+          );
+          items.push(
+            <mesh key={key(`l${i}`)} material={material} position={[x - s * 0.03, yb + h / 2, z]}>
+              <boxGeometry args={[0.03, h, 0.05]} />
+            </mesh>,
+          );
+        }
+        break;
+      }
       case "diagonal": {
         // big X shapes (Bashundhara blue diagonal light lines)
         const n = Math.max(2, Math.round(span / 7));

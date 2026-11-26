@@ -767,71 +767,51 @@ Plays between choosing a showtime and the seat selection. Total ≈ 1.8s.
    from the hall entrance to the seat-selection overview.
 - Reduced motion: the doors simply fade out over 400ms.
 
-### 9.5 Step 2 — Seat selection in the 3D hall (`/book/seats/[showId]`)
+### 9.5 Step 2 — Seat selection (`/book/seats/[showId]`)
 
-**Reference:** `references/arena-3d-seat-inspiration.mp4` (the basketball arena: overview → fly in → view from seat).
+**Rebuilt Nov 26 from the designer's two reference videos** (B: group seat picker · A: map → dive into the seat).
+2D-first on every device; the 3D hall is the **Preview**, not the picking surface.
 
-**Layout:** the 3D hall fills the screen. Overlays:
-- **Top-left:** "← Change showtime" + show info: movie · branch · Hall 1 · date · time.
-- **Top-right:** `3D / 2D` toggle and **"Best available for [2 ▾]"**.
-- **Bottom bar** (glass): seat legend (Premium · Semi-Recliner · Booked · Selected), the selected seats as chips
-  (`E7` `E8`), the total price, and **Continue →** (disabled until at least 1 seat is selected).
+**Layout:** one centred column (760px max) over `--night`:
+- **Top:** "← Change showtime", movie title, `date · time · Hall`, and a **ticket stepper** `– 2 tickets +` (1–10).
+- **Middle:** the seat map, with the screen arc and row letters.
+- **Bottom:** legend (Free · Booked · Yours · class + price), the summary line `Row H · Seats 10–11` / `2 × ৳550`,
+  then **Preview** (eye icon, secondary) and **Continue · ৳1,100** (primary; the price digits roll when it changes).
 
-**Camera — overview (default):**
-- **Start position:** behind the last row and high up, looking down at **50–55°**, framed so the **whole seating
-  area fills the viewport** (fit to the seat bounding box with ~8% margin; the screen stays visible at the top).
-  Every seat in every row must be readable at 1280×720 — this angle is chosen for choosing seats, not for drama.
-- **Orbit limits:** left/right **±60°** around the hall centre (never behind the screen); up/down **15°–60°**.
-- **Zoom:** from the whole hall down to ~4–5 seats in view (scroll / pinch). Damped, no snapping.
-- Clicking a seat block glides the camera towards it (1s, `--ease-in-out`), like the arena video zooming into a section.
-- **Reset view** button (Solar "restart" icon) returns to the start position.
+**The map is the hall seen from straight above.** `lib/topdown.ts` places a real camera above the hall (28° lens,
+9° tilt) so the seat bounding box fills the map area, and projects every seat to screen pixels. The map glyphs are
+drawn at those pixels, so the 3D hall can fade in exactly underneath them.
 
-**Camera — view from seat:** see "View from seat" below.
+**Picking (video B):** your N seats are **one block**.
+- It starts on the best available group (centre, middle rows, together).
+- **Drag** the gold seats: they lift and stack under the pointer, a **dashed gold ghost** shows where they'll land
+  (snapped to the nearest free run in that row or the next), with a glass tooltip `Row E · 13–14` (Plex Mono).
+  Release to drop; the seats glide in with a 40ms stagger.
+- **Tap** a free seat to move the block there. **Keyboard:** arrows move the block, `+`/`−` change the count.
+- Changing the count grows the block right, then left; if there's no room it moves; if no group fits anywhere,
+  seats are split and the summary says so.
+- Glyphs: cushion shapes in the §5 2D colours (Premium `#3D2350`, Semi-Recliner `#6A3482`, VIP `#9A5CC0`, Booked
+  `#26222B`); **gold `#F5B72E` = yours**, with the seat number in Plex Mono.
 
-**Seat states:**
-| State | Look |
-|-------|------|
-| Available | The branch's seat colour/material (§6 Branch hall themes) |
-| **Hover** | Seat brightens (emissive +30%), lifts slightly; **popup** appears above it |
-| Selected | Gold glowing outline + lift + small ✓ marker above it (seat keeps its branch colour) |
-| **Booked** | Seat turns **dark grey and dimmed** (≈40% brightness) **and** a **stylised seated person** sits in it (see below). Not selectable. The colour change is what makes booked seats readable from the overview, even when the silhouette is tiny. |
+**Preview (video A):**
+1. The 3D hall fades in under the map from the same camera (450ms), the map fades out.
+2. The camera **dives** into your first seat (2.2s): it descends first, then tilts up to the screen late, and the lens
+   widens with the tilt. The trailer plays on the screen.
+3. In the seat: drag to look around (360° / ±30°, eases back after ~2s). A strip of your row (± one row) sits at the
+   bottom with your seats in gold. The button becomes **Seats** (grid icon).
+4. **Seats** plays the same move backwards (tilt down, rise) and the map fades back in.
+- The frame from your seat is captured for checkout's "view from your seat" image.
+- Reduced motion: no dive, a fade.
 
-**Readability rule:** from the default overview, available vs booked must be obvious at a glance — available seats are
-bright in their branch colour, booked seats are dark. Hovering a class in the legend (e.g. "Premium") makes the
-**available seats of that class glow softly** for ~1.5s so free seats are easy to find.
+**Phones / no 3D:** same map. Preview appears only on capable phones (§11 check) and mounts the hall on tap;
+otherwise there is no Preview button.
 
-**Hover popup** (HTML anchored to the seat, glass card, 200ms fade): `Row E · Seat 7`, seat class, price for this
-show, and two buttons: **Select** and **View from seat** (Solar eye icon). On a booked seat the popup only says "Booked".
-Clicking the seat itself also toggles selection. Max 10 seats per booking.
+**The hall (look, Nov 26):** same layout from `halls.json`; new "studio" look from the reference video: warm fluted
+slat walls with a warm-white LED line in every gap, a black screen wall, black ceiling with downlights, a framed
+screen, **no projector beam** and **no seated people** (booked seats show as dark in the map only).
+Seat models: converted from the designer's Tripo models (`scripts/convert-tripo-seat.py`).
 
-**Single-seat gap rule:** if the selection would leave **one empty seat alone** between a selected seat and a
-booked seat (or the row end), show a gentle inline hint in the bottom bar — *"This leaves one seat alone. Shift
-right?"* with a **Shift** button that moves the selection. It's a suggestion, never a block.
-
-**Seat labels** in the popup, chips and ticket come from the hall data (e.g. `E07` in Hall 1, `D3` in VIP Hall 5).
-
-**Seated people on booked seats:**
-- **Simple stylised silhouettes**, low-poly, no faces or details: 3–4 variants (e.g. short hair, longer hair,
-  a slimmer and a broader build), mixed male and female, chosen randomly per seat.
-- Flat dark colours with slight variation (charcoal, plum, deep blue), faintly rim-lit by the screen light so
-  they read as an audience.
-- Small random variations: body turned ±5°, slight height differences. Instanced (one draw call per variant).
-- Booked seats should cluster naturally (groups of 2–4 together) rather than being scattered evenly.
-
-**View from seat:**
-- From the popup (or a selected seat's chip), the camera glides (1.2s, `--ease-in-out`) to that seat at
-  **seated eye height**, looking at the centre of the screen. The trailer of the chosen movie plays on the screen.
-- Neighbouring seated people are visible in the foreground, which makes the view feel real.
-- **Look around:** drag to turn the head a **full 360° left/right** and **±30° up/down** (see the people beside and
-  behind, the projector window). The camera stays in the seat — no walking. After the user lets go, it eases back
-  to face the screen after ~2s idle.
-- HUD: "View from E7" + **Select this seat** (or "Selected ✓") + **← Back to hall** (returns to the previous camera position).
-
-**2D toggle:** a flat seat map generated from the same data (rows, aisles, classes, booked/selected), screen at the
-top. Fully keyboard-navigable. Selections are shared with the 3D view.
-
-**Best available:** picks the best adjacent group of N available seats (centre of the hall, middle rows,
-together in one row), selects them, and flies the camera to show them.
+**Seat labels** come from the hall data (e.g. `E07` in Hall 1, `D3` in VIP Hall 5). Max 10 seats per booking.
 
 **Data:** `data/showtimes.json` — `id, branch, hall, movie, date, time, format, priceBand ("matinee" | "evening" |
 "weekend"), bookedSeats[]` (generate realistic demo bookings).

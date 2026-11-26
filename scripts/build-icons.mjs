@@ -55,6 +55,10 @@ export const ICONS = {
   checkCircleDuo: "check-circle-bold-duotone",
   danger: "danger-triangle-linear",
   info: "info-circle-linear",
+  // seat picker (Nov 26 rebuild)
+  minus: "minus-circle-linear",
+  plus: "add-circle-linear",
+  widget: "widget-linear",
 };
 
 const names = Object.values(ICONS);

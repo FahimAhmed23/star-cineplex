@@ -1321,3 +1321,87 @@ body {
   #checkout-summary .ticket-card__tear::before,
   #checkout-summary .ticket-card__tear::after { background: rgb(150 149 147); }
 }
+
+/* ── Seat picker (§9.5, Nov 26 rebuild) — map glyphs use the §5 2D colours; gold is only "yours" ── */
+.seatmap { outline: none; }
+.seatmap.is-dragging { cursor: grabbing; }
+.seat-g {
+  position: absolute;
+  width: var(--g, 20px);
+  height: calc(var(--g, 20px) * 0.86);
+  transform: translate(-50%, -50%);
+  border-radius: calc(var(--g, 20px) * 0.24) calc(var(--g, 20px) * 0.24) calc(var(--g, 20px) * 0.36) calc(var(--g, 20px) * 0.36);
+  /* the seat back: a slightly darker band across the top, like a cushion seen from above */
+  background-image: linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 26%, transparent 26%);
+  pointer-events: none;
+}
+.seat-g--free.seat-g--premium { background-color: #3d2350; box-shadow: inset 0 0 0 1px rgb(183 132 214 / 0.35); }
+.seat-g--free.seat-g--semi-recliner { background-color: #6a3482; box-shadow: inset 0 0 0 1px rgb(183 132 214 / 0.45); }
+.seat-g--free.seat-g--vip { background-color: #9a5cc0; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25); }
+.seat-g--taken { background-color: #26222b; opacity: 0.85; }
+.seat-g--ghost { border: 1.5px dashed #f5b72e; background: rgb(245 183 46 / 0.08); z-index: 4; }
+.seat-g--yours {
+  background-color: #f5b72e;
+  color: var(--ink);
+  font: 600 calc(var(--g, 20px) * 0.42) / 1 var(--font-mono), ui-monospace, monospace;
+  display: grid;
+  place-items: center;
+  padding-top: calc(var(--g, 20px) * 0.14);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.35), 0 4px 12px -2px rgb(245 183 46 / 0.45);
+}
+.seat-g--chip {
+  left: 0;
+  top: 0;
+  transition: transform 420ms var(--ease-out), box-shadow 200ms ease;
+}
+.seat-g--chip.is-lifted { transition: transform 90ms linear; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.5), 0 12px 24px -4px rgb(0 0 0 / 0.6); }
+.legend-g { position: relative; display: inline-block; width: 14px; height: 12px; border-radius: 3px 3px 5px 5px; background-image: linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 26%, transparent 26%); }
+.seatmap__row { position: absolute; transform: translate(-50%, -50%); font: 500 11px/1 var(--font-mono), monospace; color: var(--muted); }
+.seatmap__screen { position: absolute; transform: translateX(-50%); font-size: 12px; color: rgb(255 255 255 / 0.5); }
+.seat-tip {
+  position: absolute;
+  z-index: 40;
+  transform: translate(-50%, -100%);
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  background: var(--surface-dark);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  color: white;
+  font: 500 12px/1 var(--font-mono), monospace;
+  pointer-events: none;
+}
+.tickets {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  background: rgb(255 255 255 / 0.04);
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+.tickets > span { min-width: 76px; text-align: center; }
+.tickets button { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9999px; color: white; transition: background-color 150ms ease; }
+.tickets button:hover:not(:disabled) { background: rgb(255 255 255 / 0.1); }
+.tickets button:disabled { opacity: 0.35; cursor: not-allowed; }
+.seat-strip { position: absolute; inset: 0; pointer-events: none; overflow: hidden; --g: 22px; mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent); }
+.seat-strip__row { position: absolute; left: 0; right: 0; height: 22px; opacity: 0.45; }
+.seat-strip__row:nth-child(1) { top: 2px; }
+.seat-strip__row:nth-child(2) { top: 25px; }
+.seat-strip__row:nth-child(3) { top: 48px; }
+.seat-strip__row.is-mine { opacity: 1; }
+.seat-strip__label { position: absolute; top: 50%; transform: translate(-50%, -50%); font: 500 11px/1 var(--font-mono), monospace; color: var(--muted); }
+
+/* rolling price digits */
+.rolling { display: inline-flex; align-items: flex-start; height: 1.2em; line-height: 1.2em; overflow: hidden; font-variant-numeric: tabular-nums; vertical-align: -0.25em; }
+.rolling > span { display: block; height: 1.2em; }
+.rolling__slot { overflow: hidden; }
+.rolling__reel { display: flex; flex-direction: column; transition: transform 500ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) {
+  .rolling__reel, .seat-g--chip { transition: none; }
+}

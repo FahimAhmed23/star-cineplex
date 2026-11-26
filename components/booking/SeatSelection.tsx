@@ -3,417 +3,473 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CameraMode } from "@/components/hall/CameraRig";
 import { Navbar } from "@/components/nav/Navbar";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { RollingNumber } from "@/components/ui/RollingNumber";
+import { saveSeatView, startHold } from "@/lib/booking";
 import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
 import { dateLocale, formatTime } from "@/lib/demo-date";
-import { saveSeatView, startHold } from "@/lib/booking";
 import { deviceNow, useDevice } from "@/lib/device";
 import { markDoorsReady } from "@/lib/doors";
-import { buildLayout, type PlacedSeat } from "@/lib/hall-layout";
+import { buildLayout } from "@/lib/hall-layout";
 import { seatPrice } from "@/lib/halls";
 import { useT } from "@/lib/i18n";
-import { bestAvailable, findGap } from "@/lib/seat-logic";
+import { bestAvailable, groupAround, groupLabel, resizeGroup, rowsOf, spreadPick } from "@/lib/seat-logic";
+import { topDown, type MapBox } from "@/lib/topdown";
 import type { SeatClass, Showtime } from "@/lib/types";
-import { SeatMap2D } from "./SeatMap2D";
-import { Stepper } from "./Stepper";
 
 const Hall3D = dynamic(() => import("@/components/hall/Hall3D"), { ssr: false });
 
 const MAX_SEATS = 10;
-const CLASS_KEY: Record<SeatClass, string> = { premium: "booking.classPremium", "semi-recliner": "booking.classSemiRecliner", vip: "booking.classVip" };
+const DIVE_MS = 2200; // camera dive / rise (CameraRig)
+const FADE_MS = 450; // hall fades in under the map before the dive
+type Stage = "map" | "toHall" | "hall" | "toMap";
 
 /**
- * Step 2 — choose your seats inside the 3D hall (CLAUDE.md §9.5): overview camera, hover popup, select,
- * view from seat (look around), 2D map toggle, best available, single-seat gap hint, bottom bar with total.
+ * Step 2 — seats (CLAUDE.md §9.5, rebuilt Nov 26 after the designer's reference videos):
+ * B) pick how many tickets, then move them as ONE block — drag it (ghost outline + "Row F · 07–09"), tap a free
+ *    seat, or use the arrow keys; the price rolls.
+ * A) "Preview": the 3D hall fades in exactly under the map (the map IS the hall seen from above), the camera dives
+ *    into your seat with the trailer playing, a strip of your row stays at the bottom; "Seats" flies back up.
  */
 export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: { show: Showtime; hallId: string; initialSeats?: string[]; taken?: string[] }) {
   const { t, lang } = useT();
   const router = useRouter();
   const hall = getHall(hallId)!;
   const movie = getMovie(show.movie)!;
-  const branch = getBranch(show.branch)!;
   const layout = useMemo(() => buildLayout(hall), [hall]);
   const booked = useMemo(() => new Set(show.bookedSeats), [show.bookedSeats]);
+  const byId = useMemo(() => new Map(layout.seats.map((s) => [s.id, s])), [layout.seats]);
   const classes = useMemo(() => [...new Set(hall.rows.map((r) => r.class))], [hall]);
+  const { full3D } = useDevice();
 
-  const [view, setView] = useState<"3d" | "2d">("3d");
-  const [mode, setMode] = useState<CameraMode>("overview");
-  const [seatId, setSeatId] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Set<string>>(() => new Set(initialSeats));
-  const [leaving, setLeaving] = useState(false);
-  const [takenNote, setTakenNote] = useState(taken.length > 0);
-  const [hover, setHover] = useState<PlacedSeat | null>(null);
-  const [pinned, setPinned] = useState<PlacedSeat | null>(null); // the popup stays while the pointer is on it
-  const [highlight, setHighlight] = useState<string | null>(null);
-  const [resetKey, setResetKey] = useState(0);
-  const [focus, setFocus] = useState<{ ids: string[]; key: number } | null>(null);
-  const [bestN, setBestN] = useState(2);
-  const [limitHit, setLimitHit] = useState(false);
-  const popupHover = useRef(false);
-  const clearTimer = useRef<number | undefined>(undefined);
-  const highlightTimer = useRef<number | undefined>(undefined);
-
-  // 2D first on phones / when WebGL is missing (§11, §9.9)
-  // §11 / §9.9: phones and devices without full 3D open in the 2D map; the hall (WebGL) is only mounted once
-  // it is needed — at once on desktop, on phones for "View from seat" or "Explore in 3D"
-  const { phone, full3D } = useDevice();
-  const [hallOn, setHallOn] = useState(false);
-  const decided = useRef(false);
-  const mapRef = useRef<HTMLDivElement>(null);
-  const headRef = useRef<HTMLDivElement>(null);
-  const [mapTop, setMapTop] = useState(248);
-  useEffect(() => {
-    if (decided.current) return;
-    decided.current = true;
-    const d = deviceNow(); // the hook still holds the server (desktop) values during hydration
-    if (d.phone || !d.full3D) {
-      setView("2d");
-      markDoorsReady();
-    } else setHallOn(true);
-  }, []);
-  // the 2D map starts right under the header block (taller on phones, where it wraps)
-  useEffect(() => {
-    const el = headRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => setMapTop(Math.ceil(el.getBoundingClientRect().bottom) + 16));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  // phones: centre the (wider than the screen) map horizontally
-  useEffect(() => {
-    const el = mapRef.current;
-    if (view === "2d" && el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
-  }, [view]);
-
-  const price = useCallback((cls: SeatClass) => seatPrice(hall, cls, show.priceBand) ?? 0, [hall, show.priceBand]);
-  const selectedSeats = useMemo(() => layout.seats.filter((s) => selected.has(s.id)), [layout.seats, selected]);
-  const total = selectedSeats.reduce((sum, s) => sum + price(s.class), 0);
-  const gap = useMemo(() => (selected.size ? findGap(layout.seats, booked, selected) : null), [layout.seats, booked, selected]);
-
-  const toggle = useCallback(
-    (id: string) => {
-      if (booked.has(id)) return;
-      setSelected((prev) => {
-        const n = new Set(prev);
-        if (n.has(id)) n.delete(id);
-        else if (n.size < MAX_SEATS) n.add(id);
-        else setLimitHit(true);
-        return n;
-      });
-    },
-    [booked],
+  // ── the block of seats ──
+  const [count, setCount] = useState(() => Math.min(MAX_SEATS, Math.max(1, initialSeats.length || 2)));
+  const [group, setGroup] = useState<string[]>(() =>
+    initialSeats.length ? initialSeats : (bestAvailable(hall, layout.seats, booked, 2) ?? spreadPick(hall, layout.seats, booked, 2) ?? []),
   );
+  const sorted = useMemo(
+    () => [...group].filter((id) => byId.has(id)).sort((a, b) => byId.get(a)!.rowIndex - byId.get(b)!.rowIndex || byId.get(a)!.col - byId.get(b)!.col),
+    [group, byId],
+  );
+  const together = useMemo(() => sorted.every((id) => byId.get(id)!.row === byId.get(sorted[0])?.row), [sorted, byId]);
+  const label = useMemo(() => groupLabel(layout.seats, sorted), [layout.seats, sorted]);
+  const price = useCallback((cls: SeatClass) => seatPrice(hall, cls, show.priceBand) ?? 0, [hall, show.priceBand]);
+  const total = sorted.reduce((sum, id) => sum + price(byId.get(id)!.class), 0);
+  const unit = sorted.length && sorted.every((id) => price(byId.get(id)!.class) === price(byId.get(sorted[0])!.class)) ? price(byId.get(sorted[0])!.class) : null;
+  const [takenNote, setTakenNote] = useState(taken.length > 0);
+  const [announce, setAnnounce] = useState("");
+
+  const commit = useCallback(
+    (ids: string[] | null) => {
+      if (!ids) return;
+      setGroup(ids);
+      const l = groupLabel(layout.seats, ids);
+      if (l) setAnnounce(l.row ? t("booking.rowSeats", { row: l.row, seats: l.seats }) : l.seats);
+    },
+    [layout.seats, t],
+  );
+  const setCountTo = (n: number) => {
+    const next = Math.min(MAX_SEATS, Math.max(1, n));
+    if (next === count) return;
+    const g = resizeGroup(hall, layout.seats, booked, sorted, next);
+    if (!g) return;
+    setCount(next);
+    commit(g);
+  };
+
+  // ── the map = the hall seen from straight above (lib/topdown.ts) ──
+  const headRef = useRef<HTMLDivElement>(null);
+  const footRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<MapBox | null>(null);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const head = headRef.current?.getBoundingClientRect();
+      const foot = footRef.current?.getBoundingClientRect();
+      if (!head || !foot) return;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const w = Math.min(760, vw - 32);
+      const top = head.bottom + 56; // room for the screen arc
+      const next = { vw, vh, x: (vw - w) / 2, y: top, w, h: Math.max(140, foot.top - 20 - top) };
+      setBox((b) => (b && Object.keys(next).every((k) => Math.abs(b[k as keyof MapBox] - next[k as keyof MapBox]) < 1) ? b : next));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    const ro = new ResizeObserver(measure);
+    if (headRef.current) ro.observe(headRef.current);
+    if (footRef.current) ro.observe(footRef.current);
+    return () => {
+      window.removeEventListener("resize", measure);
+      ro.disconnect();
+    };
+  }, []);
+  const td = useMemo(() => (box ? topDown(layout, box) : null), [layout, box]);
+  const camTop = useMemo(() => (td ? { pos: td.pos, look: td.look, fov: td.fov } : null), [td]);
+  const glyph = td ? Math.max(9, Math.min(30, td.pitch * 0.8)) : 20;
+  const doorsDone = useRef(false);
   useEffect(() => {
-    if (!limitHit) return;
-    const id = window.setTimeout(() => setLimitHit(false), 2500);
-    return () => window.clearTimeout(id);
-  }, [limitHit]);
-
-  const viewFrom = (id: string) => {
-    if (!full3D) return;
-    setHallOn(true);
-    setPinned(null);
-    setHover(null);
-    setSeatId(id);
-    setMode("seat");
-  };
-  const backToHall = () => setMode("overview");
-
-  const onPointer = (s: PlacedSeat | null) => {
-    window.clearTimeout(clearTimer.current);
-    if (s) {
-      setHover(s);
-      setPinned(s);
-      document.body.style.cursor = booked.has(s.id) ? "not-allowed" : "pointer";
-    } else {
-      document.body.style.cursor = "";
-      setHover(null);
-      // keep the popup a moment so the pointer can reach its buttons
-      clearTimer.current = window.setTimeout(() => {
-        if (!popupHover.current) setPinned(null);
-      }, 350);
+    if (td && !doorsDone.current) {
+      doorsDone.current = true;
+      markDoorsReady(); // the map is drawn: the doors can open (the 3D hall keeps loading behind it)
     }
-  };
-  useEffect(() => () => void (document.body.style.cursor = ""), []);
+  }, [td]);
 
-  const glowClass = (cls: string | null) => {
-    window.clearTimeout(highlightTimer.current);
-    setHighlight(cls);
-    if (cls) highlightTimer.current = window.setTimeout(() => setHighlight(null), 1500);
-  };
+  // ── the 3D hall: mounted at once on desktop (so Preview is instant), on phones when Preview is tapped ──
+  const [hallOn, setHallOn] = useState(false);
+  const [hallReady, setHallReady] = useState(false);
+  useEffect(() => {
+    const d = deviceNow();
+    if (!d.phone && d.full3D) setHallOn(true);
+  }, []);
+  const [stage, setStage] = useState<Stage>("map");
+  const [camMode, setCamMode] = useState<CameraMode>("topdown");
+  const [diveSeat, setDiveSeat] = useState<string | null>(null);
+  const [waiting, setWaiting] = useState(false);
+  const timers = useRef<number[]>([]);
+  const later = useCallback((ms: number, fn: () => void) => {
+    timers.current.push(window.setTimeout(fn, ms));
+  }, []);
+  useEffect(() => () => timers.current.forEach((id) => window.clearTimeout(id)), []);
+  const shot = useRef<{ seat: string; url: string } | null>(null);
+  const pendingPreview = useRef(false);
 
-  const pickBest = () => {
-    const taken = new Set([...booked]);
-    const ids = bestAvailable(hall, layout.seats, taken, bestN);
-    if (!ids) return;
-    setSelected(new Set(ids));
-    setMode("overview");
-    setFocus((f) => ({ ids, key: (f?.key ?? 0) + 1 }));
-    if (view === "2d") window.setTimeout(() => document.querySelector(`[data-seat="${ids[0]}"]`)?.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }), 50);
-  };
-  const resetView = () => {
-    setFocus(null);
-    setResetKey((k) => k + 1);
-  };
-  const applyShift = () => {
-    if (!gap) return;
-    setSelected((prev) => {
-      const n = new Set(prev);
-      n.delete(gap.remove);
-      n.add(gap.add);
-      return n;
-    });
-  };
-
-  // §9.6: Continue → (3D) a still from the first seat for the ticket, then the hall fades out to paper
-  const goCheckout = () => {
-    if (leaving || !selectedSeats.length) return;
-    const ids = selectedSeats.map((s) => s.id);
-    const first = ids[0];
-    setLeaving(true);
-    setPinned(null);
-    startHold(show.id, ids);
-    const go = () => router.push(`/book/checkout?show=${encodeURIComponent(show.id)}&seats=${encodeURIComponent(ids.join(","))}`);
-    if (view !== "3d") {
-      saveSeatView(show.id, null);
-      window.setTimeout(go, 600);
-      return;
-    }
-    setSeatId(first);
-    setMode("seat");
-    // grab a few frames once the camera has settled and keep the brightest (trailers have dark scenes)
-    const grab = () => {
-      const src = document.querySelector<HTMLCanvasElement>("[data-hall] canvas");
-      if (!src) return null;
+  const capture = useCallback(() => {
+    const src = document.querySelector<HTMLCanvasElement>("[data-hall] canvas");
+    if (!src) return null;
+    try {
       const c = document.createElement("canvas");
       c.width = 960;
       c.height = 540;
-      const ctx = c.getContext("2d", { willReadFrequently: true })!;
-      const sh = Math.min(src.height, (src.width * 9) / 16); // centre-crop to 16:9
+      const sh = Math.min(src.height, (src.width * 9) / 16);
       const sw = (sh * 16) / 9;
-      ctx.drawImage(src, (src.width - sw) / 2, (src.height - sh) / 2, sw, sh, 0, 0, c.width, c.height);
-      const d = ctx.getImageData(0, 0, c.width, c.height / 2, { colorSpace: "srgb" }).data; // upper half: the screen
-      let sum = 0;
-      for (let i = 0; i < d.length; i += 64) sum += d[i] + d[i + 1] + d[i + 2];
-      return { url: c.toDataURL("image/jpeg", 0.8), light: sum };
-    };
-    let best: { url: string; light: number } | null = null;
-    let tries = 0;
-    const sample = () => {
-      try {
-        const g = grab();
-        if (g && (!best || g.light > best.light)) best = g;
-      } catch {
-        /* a tainted or lost canvas: no still, the ticket shows without it */
+      c.getContext("2d")!.drawImage(src, (src.width - sw) / 2, (src.height - sh) / 2, sw, sh, 0, 0, 960, 540);
+      return c.toDataURL("image/jpeg", 0.8);
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const runPreview = useCallback(() => {
+    const first = sorted[0];
+    setStage("toHall"); // the hall fades in under the map, from the same camera
+    later(FADE_MS + 50, () => {
+      setDiveSeat(first);
+      setCamMode("seat"); // the dive
+    });
+    later(FADE_MS + 50 + DIVE_MS, () => {
+      setStage("hall");
+      later(700, () => {
+        const url = capture();
+        if (url) shot.current = { seat: first, url }; // the checkout's "view from your seat"
+      });
+    });
+  }, [sorted, capture, later]);
+
+  const preview = () => {
+    if (!full3D || !sorted.length || stage !== "map") return;
+    if (!hallReady) {
+      pendingPreview.current = true;
+      setHallOn(true);
+      setWaiting(true);
+      return;
+    }
+    runPreview();
+  };
+  useEffect(() => {
+    if (hallReady && pendingPreview.current) {
+      pendingPreview.current = false;
+      setWaiting(false);
+      runPreview();
+    }
+  }, [hallReady, runPreview]);
+
+  const backToSeats = () => {
+    if (stage !== "hall") return;
+    setStage("toMap");
+    setCamMode("topdown"); // rise back to the map's camera
+    later(DIVE_MS, () => setStage("map"));
+  };
+
+  // ── moving the block: drag, tap, keys ──
+  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
+  const [ghost, setGhost] = useState<string[] | null>(null);
+  const downAt = useRef<{ x: number; y: number; onGroup: boolean } | null>(null);
+  const nearest = (p: { x: number; y: number }) => {
+    if (!td) return null;
+    let best: string | null = null;
+    let bd = Infinity;
+    for (const [id, q] of td.seats) {
+      const d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (d < bd) {
+        bd = d;
+        best = id;
       }
-      if (++tries < 5) window.setTimeout(sample, 220);
-      else {
-        saveSeatView(show.id, best?.url ?? null);
-        window.setTimeout(go, 300);
+    }
+    return best && bd < td.pitch * 1.3 ? byId.get(best)! : null;
+  };
+  const candidate = (p: { x: number; y: number }) => {
+    const s = nearest(p);
+    return s ? groupAround(layout.seats, booked, s, count) : null;
+  };
+
+  const onDown = (e: React.PointerEvent) => {
+    if (stage !== "map" || !td) return;
+    const p = { x: e.clientX, y: e.clientY };
+    const onGroup = sorted.some((id) => {
+      const q = td.seats.get(id)!;
+      return Math.hypot(q.x - p.x, q.y - p.y) < Math.max(glyph * 0.8, 14);
+    });
+    downAt.current = { ...p, onGroup };
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+  };
+  const onMove = (e: React.PointerEvent) => {
+    const d = downAt.current;
+    if (!d || !d.onGroup) return;
+    const p = { x: e.clientX, y: e.clientY };
+    if (drag || Math.hypot(p.x - d.x, p.y - d.y) > 4) {
+      setDrag(p);
+      setGhost(candidate(p));
+    }
+  };
+  const onUp = (e: React.PointerEvent) => {
+    const d = downAt.current;
+    downAt.current = null;
+    if (!d) return;
+    if (drag) commit(ghost);
+    else {
+      // tap: move the block to the tapped seat
+      const s = nearest({ x: e.clientX, y: e.clientY });
+      if (s && !booked.has(s.id) && !sorted.includes(s.id)) commit(groupAround(layout.seats, booked, s, count));
+    }
+    setDrag(null);
+    setGhost(null);
+  };
+  const onKey = (e: React.KeyboardEvent) => {
+    if (stage !== "map" || !sorted.length) return;
+    const head = byId.get(sorted[0])!;
+    const cols = sorted.map((id) => byId.get(id)!.col);
+    const midCol = (Math.min(...cols) + Math.max(...cols)) / 2;
+    const rows = [...rowsOf(layout.seats).values()];
+    const step = (dRow: number, dCol: number) => {
+      const row = rows.find((r) => r[0].rowIndex === head.rowIndex + dRow);
+      if (!row) return;
+      // walk outwards until the block lands somewhere new
+      for (let k = 1; k <= 24; k++) {
+        const col = midCol + dCol * k;
+        const target = row.reduce((b, s) => (Math.abs(s.col - col) < Math.abs(b.col - col) ? s : b), row[0]);
+        const g = groupAround(layout.seats, booked, target, count);
+        if (g && g.join() !== sorted.join()) return commit(g);
+        if (!dCol) return;
       }
     };
-    window.setTimeout(sample, 1450);
+    const keys: Record<string, () => void> = {
+      ArrowLeft: () => step(0, -1),
+      ArrowRight: () => step(0, 1),
+      ArrowUp: () => step(-1, 0),
+      ArrowDown: () => step(1, 0),
+      "+": () => setCountTo(count + 1),
+      "=": () => setCountTo(count + 1),
+      "-": () => setCountTo(count - 1),
+    };
+    const fn = keys[e.key];
+    if (fn) {
+      e.preventDefault();
+      fn();
+    }
+  };
+
+  // ── leaving for checkout (§9.6): the still from your seat if you previewed it, then the fade to paper ──
+  const [leaving, setLeaving] = useState(false);
+  const goCheckout = () => {
+    if (leaving || !sorted.length) return;
+    setLeaving(true);
+    startHold(show.id, sorted);
+    let url = shot.current?.seat === sorted[0] ? shot.current.url : null;
+    if (!url && stage === "hall" && diveSeat === sorted[0]) url = capture();
+    saveSeatView(show.id, url);
+    later(600, () => router.push(`/book/checkout?show=${encodeURIComponent(show.id)}&seats=${encodeURIComponent(sorted.join(","))}`));
   };
 
   const title = (lang === "bn" && movie.titleBn) || movie.title;
   const dateLabel = new Date(`${show.date}T00:00:00`).toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric", month: "short" });
-  const info = [title, (lang === "bn" && branch.nameBn) || branch.name, hallName(hall, lang), dateLabel, formatTime(show.time)].join(" · ");
-  const show3D = view === "3d" || mode === "seat";
-  const popupSeat = mode === "overview" && view === "3d" && !phone ? pinned : null;
-  const seatView = mode === "seat" && seatId ? layout.byId.get(seatId) : null;
+  const meta = [dateLabel, formatTime(show.time), hallName(hall, lang)].join(" · ");
+  const inHall = stage !== "map";
+  const mapVisible = stage === "map";
+  const totalText = `৳${total.toLocaleString("en-US")}`;
+  const selectedSet = useMemo(() => new Set(sorted), [sorted]);
+  const screenY = td && box ? Math.max(td.screen.y, box.y - 44) : 0;
 
-  const popup = popupSeat && (
-    <div
-      className="seat-popup glass"
-      onPointerEnter={() => {
-        popupHover.current = true;
-        window.clearTimeout(clearTimer.current);
-      }}
-      onPointerLeave={() => {
-        popupHover.current = false;
-        setPinned(null);
-      }}
-    >
-      <p className="text-[14px] font-semibold text-white">{t("booking.rowSeat", { row: popupSeat.row, seat: popupSeat.number })}</p>
-      {booked.has(popupSeat.id) ? (
-        <p className="mt-1 text-[13px] text-muted">{t("booking.booked")}</p>
-      ) : (
-        <>
-          <p className="mt-1 text-[13px] text-muted">
-            {t(CLASS_KEY[popupSeat.class])} · <span className="text-white tabular-nums">৳{price(popupSeat.class)}</span>
-          </p>
-          <div className="mt-3 flex gap-2">
-            <button type="button" onClick={() => toggle(popupSeat.id)} className="seat-popup__btn seat-popup__btn--primary focus-ring">
-              {selected.has(popupSeat.id) ? `${t("booking.selected")} ✓` : t("booking.select")}
-            </button>
-            <button type="button" onClick={() => viewFrom(popupSeat.id)} className="seat-popup__btn focus-ring">
-              <Icon name="eye" size={16} />
-              {t("booking.viewFromSeat")}
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
+  // your row and its neighbours, shown at the bottom in the hall view (reference video A)
+  const strip = useMemo(() => {
+    if (!sorted.length) return null;
+    const first = byId.get(sorted[0])!;
+    const rows = [...rowsOf(layout.seats).values()].filter((r) => Math.abs(r[0].rowIndex - first.rowIndex) <= 1);
+    const cols = sorted.filter((id) => byId.get(id)!.row === first.row).map((id) => byId.get(id)!.col);
+    return { rows, center: (Math.min(...cols) + Math.max(...cols)) / 2, row: first.row };
+  }, [sorted, byId, layout.seats]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-night">
+    <div className="fixed inset-0 overflow-hidden bg-night select-none">
       <Navbar />
 
-      {/* the hall */}
-      <div data-hall className={`absolute inset-0 transition-opacity duration-500 ${show3D ? "z-[5] opacity-100" : "pointer-events-none opacity-0"}`}>
-        {hallOn && (
-        <Hall3D
-          className="!absolute inset-0"
-          hall={hall}
-          bookedSeats={show.bookedSeats}
-          mode={mode}
-          seatId={seatId}
-          resetKey={resetKey}
-          trailer={movie.trailer}
-          poster={movie.trailerPoster}
-          trailerCrop={movie.trailerCrop}
-          startAt={0.18}
-          houseLights={mode === "seat" ? 0.15 : 0.85}
-          active={show3D}
-          selected={selected}
-          hovered={hover?.id ?? null}
-          highlightClass={highlight}
-          onSeatPointer={(s) => onPointer(s)}
-          onSeatClick={(s) => {
-            if (mode !== "overview") return;
-            toggle(s.id);
+      {/* the 3D hall, under the map */}
+      <div
+        data-hall
+        className="absolute inset-0 transition-opacity ease-out"
+        style={{ opacity: inHall ? 1 : 0, transitionDuration: `${FADE_MS}ms`, pointerEvents: stage === "hall" ? "auto" : "none" }}
+      >
+        {hallOn && camTop && (
+          <Hall3D
+            className="!absolute inset-0"
+            hall={hall}
+            bookedSeats={show.bookedSeats}
+            mode={camMode}
+            seatId={diveSeat}
+            topdown={camTop}
+            trailer={movie.trailer}
+            poster={movie.trailerPoster}
+            trailerCrop={movie.trailerCrop}
+            startAt={0.18}
+            houseLights={camMode === "seat" ? 0.12 : 0.45}
+            playing={inHall}
+            active={inHall || !hallReady}
+            selected={selectedSet}
+            onReady={() => setHallReady(true)}
+          />
+        )}
+        {/* soft night edges so the header and footer stay readable over the hall */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-night/85 to-transparent" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-night/90 to-transparent" />
+      </div>
+
+      {/* the seat map */}
+      {td && (
+        <div
+          role="application"
+          tabIndex={0}
+          aria-label={t("booking.mapLabel")}
+          aria-describedby="seatmap-help"
+          onPointerDown={onDown}
+          onPointerMove={onMove}
+          onPointerUp={onUp}
+          onPointerCancel={() => {
+            downAt.current = null;
+            setDrag(null);
+            setGhost(null);
           }}
-          anchor={popup ? { seatId: popupSeat!.id, node: popup } : null}
-          markers={[...selected]}
-          focusSeats={focus?.ids ?? null}
-          focusKey={focus?.key ?? 0}
-          onReady={markDoorsReady}
-        />
-        )}
-      </div>
-
-      {view === "2d" && (
-        <div ref={mapRef} className="absolute inset-x-0 bottom-[148px] overflow-auto px-4 md:bottom-[120px] md:px-8" style={{ top: mapTop }}>
-          {phone && (
-            <ul className="mb-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[12px] text-white/75" aria-label={t("booking.legend")}>
-              {classes.map((c) => (
-                <li key={c} className="inline-flex items-center gap-1.5">
-                  <span className="legend-dot" style={{ background: c === "vip" ? "#6B1E24" : c === "semi-recliner" ? "#8d1d23" : "#C0262D" }} />
-                  {t(CLASS_KEY[c])} <span className="text-muted tabular-nums">৳{price(c)}</span>
-                </li>
-              ))}
-              <li className="inline-flex items-center gap-1.5">
-                <span className="legend-dot" style={{ background: "#1d1c20", boxShadow: "inset 0 0 0 1px rgb(255 255 255 / .15)" }} />
-                {t("booking.booked")}
-              </li>
-            </ul>
-          )}
-          <SeatMap2D hall={hall} seats={layout.seats} booked={booked} selected={selected} onToggle={toggle} price={price} />
+          onKeyDown={onKey}
+          className={`seatmap focus-ring absolute inset-0 touch-none ${drag ? "is-dragging" : ""}`}
+          style={{
+            opacity: mapVisible ? 1 : 0,
+            transition: `opacity ${mapVisible ? 300 : 350}ms ease ${stage === "toHall" ? 300 : 0}ms`,
+            pointerEvents: mapVisible ? "auto" : "none",
+            ["--g" as string]: `${glyph}px`,
+          }}
+        >
+          <p id="seatmap-help" className="sr-only">
+            {t("booking.mapHelp")}
+          </p>
+          {/* the screen */}
+          <svg aria-hidden className="pointer-events-none absolute top-0 left-0 overflow-visible" width="1" height="1">
+            <path
+              d={`M ${td.screen.x0} ${screenY + 10} Q ${(td.screen.x0 + td.screen.x1) / 2} ${screenY - 8} ${td.screen.x1} ${screenY + 10}`}
+              fill="none"
+              stroke="rgb(255 255 255 / 0.32)"
+              strokeWidth="2"
+            />
+          </svg>
+          <span className="seatmap__screen" style={{ left: (td.screen.x0 + td.screen.x1) / 2, top: screenY + 16 }}>
+            {t("booking.screen")}
+          </span>
+          {/* row letters */}
+          {[...rowsOf(layout.seats).values()].map((row) => {
+            const q = td.seats.get(row[0].id)!;
+            return (
+              <span key={row[0].row} aria-hidden className="seatmap__row" style={{ left: q.x - td.pitch * 1.15, top: q.y }}>
+                {row[0].row}
+              </span>
+            );
+          })}
+          {/* seats */}
+          {layout.seats.map((s) => {
+            const q = td.seats.get(s.id)!;
+            return <span key={s.id} aria-hidden className={`seat-g ${booked.has(s.id) ? "seat-g--taken" : `seat-g--free seat-g--${s.class}`}`} style={{ left: q.x, top: q.y }} />;
+          })}
+          {/* ghost: where the block will land */}
+          {ghost?.map((id) => {
+            const q = td.seats.get(id)!;
+            return <span key={`g-${id}`} aria-hidden className="seat-g seat-g--ghost" style={{ left: q.x, top: q.y }} />;
+          })}
+          {ghost &&
+            (() => {
+              const l = groupLabel(layout.seats, ghost);
+              const qs = ghost.map((id) => td.seats.get(id)!);
+              const x = qs.reduce((a, q) => a + q.x, 0) / qs.length;
+              const y = Math.min(...qs.map((q) => q.y));
+              return l ? (
+                <span className="seat-tip" style={{ left: x, top: y - glyph * 0.6 - 18 }}>
+                  {l.row ? t("booking.rowSeats", { row: l.row, seats: l.seats }) : l.seats}
+                </span>
+              ) : null;
+            })()}
+          {/* your seats: gold chips that move as one block (stacked under the pointer while dragging) */}
+          {sorted.map((id, i) => {
+            const q = td.seats.get(id);
+            if (!q) return null;
+            const p = drag ? { x: drag.x + i * glyph * 0.5, y: drag.y - i * 3, r: i * 6 } : { x: q.x, y: q.y, r: 0 };
+            return (
+              <span
+                key={`chip-${i}`}
+                aria-hidden
+                className={`seat-g seat-g--yours seat-g--chip ${drag ? "is-lifted" : ""}`}
+                style={{
+                  transform: `translate(${p.x}px, ${p.y}px) translate(-50%, -50%) rotate(${p.r}deg)`,
+                  transitionDelay: drag ? "0ms" : `${i * 40}ms`,
+                  zIndex: drag ? 30 - i : 5,
+                }}
+              >
+                {glyph >= 14 ? byId.get(id)!.number : ""}
+              </span>
+            );
+          })}
         </div>
       )}
+      <p aria-live="polite" className="sr-only">
+        {announce}
+      </p>
 
-      {/* top-left: change showtime + show info */}
-      <div ref={headRef} className={`pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto flex max-w-[1440px] items-start justify-between gap-3 px-4 max-md:flex-col md:top-[112px] md:gap-6 md:px-8 ${mode === "seat" && phone ? "invisible" : ""}`}>
-        <div className="pointer-events-auto">
-          <Link href={`/book?movie=${movie.slug}`} className="focus-ring inline-flex items-center gap-2 text-[14px] text-white/80 hover:text-white">
-            <Icon name="arrowLeft" size={18} />
-            {t("booking.changeShowtime")}
-          </Link>
-          <p className="mt-2 text-[14px] font-medium text-white md:text-[15px]">{info}</p>
-          <div className="mt-3">
-            <Stepper step={2} />
+      {/* header (the column) */}
+      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto w-full max-w-[760px] px-4 md:top-[104px]">
+        <Link href={`/book?movie=${movie.slug}`} className="focus-ring pointer-events-auto inline-flex items-center gap-1.5 text-[13px] text-white/70 hover:text-white">
+          <Icon name="arrowLeft" size={16} />
+          {t("booking.changeShowtime")}
+        </Link>
+        <div className="mt-2 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="truncate text-[18px] font-semibold text-white md:text-[20px]">{title}</h1>
+            <p className="mt-0.5 text-[13px] text-muted">{meta}</p>
+          </div>
+          <div className={`tickets transition-opacity duration-300 ${inHall ? "opacity-0" : "pointer-events-auto"}`} role="group" aria-label={t("booking.ticketCount")}>
+            <button type="button" className="focus-ring" onClick={() => setCountTo(count - 1)} disabled={count <= 1 || inHall} aria-label={t("booking.lessTickets")}>
+              <Icon name="minus" size={16} />
+            </button>
+            <span className="tabular-nums">{t(count === 1 ? "booking.ticketOne" : "booking.ticketMany", { n: count })}</span>
+            <button type="button" className="focus-ring" onClick={() => setCountTo(count + 1)} disabled={count >= MAX_SEATS || inHall} aria-label={t("booking.moreTickets")}>
+              <Icon name="plus" size={16} />
+            </button>
           </div>
         </div>
-
-        {/* top-right: 3D / 2D + Best available + Reset view */}
-        {mode === "overview" && (
-          <div className="pointer-events-auto flex flex-wrap items-center gap-2 max-md:flex-nowrap md:justify-end md:gap-3">
-            {phone ? (
-              // §11: phones start in 2D; capable phones can open the whole hall in 3D
-              full3D && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (view === "2d") setHallOn(true);
-                    setView(view === "2d" ? "3d" : "2d");
-                  }}
-                  className="glass focus-ring inline-flex h-10 shrink-0 items-center gap-2 rounded-pill border border-white/10 px-4 text-[14px] font-medium text-white"
-                >
-                  <Icon name={view === "2d" ? "armchair" : "map"} size={18} />
-                  {view === "2d" ? t("booking.explore3d") : t("booking.map2d")}
-                </button>
-              )
-            ) : (
-              full3D && (
-                <div className="glass flex rounded-pill border border-white/10 p-1" role="group" aria-label={t("booking.viewMode")}>
-                  {(["3d", "2d"] as const).map((v) => (
-                    <button
-                      key={v}
-                      type="button"
-                      onClick={() => {
-                        if (v === "3d") setHallOn(true);
-                        setView(v);
-                      }}
-                      aria-pressed={view === v}
-                      className={`seg-btn focus-ring ${view === v ? "is-on" : ""}`}
-                    >
-                      {v.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              )
-            )}
-            <div className="glass flex items-center gap-1 rounded-pill border border-white/10 py-1 pr-1 pl-4">
-              <button type="button" onClick={pickBest} className="focus-ring inline-flex items-center gap-2 text-[14px] font-medium text-white">
-                <Icon name="magic" size={18} />
-                {phone ? t("booking.bestShort") : t("booking.bestAvailable")}
-              </button>
-              <label className="relative">
-                <span className="sr-only">{t("booking.howMany")}</span>
-                <select value={bestN} onChange={(e) => setBestN(+e.target.value)} className="focus-ring h-8 appearance-none rounded-pill bg-white/10 pr-7 pl-3 text-[14px] text-white">
-                  {Array.from({ length: MAX_SEATS }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n} className="bg-[#0b0810]">
-                      {n}
-                    </option>
-                  ))}
-                </select>
-                <Icon name="chevronDown" size={14} className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-muted" />
-              </label>
-            </div>
-            {view === "3d" && (
-              <button type="button" onClick={resetView} className="glass focus-ring grid size-10 place-items-center rounded-pill border border-white/10 text-white" aria-label={t("booking.resetView")} title={t("booking.resetView")}>
-                <Icon name="restart" size={18} />
-              </button>
-            )}
-          </div>
-        )}
       </div>
-
-      {/* view from seat HUD */}
-      {seatView && !leaving && (
-        <div className="absolute inset-x-0 bottom-[132px] z-10 flex justify-center px-4 max-md:top-[84px] max-md:bottom-auto">
-          <div className="glass flex flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-card-md border border-white/10 py-2 pr-2 pl-5 md:rounded-pill">
-            <span className="text-[15px] font-medium text-white">{t("booking.viewFrom", { seat: seatView.id })}</span>
-            {!booked.has(seatView.id) && (
-              <Button size="sm" variant={selected.has(seatView.id) ? "secondary" : "primary"} onClick={() => toggle(seatView.id)}>
-                {selected.has(seatView.id) ? `${t("booking.selected")} ✓` : t("booking.selectThis")}
-              </Button>
-            )}
-            <Button size="sm" variant="secondary" icon="arrowLeft" onClick={backToHall}>
-              {t("booking.backToHall")}
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* §9.9 a seat was taken while choosing */}
       {takenNote && (
-        <div role="alert" className="absolute inset-x-0 z-20 flex justify-center px-4" style={{ top: mapTop }}>
+        <div role="alert" className="absolute inset-x-0 top-[180px] z-20 flex justify-center px-4">
           <div className="glass flex items-center gap-3 rounded-pill border border-white/10 py-2 pr-2 pl-4 text-[14px] text-white">
             <Icon name="info" size={18} className="text-gold" />
             {t(taken.length > 1 ? "booking.justTakenMany" : "booking.justTaken", { seat: taken.join(", ") })}
@@ -424,66 +480,100 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
         </div>
       )}
 
-      {/* §9.6 leaving for checkout: the hall fades to paper */}
-      <div aria-hidden className={`pointer-events-none fixed inset-0 z-[60] bg-paper transition-opacity duration-[600ms] ${leaving && (view !== "3d" || mode === "seat") ? "" : "opacity-0"}`} style={{ transitionDelay: leaving && view === "3d" ? "1700ms" : "0ms" }} />
-
-      {/* bottom bar */}
-      <div className="absolute inset-x-0 bottom-0 z-10 p-3 md:p-4">
-        <div className="glass mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-8 gap-y-3 rounded-card-md border border-white/10 px-4 py-3 md:px-6 md:py-4">
-          <ul className="flex flex-wrap items-center gap-4 text-[13px] text-white/80 max-md:hidden" aria-label={t("booking.legend")}>
-            {classes.map((c) => (
-              <li key={c}>
-                <button type="button" onMouseEnter={() => glowClass(c)} onFocus={() => glowClass(c)} className="focus-ring inline-flex items-center gap-2 hover:text-white">
-                  <span className={`legend-dot legend-dot--${c}`} style={{ background: c === "vip" ? "#6B1E24" : c === "semi-recliner" ? "#8d1d23" : "#C0262D" }} />
-                  {t(CLASS_KEY[c])} <span className="text-muted tabular-nums">৳{price(c)}</span>
-                </button>
-              </li>
-            ))}
-            <li className="inline-flex items-center gap-2">
-              <span className="legend-dot" style={{ background: "#1d1c20", boxShadow: "inset 0 0 0 1px rgb(255 255 255 / .15)" }} />
+      {/* footer (the column): legend / your row, summary, actions */}
+      <div ref={footRef} className="absolute inset-x-0 bottom-0 z-10 mx-auto w-full max-w-[760px] px-4 pb-5 md:pb-8">
+        <div className="relative h-[72px]">
+          <ul
+            className={`absolute inset-x-0 bottom-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[12px] text-white/70 transition-opacity duration-300 ${inHall ? "opacity-0" : ""}`}
+            aria-label={t("booking.legend")}
+          >
+            <li className="inline-flex items-center gap-1.5">
+              <span className="legend-g seat-g--free seat-g--premium" />
+              {t("booking.free")}
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <span className="legend-g seat-g--taken" />
               {t("booking.booked")}
             </li>
-            <li className="inline-flex items-center gap-2">
-              <span className="legend-dot" style={{ background: "var(--gold)" }} />
-              {t("booking.selected")}
+            <li className="inline-flex items-center gap-1.5">
+              <span className="legend-g seat-g--yours" />
+              {t("booking.yours")}
             </li>
+            {classes.length > 1 &&
+              classes.map((c) => (
+                <li key={c} className="inline-flex items-center gap-1.5">
+                  <span className={`legend-g seat-g--free seat-g--${c}`} />
+                  {t(c === "semi-recliner" ? "booking.classSemiRecliner" : c === "vip" ? "booking.classVip" : "booking.classPremium")}{" "}
+                  <span className="text-white/50 tabular-nums">৳{price(c)}</span>
+                </li>
+              ))}
           </ul>
-
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 max-md:basis-full">
-            {selectedSeats.length === 0 && <span className="text-[14px] text-muted">{t("booking.noSeats")}</span>}
-            {selectedSeats.map((s) => (
-              <span key={s.id} className="seat-chip">
-                <button type="button" className="focus-ring inline-flex items-center gap-1" onClick={() => viewFrom(s.id)} title={full3D ? t("booking.viewFromSeat") : undefined} aria-label={full3D ? `${t("booking.viewFromSeat")} ${s.id}` : s.id}>
-                  {full3D && <Icon name="eye" size={14} className="text-white/60" />}
-                  {s.id}
-                </button>
-                <button type="button" onClick={() => toggle(s.id)} className="focus-ring text-white/60 hover:text-white" aria-label={t("booking.remove", { seat: s.id })}>
-                  <Icon name="closeSimple" size={14} />
-                </button>
-              </span>
-            ))}
-            {limitHit && <span className="text-[13px] text-gold">{t("booking.maxSeats")}</span>}
-            {gap && !limitHit && (
-              <span className="inline-flex items-center gap-2 text-[13px] text-white/80">
-                {t(gap.dir === 1 ? "booking.oneSeatAlone" : "booking.oneSeatAloneLeft")}
-                <button type="button" onClick={applyShift} className="focus-ring rounded-pill border border-white/25 px-3 py-1 text-[13px] font-medium text-white hover:border-purple-light">
-                  {t("booking.shift")}
-                </button>
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-5 max-md:w-full max-md:justify-between">
-            <div className="md:text-right">
-              <p className="text-[12px] text-muted">{t("booking.total")}</p>
-              <p className="text-[20px] font-semibold text-white tabular-nums">৳{total.toLocaleString("en-US")}</p>
+          {strip && (
+            <div aria-hidden className={`seat-strip transition-opacity duration-500 ${stage === "hall" ? "opacity-100" : "opacity-0"}`}>
+              {strip.rows.map((row) => (
+                <div key={row[0].row} className={`seat-strip__row ${row[0].row === strip.row ? "is-mine" : ""}`}>
+                  {row[0].row === strip.row && (
+                    <span className="seat-strip__label" style={{ left: `calc(50% + ${(row[0].col - strip.center) * 26 - 22}px)` }}>
+                      {row[0].row}
+                    </span>
+                  )}
+                  {row.map((s) => (
+                    <span
+                      key={s.id}
+                      className={`seat-g ${selectedSet.has(s.id) ? "seat-g--yours" : booked.has(s.id) ? "seat-g--taken" : `seat-g--free seat-g--${s.class}`}`}
+                      style={{ left: `calc(50% + ${(s.col - strip.center) * 26}px)`, top: "50%" }}
+                    >
+                      {selectedSet.has(s.id) ? s.number : ""}
+                    </span>
+                  ))}
+                </div>
+              ))}
             </div>
-            <Button disabled={selected.size === 0} loading={leaving} onClick={goCheckout} icon="arrowRight">
-              {t("common.continue")}
+          )}
+        </div>
+
+        <div className="flex items-baseline justify-between gap-4 border-t border-white/10 pt-3 text-[13px]">
+          <p className="min-w-0 truncate text-white">
+            {label ? (
+              label.row ? (
+                <>
+                  {t("booking.row")} {label.row}{" "}
+                  <span className="text-muted">
+                    · {t("booking.seatsWord")} {label.seats}
+                  </span>
+                </>
+              ) : (
+                <span className="text-muted">{label.seats}</span>
+              )
+            ) : (
+              <span className="text-muted">{t("booking.noSeats")}</span>
+            )}
+            {!together && sorted.length > 1 && <span className="ml-2 text-gold">· {t("booking.splitNote", { n: count })}</span>}
+          </p>
+          <p className="shrink-0 text-muted tabular-nums">{unit !== null && sorted.length ? `${sorted.length} × ৳${unit}` : ""}</p>
+        </div>
+
+        <div className="mt-3 flex gap-3">
+          {full3D && (
+            <Button
+              variant="secondary"
+              icon={inHall ? "widget" : "eye"}
+              onClick={inHall ? backToSeats : preview}
+              disabled={stage === "toHall" || stage === "toMap" || !sorted.length}
+              loading={waiting}
+              className="shrink-0"
+            >
+              {inHall ? t("booking.seatsBtn") : t("booking.preview")}
             </Button>
-          </div>
+          )}
+          <Button className="flex-1" disabled={!sorted.length} loading={leaving} onClick={goCheckout}>
+            {t("common.continue")} · <RollingNumber value={totalText} />
+          </Button>
         </div>
       </div>
+
+      {/* §9.6 leaving for checkout: fade to paper */}
+      <div aria-hidden className={`pointer-events-none fixed inset-0 z-[60] bg-paper transition-opacity duration-[600ms] ${leaving ? "" : "opacity-0"}`} />
     </div>
   );
 }

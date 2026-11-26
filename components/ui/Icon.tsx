@@ -12,7 +12,7 @@ export type IconName = keyof typeof ICONS;
 interface Props {
   name: IconName;
   /** 16 inline · 20 buttons/navbar · 24 controls · 32–40 feature cards (§5 Icons) */
-  size?: 14 | 16 | 18 | 20 | 24 | 32 | 40;
+  size?: number;
   className?: string;
   /** Decorative by default; pass a label when the icon carries meaning on its own. */
   label?: string;

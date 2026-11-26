@@ -32,7 +32,7 @@ export interface Hall {
 }
 
 /** How the accent lights are drawn on the side walls (procedural, §6 Branch hall themes). */
-export type AccentPattern = "diagonal" | "zigzag" | "hexagon" | "columns" | "lines" | "downlights" | "stars" | "sconces";
+export type AccentPattern = "diagonal" | "zigzag" | "hexagon" | "columns" | "lines" | "downlights" | "stars" | "sconces" | "slats";
 
 export interface BranchTheme {
   seat: string;

@@ -10,7 +10,7 @@ import { EYE_HEIGHT, type HallLayout } from "@/lib/hall-layout";
 import { EASE_IN_OUT } from "@/lib/motion";
 
 
-export type CameraMode = "front" | "overview" | "seat" | "portrait";
+export type CameraMode = "front" | "overview" | "seat" | "portrait" | "topdown";
 
 interface Props {
   layout: HallLayout;
@@ -24,6 +24,8 @@ interface Props {
   /** overview: glide in to show these seats (§9.5 Best available) */
   focusSeats?: string[] | null;
   focusKey?: number;
+  /** "topdown": the camera the seat map is drawn from (lib/topdown.ts) */
+  topdown?: { pos: THREE.Vector3; look: THREE.Vector3; fov: number } | null;
 }
 
 interface Pose {
@@ -34,7 +36,8 @@ interface Pose {
 const OVERVIEW_ELEVATION = THREE.MathUtils.degToRad(52); // 50–55° looking down (§9.5)
 const MARGIN = 0.92; // seats fill the view with ~8% margin
 const BASE_FOV = 42; // overview + view from seat
-const HERO_FOV = 54; // the angled hero shot needs a wider lens to keep the whole screen on the right half
+const HERO_FOV = 54;
+const SEAT_FOV = 66; // view from seat: the screen plus the lit walls around it, like the reference video
 
 function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -136,7 +139,7 @@ export function focusPose(layout: HallLayout, overview: Pose, ids: string[]): Po
   return { pos: c.clone().addScaledVector(dir, dist), look: c };
 }
 
-export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, focusSeats, focusKey = 0 }: Props) {
+export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, focusSeats, focusKey = 0, topdown }: Props) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const size = useThree((s) => s.size);
   const gl = useThree((s) => s.gl);
@@ -145,6 +148,8 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
   const tweening = useRef(false);
   const first = useRef(true);
   const [orbitReady, setOrbitReady] = useState(false);
+  const prevMode = useRef<CameraMode>(mode);
+  const fovTween = useRef(false); // the dive tweens the lens itself
 
   // look-around while in a seat: full 360° yaw, ±30° pitch, eases back after ~2s idle
   const look = useRef({ yaw: 0, pitch: 0, dragging: false, lastInput: 0 });
@@ -158,10 +163,11 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
     if (mode === "overview") return (focusSeats?.length && focusPose(layout, overview, focusSeats)) || overview;
     if (mode === "seat" && seatId) return seatPose(layout, seatId) ?? overview;
     if (mode === "portrait") return portraitPose(layout, size.width / size.height);
+    if (mode === "topdown" && topdown) return { pos: topdown.pos.clone(), look: topdown.look.clone() };
     return frontPose(layout);
     // resetKey: recompute (and re-tween) on "Reset view"
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, seatId, layout, overview, resetKey, focusKey]);
+  }, [mode, seatId, layout, overview, resetKey, focusKey, topdown]);
 
   useEffect(() => {
     const from = { p: pose.current.pos.clone(), l: pose.current.look.clone() };
@@ -172,21 +178,51 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
     }
     look.current.yaw = 0;
     look.current.pitch = 0;
-    const duration = first.current || reducedMotion() ? 0 : mode === "seat" ? 1.2 : 1.0;
+    // reference video A: map → seat is one continuous dive (descend first, tilt up to the screen late);
+    // seat → map is the same move backwards (tilt down first, then rise)
+    const from_ = prevMode.current;
+    prevMode.current = mode;
+    const dive = (from_ === "topdown" && mode === "seat") || (from_ === "seat" && mode === "topdown");
+    const rising = from_ === "seat" && mode === "topdown";
+    const duration = first.current || reducedMotion() ? 0 : dive ? 2.2 : mode === "seat" ? 1.2 : 1.0;
     first.current = false;
     const state = { t: 0 };
     tweening.current = true;
     setOrbitReady(false);
+    const fov0 = camera.fov;
+    const fov1 = mode === "topdown" && topdown ? topdown.fov : mode === "seat" ? (size.width / size.height < 1 ? camera.fov : SEAT_FOV) : camera.fov;
+    fovTween.current = dive && duration > 0;
+    // the map camera must match the flat map exactly the moment the hall fades in: set the lens now, not eased
+    if (mode === "topdown" && topdown && !dive) {
+      camera.fov = topdown.fov;
+      camera.updateProjectionMatrix();
+    }
+    const easeInOut = gsap.parseEase("power2.inOut");
+    const easeIn = gsap.parseEase("power2.in");
+    const easeOut = gsap.parseEase("power2.out");
     const tween = gsap.to(state, {
       t: 1,
       duration,
-      ease: EASE_IN_OUT,
+      ease: dive ? "none" : EASE_IN_OUT,
       onUpdate: () => {
-        pose.current.pos.lerpVectors(from.p, targetPose.pos, state.t);
-        pose.current.look.lerpVectors(from.l, targetPose.look, state.t);
+        const t = state.t;
+        if (!dive) {
+          pose.current.pos.lerpVectors(from.p, targetPose.pos, t);
+          pose.current.look.lerpVectors(from.l, targetPose.look, t);
+          return;
+        }
+        const pt = easeInOut(t);
+        const lt = rising ? easeOut(Math.min(1, t / 0.7)) : easeIn(Math.max(0, (t - 0.25) / 0.75));
+        pose.current.pos.lerpVectors(from.p, targetPose.pos, pt);
+        pose.current.look.lerpVectors(from.l, targetPose.look, lt);
+        if (fovTween.current) {
+          camera.fov = THREE.MathUtils.lerp(fov0, fov1, lt);
+          camera.updateProjectionMatrix();
+        }
       },
       onComplete: () => {
         tweening.current = false;
+        fovTween.current = false;
         setOrbitReady(true);
         if (controls.current) {
           controls.current.target.copy(targetPose.look);
@@ -197,9 +233,13 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
     });
     if (duration === 0) tween.progress(1);
     return () => {
+      // React runs effects twice in development: if this tween never got going, forget we switched modes,
+      // so the re-run still knows it is a dive
+      if (duration > 0 && tween.progress() < 0.02) prevMode.current = from_;
       tween.kill();
     };
   }, [targetPose, camera, mode]);
+  // eslint note: size/topdown are read when a tween starts; a new tween starts when they change the target
 
   // pointer look-around in seat mode
   useEffect(() => {
@@ -243,14 +283,20 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
     // lens: wider for the hero, normal elsewhere (eased so mode changes never jump)
     const aspect = size.width / size.height;
     const targetFov =
-      mode === "front"
+      mode === "topdown" && topdown
+        ? topdown.fov
+        : mode === "front"
         ? HERO_FOV
         : mode === "portrait"
           ? portraitPose(layout, aspect).fov
           : mode === "seat" && aspect < 1
             ? seatFovPortrait(layout, seatId, aspect)
-            : BASE_FOV;
-    if (Math.abs(camera.fov - targetFov) > 0.01) {
+            : mode === "seat"
+              ? SEAT_FOV
+              : BASE_FOV;
+    // a frame can land between the new mode arriving and the effect above starting its tween: leave the lens alone
+    const pending = prevMode.current !== mode;
+    if (!pending && !fovTween.current && Math.abs(camera.fov - targetFov) > 0.01) {
       camera.fov += (targetFov - camera.fov) * (first.current ? 1 : 1 - Math.exp(-dt * 4));
       camera.updateProjectionMatrix();
     }

@@ -115,7 +115,22 @@
     "justTakenMany": "Seats {seat} were just taken by someone else. Your other seats are still selected.",
     "explore3d": "Explore in 3D",
     "map2d": "Seat map",
-    "bestShort": "Best seats"
+    "bestShort": "Best seats",
+    "rowSeats": "Row {row} · {seats}",
+    "row": "Row",
+    "seatsWord": "Seats",
+    "ticketOne": "{n} ticket",
+    "ticketMany": "{n} tickets",
+    "ticketCount": "Number of tickets",
+    "lessTickets": "One ticket less",
+    "moreTickets": "One ticket more",
+    "free": "Free",
+    "yours": "Yours",
+    "preview": "Preview",
+    "seatsBtn": "Seats",
+    "splitNote": "not enough seats together for {n}, so they're split",
+    "mapLabel": "Seat map",
+    "mapHelp": "Your seats move together. Arrow keys move them, plus and minus change the number of tickets. You can also drag them or tap a free seat."
   },
   "checkout": {
     "yourDetails": "Your details",
