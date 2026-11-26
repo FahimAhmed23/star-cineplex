@@ -63,48 +63,47 @@
   "approx": true,
   "zoom": {
     "crop": {
-      "x": 220,
-      "y": 342,
-      "w": 280,
-      "h": 290
+      "x": 60,
+      "y": 150,
+      "w": 480,
+      "h": 600
     },
-    "note": "Branch stars spread apart so each reads (min 8 units); positions approximate",
     "points": {
       "bashundhara-city": {
-        "x": 23.33,
-        "y": 24.36
+        "x": 46.82,
+        "y": 44.17
       },
       "shimanto-shambhar": {
-        "x": 20.89,
-        "y": 25.73
+        "x": 44.07,
+        "y": 45.31
       },
       "sks-tower": {
-        "x": 23.3,
-        "y": 21.62
+        "x": 46.96,
+        "y": 41.68
       },
       "sony-square": {
-        "x": 20.01,
-        "y": 20.43
+        "x": 42.52,
+        "y": 40.73
       },
       "military-museum": {
-        "x": 20.88,
-        "y": 23.02
+        "x": 44.23,
+        "y": 42.83
       },
       "centrepoint": {
-        "x": 22.46,
-        "y": 18.99
+        "x": 46.62,
+        "y": 37.48
       },
       "shimanto-tower": {
-        "x": 26.46,
-        "y": 27.45
+        "x": 53.89,
+        "y": 49.91
       },
       "bali-arcade": {
-        "x": 80.09,
-        "y": 81.29
+        "x": 80.76,
+        "y": 71.36
       },
       "finlay-square": {
-        "x": 77.3,
-        "y": 80.98
+        "x": 77.72,
+        "y": 71.07
       }
     }
   }

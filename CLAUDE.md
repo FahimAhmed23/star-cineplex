@@ -237,7 +237,9 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 - Home page: **100px between sections** (designer, Nov 26) — each section starts 100px after the previous one ends
   (Now Showing, Coming Soon, Branches: 100px top; Coming Soon and Branches 100px bottom before Moments / the footer).
   Moments keeps its scroll-driven height (its pinned headline, not a gap).
-  **Exception:** Coming Soon → Moments is **200px** (Coming Soon bottom padding; designer, Nov 26).
+  **Exceptions:** Coming Soon → Moments is **200px** (Coming Soon bottom padding; designer, Nov 26), and Branches →
+  footer is **200px** (Branches bottom padding; designer, Nov 27), where the footer hall's top fade is an eased
+  black gradient so the section's black melts into the image.
 
 ### Motion tokens
 - `--ease-out`: `cubic-bezier(0.22, 1, 0.36, 1)` — default for UI entering
@@ -630,10 +632,11 @@ film reel). No functional goal: no map links, no "near me", no showtimes, no but
 - **Left (440px):** headline **"One Star. Nine homes."** (`display-m`, word reveal, two lines) + "Star Cineplex across
   Bangladesh", then every branch as a list grouped by city — Dhaka 6 · Narayanganj 1 · Chattogram 2 — each row `01`
   (Plex Mono, `--purple-light`) · name · area, **shown in full, never truncated** (dropped when it repeats the city).
-- **Right (58vw, bleeding off the right edge):** a **zoomed map** — the dotted Bangladesh outline (Natural Earth via
-  `world-atlas`; `scripts/build-branch-map.mjs` → `data/branch-map.json` `zoom`) cropped to Dhaka, Narayanganj and
-  Chattogram, **fading out at the top, bottom and left**. A **five-point star on each branch only** (neighbouring Dhaka
-  stars nudged apart so each reads), small city names beside each group. **No lens, no lines, no glow.**
+- **Right (60vw, bleeding off the right edge):** a **lightly zoomed map** — the dotted Bangladesh outline (Natural
+  Earth via `world-atlas`; `scripts/build-branch-map.mjs` → `data/branch-map.json` `zoom`), cropped so most of the
+  country shows with Dhaka, Narayanganj and Chattogram well inside, **dissolving towards the corners** (radial mask).
+  A **five-point star on each branch only** (the Dhaka cluster opened up ×3.2 and nudged apart so each star reads, real
+  order kept), small city names beside each group. **No lens, no lines, no glow.**
 - **Card only on hover:** hovering a star (or its list row, or keyboard focus) shows that branch's card **beside its
   star** — its own hall still (§6 themes; `/dev/capture?mode=front&branch=<slug>&blank=1&screen=0.22&lights=0.4&w=960&h=600`
   → `/public/branches/halls/<slug>.webp`), `01`, name, area, one line. Nothing shows when nothing is hovered.

@@ -39,11 +39,15 @@ pts["bali-arcade"].map.x += 7; pts["finlay-square"].map.x -= 7;
 
 // the zoomed view (Nov 27): Dhaka, Narayanganj and Chattogram in one crop of the outline. Stars closer than MIN units
 // are pushed apart (with a weak pull back home) so each one reads; positions are approximate.
-const MIN = 8;
+const MIN = 15;
 const P = Object.fromEntries(Object.entries(pts).map(([k, v]) => [k, [v.map.x, v.map.y]]));
 P["bali-arcade"][0] -= 7; P["finlay-square"][0] += 7; // undo the country-map spread; the relaxation spreads them
+// open the Dhaka cluster up ×3.2 around its centre first, so the relaxation keeps the branches' real order
+const DHAKA = ["bashundhara-city", "shimanto-shambhar", "sks-tower", "sony-square", "military-museum", "centrepoint", "shimanto-tower"];
+const dc = [DHAKA.reduce((a, k) => a + P[k][0], 0) / DHAKA.length, DHAKA.reduce((a, k) => a + P[k][1], 0) / DHAKA.length];
+for (const k of DHAKA) P[k] = [dc[0] + (P[k][0] - dc[0]) * 3.2, dc[1] + (P[k][1] - dc[1]) * 3.2];
 const home = Object.fromEntries(Object.entries(P).map(([k, v]) => [k, [...v]]));
-for (let it = 0; it < 400; it++) {
+for (let it = 0; it < 600; it++) {
   const ks = Object.keys(P);
   for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) {
     const a = P[ks[i]], b = P[ks[j]];
@@ -52,7 +56,7 @@ for (let it = 0; it < 400; it++) {
   }
   for (const k of ks) { P[k][0] += (home[k][0] - P[k][0]) * 0.02; P[k][1] += (home[k][1] - P[k][1]) * 0.02; }
 }
-const crop = { x: 220, y: 342, w: 280, h: 290 };
+const crop = { x: 60, y: 150, w: 480, h: 600 };
 const r2 = (v) => Math.round(v * 100) / 100;
 const zoom = { crop, points: Object.fromEntries(Object.entries(P).map(([k, [x, y]]) => [k, { x: r2(((x - crop.x) / crop.w) * 100), y: r2(((y - crop.y) / crop.h) * 100) }])) };
 writeFileSync("data/branch-map.json", JSON.stringify({ viewBox: [W, H], outline, points: pts, zoom, approx: true }, null, 2) + "\n");

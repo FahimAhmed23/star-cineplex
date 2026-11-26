@@ -19,9 +19,9 @@ const ordered = [...branches].sort((a, b) => a.order - b.order);
 
 /** a small city name near each group of stars (in % of the crop) */
 const CITY_LABELS: { key: string; x: number; y: number; align: "left" | "right" }[] = [
-  { key: "home.cityDhaka", x: 17.6, y: 22.6, align: "right" },
-  { key: "home.cityNarayanganj", x: 29.2, y: 27.5, align: "left" },
-  { key: "home.cityChattogram", x: 75.6, y: 81.2, align: "right" },
+  { key: "home.cityDhaka", x: 41.4, y: 40.6, align: "right" },
+  { key: "home.cityNarayanganj", x: 55, y: 49.9, align: "left" },
+  { key: "home.cityChattogram", x: 76.6, y: 71.2, align: "right" },
 ];
 
 /**
@@ -68,7 +68,7 @@ export function BranchMap() {
     <section
       id="branches"
       aria-labelledby="branches-title"
-      className="relative scroll-mt-24 overflow-hidden bg-night pt-[100px] pb-[100px] lg:min-h-[820px]"
+      className="relative scroll-mt-24 overflow-hidden bg-night pt-[100px] pb-[200px]"
     >
       {/* left: headline + every branch, grouped by city */}
       <div className="pointer-events-none relative z-10 mx-auto max-w-[1280px] px-8 max-md:px-5">
@@ -118,7 +118,7 @@ export function BranchMap() {
       </div>
 
       {/* right: the zoomed map, bleeding off the right edge and fading out at the edges */}
-      <div className="branch-map max-lg:relative max-lg:mt-10 max-lg:px-5 lg:absolute lg:inset-y-0 lg:right-0 lg:flex lg:w-[58vw] lg:justify-end">
+      <div className="branch-map max-lg:relative max-lg:mt-10 max-lg:px-5 lg:absolute lg:inset-y-0 lg:right-0 lg:flex lg:w-[60vw] lg:justify-end">
         <div
           className="relative max-lg:w-full lg:h-full"
           style={{ aspectRatio: `${CROP.w} / ${CROP.h}` }}
@@ -135,8 +135,8 @@ export function BranchMap() {
             transition={{ duration: reduced ? 0.4 : 1.4, ease: EASE }}
           >
             <defs>
-              <pattern id="bm-dots" width="2.4" height="2.4" patternUnits="userSpaceOnUse">
-                <circle cx="1.2" cy="1.2" r="0.34" fill="#B784D6" />
+              <pattern id="bm-dots" width="4.4" height="4.4" patternUnits="userSpaceOnUse">
+                <circle cx="2.2" cy="2.2" r="0.75" fill="#B784D6" />
               </pattern>
               <clipPath id="bm-country">
                 <path d={map.outline} />
