@@ -38,16 +38,19 @@
   },
   "hero": {
     "eyebrow": "স্টার সিনেপ্লেক্সে এখন চলছে",
-    "playingAcross": "{count}টি শাখায় চলছে",
     "tonightAt": "আজ রাতে",
     "pauseCarousel": "ট্রেলার থামান",
     "playCarousel": "ট্রেলার চালান",
     "showTrailer": "ট্রেলার {n} / {total}",
-    "certificate": "রেটিং {c}",
+    "certificate": "রেটিং {c}: {meaning}",
     "branchLabel": "শাখা",
     "noShowsTonight": "আজ রাতে এই শাখায় আর কোনো শো নেই।",
     "tonightShows": "আজ রাতের শো",
-    "minutes": "{h}ঘ {m}মি"
+    "minutes": "{h}ঘ {m}মি",
+    "certificateMeaning": {
+      "A": "শুধু প্রাপ্তবয়স্কদের জন্য (18+)",
+      "U": "সব বয়সের জন্য"
+    }
   },
   "home": {
     "nowShowingTitle": "এখন প্রেক্ষাগৃহে",

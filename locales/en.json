@@ -38,16 +38,19 @@
   },
   "hero": {
     "eyebrow": "Now showing at Star Cineplex",
-    "playingAcross": "Playing across {count} branches",
     "tonightAt": "Tonight at",
     "pauseCarousel": "Pause trailers",
     "playCarousel": "Play trailers",
     "showTrailer": "Show trailer {n} of {total}",
-    "certificate": "Rated {c}",
+    "certificate": "Rated {c}: {meaning}",
     "branchLabel": "Branch",
     "noShowsTonight": "No more shows tonight at this branch.",
     "tonightShows": "Shows tonight",
-    "minutes": "{h}h {m}m"
+    "minutes": "{h}h {m}m",
+    "certificateMeaning": {
+      "A": "adults only (18+)",
+      "U": "suitable for all ages"
+    }
   },
   "home": {
     "nowShowingTitle": "Now Showing in Theaters",

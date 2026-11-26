@@ -191,12 +191,15 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       )}
 
       {/* hero info */}
-      <div className={`absolute inset-x-0 mx-auto max-w-[1440px] px-5 md:px-8 ${phone ? "bottom-[156px]" : single ? "top-[max(172px,22vh)]" : "top-[max(124px,16vh)]"}`}>
+      {/* desktop: always centred on the screen's height, whatever the display (designer, Nov 26) */}
+      <div
+        className={`pointer-events-none absolute inset-x-0 mx-auto max-w-[1440px] px-5 md:px-8 ${phone ? "bottom-[156px]" : "inset-y-0 flex items-center"}`}
+      >
         <AnimatePresence mode="wait">
           {revealed && (
             <motion.div
               key={movie.slug}
-              className="relative"
+              className="pointer-events-auto relative"
               // the column always ends before the screen (which starts at ~48% of the width)
               style={phone ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
               initial="hidden"
@@ -231,8 +234,9 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                   <Dot />
                   {movie.certificate && (
                     <>
-                      <li className="rounded-[4px] border border-white/60 px-1.5 text-[12px] leading-5" title={t("hero.certificate", { c: movie.certificate })}>
+                      <li className="rounded-[4px] border border-white/60 px-1.5 text-[12px] leading-5" title={t("hero.certificate", { c: movie.certificate, meaning: t(`hero.certificateMeaning.${movie.certificate}`) })}>
                         {movie.certificate}
+                        <span className="sr-only">: {t(`hero.certificateMeaning.${movie.certificate}`)}</span>
                       </li>
                       <Dot />
                     </>
@@ -266,12 +270,6 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                     {t("common.fullSchedule")}
                   </ButtonLink>
                 </motion.div>
-                {!soon && !phone && (
-                  <motion.p variants={item} className="flex items-center gap-1.5 text-[13px] text-muted">
-                    <Icon name="mapPoint" size={16} />
-                    {t("hero.playingAcross", { count: movie.branchCount })}
-                  </motion.p>
-                )}
               </motion.div>
             </motion.div>
           )}

@@ -453,7 +453,10 @@ structure, move it into the 3D hall).
 - Meta row: `2026 · [A] · 1h 48m · English · [2D]` — rating in an outlined box, format in a purple filled badge
 - Synopsis: max 3 lines, then ellipsis
 - Buttons: **Buy Tickets** (purple filled, ticket icon) · **Full Schedule** (outlined white, calendar icon)
-- Small line: [Solar map-point icon, 16px, `--muted`] "Playing across 9 branches"
+- ~~Small line "Playing across 9 branches"~~ removed (designer, Nov 26).
+- Desktop: the info block is **always vertically centred on the screen height** (any display), left column as before.
+- The certificate box (`A` / `U`) explains itself on hover and to screen readers: "Rated A: adults only (18+)" /
+  "Rated U: suitable for all ages".
 
 **"Tonight at" showtimes strip** (pinned to the bottom of the hero, full width, dark bar)
 - Left: [star icon] `Tonight at` label + branch dropdown (default: nearest or last-used branch; demo default Bashundhara City).
