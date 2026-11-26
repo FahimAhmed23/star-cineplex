@@ -64,8 +64,6 @@ export interface Hall3DProps {
  * The procedural cinema hall (CLAUDE.md §4, §6): everything is built from halls.json + the branch theme.
  * Client-only — load it with next/dynamic({ ssr: false }).
  */
-const STUDIO_LOOK = { walls: "#2b241f", carpet: "#1a1614", accentLight: "#ffd9a8", accentPattern: "slats" as const };
-
 export default function Hall3D(props: Hall3DProps) {
   const { active = true, className } = props;
   const [dpr, setDpr] = useState(1.5);
@@ -128,8 +126,11 @@ function Scene({
   const theme = useMemo(() => hallTheme(hall), [hall]);
   const booked = useMemo(() => new Set(bookedSeats), [bookedSeats]);
   const colors = useMemo(() => ({ fabric: theme.seat, leather: theme.leather ?? theme.seat }), [theme]);
-  // studio look for every hall (designer, Nov 26): warm dark slatted walls with warm-white LED lines, charcoal floor
-  const look = useMemo(() => STUDIO_LOOK, []);
+  // each branch's real hall look (§6 Branch hall themes); Bashundhara: violet walls with blue X light lines
+  const look = useMemo(
+    () => ({ walls: theme.walls, carpet: theme.carpet, accentLight: theme.accentLight, accentPattern: theme.accentPattern }),
+    [theme],
+  );
   const rim = useMemo(() => new THREE.Color("#b784d6"), []);
 
   return (
@@ -149,7 +150,7 @@ function Scene({
         muted={muted}
         brightness={screenBrightness}
         playing={playing}
-        beam={false /* studio look: no projector beam (designer, Nov 26) */}
+        beam={false /* no projector beam (designer, Nov 26) */}
         onLightColor={(c) => rim.copy(c)}
       />
       <Seats
@@ -207,7 +208,7 @@ function HouseLights({ level, layout }: { level: number; layout: ReturnType<type
   });
   return (
     <>
-      <hemisphereLight ref={hemi} args={["#ffe6c8", "#16120f", 0.3]} />
+      <hemisphereLight ref={hemi} args={["#9c8cc8", "#1a1020", 0.3]} />
       <directionalLight ref={fill} position={[0, layout.room.height + 6, layout.room.zBack + 6]} intensity={0.2} color="#fff1e0" />
     </>
   );

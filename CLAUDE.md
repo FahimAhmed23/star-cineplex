@@ -806,9 +806,10 @@ drawn at those pixels, so the 3D hall can fade in exactly underneath them.
 **Phones / no 3D:** same map. Preview appears only on capable phones (§11 check) and mounts the hall on tap;
 otherwise there is no Preview button.
 
-**The hall (look, Nov 26):** same layout from `halls.json`; new "studio" look from the reference video: warm fluted
-slat walls with a warm-white LED line in every gap, a black screen wall, black ceiling with downlights, a framed
-screen, **no projector beam** and **no seated people** (booked seats show as dark in the map only).
+**The hall (look, Nov 26):** same layout from `halls.json`, in each branch's real look (§6 Branch hall themes;
+Bashundhara: deep violet walls with thin blue X light lines). A studio look from the reference video (warm LED slats)
+was tried and rejected by the designer: it isn't Star Cineplex. **No projector beam** and **no seated people**
+(booked seats show as dark in the map only).
 Seat models: converted from the designer's Tripo models (`scripts/convert-tripo-seat.py`).
 
 **Seat labels** come from the hall data (e.g. `E07` in Hall 1, `D3` in VIP Hall 5). Max 10 seats per booking.
