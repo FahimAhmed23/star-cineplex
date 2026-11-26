@@ -644,7 +644,7 @@ film reel). No functional goal: no map links, no "near me", no showtimes, no but
   No other hall cards in this section.
 
 **Motion (once, on view):** the map fades in, stars pop in by branch order (70ms apart), then the city names.
-Hover: the star grows and glows; the card fades up 10px. Reduced motion: plain fades.
+Hover: the star turns `--purple-light`, grows and glows; the card fades up 10px. Reduced motion: plain fades.
 
 **Phones / tablets (<1024px):** headline and list, then the map (full width, smaller stars); tapping a star shows its card.
 

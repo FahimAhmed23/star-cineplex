@@ -1451,7 +1451,7 @@ body {
 }
 .branch-star:hover svg,
 .branch-star[data-on] svg {
-  fill: #fff;
+  fill: var(--purple-light);
   transform: scale(1.4);
   filter: drop-shadow(0 0 10px rgb(183 132 214 / 0.95));
 }
