@@ -59,7 +59,7 @@
   --color-map-booked: var(--map-booked);
   --color-map-selected: var(--map-selected);
 
-  --font-display: var(--font-bricolage), var(--font-geist), system-ui, sans-serif;
+  --font-display: var(--font-movark), var(--font-geist), system-ui, sans-serif;
   /* ৳ is not in Geist: Anek Bangla draws it (only that glyph falls back; its bengali subset loads on demand) */
   --font-sans: var(--font-geist), var(--font-anek-bangla), system-ui, sans-serif;
   --font-bangla: var(--font-anek-bangla), var(--font-geist), sans-serif;
@@ -88,13 +88,11 @@ body {
 }
 
 /* ───────────────────────── Type scale ───────────────────────── */
-/* Bricolage Grotesque only at 32px+ and never all-caps (§5 Typography rules). Titles at 700 (designer, Nov 26);
-   the opsz axis follows the size on its own (font-optical-sizing: auto). */
+/* GC Movark only at 32px+ and never all-caps (§5 Typography rules). Titles at 500 (designer, Nov 26). */
 @utility font-display-settings {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-optical-sizing: auto;
-  letter-spacing: -0.03em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
   line-height: 0.95;
   text-transform: none;
 }
@@ -115,7 +113,7 @@ body {
   font-size: clamp(32px, 3vw, 48px);
 }
 /* In Bangla, display headlines become Anek Bangla 700 (§5 Language) */
-/* (matches the headline's own language, so an English film title inside a Bangla page keeps Bricolage) */
+/* (matches the headline's own language, so an English film title inside a Bangla page keeps GC Movark) */
 :is(.display-xl, .display-l, .display-m, .display-s):lang(bn) {
   font-family: var(--font-bangla);
   font-weight: 700;

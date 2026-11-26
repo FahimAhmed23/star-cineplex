@@ -52,7 +52,7 @@ Out of scope (mention as "future work" only): individual branch pages, a separat
 - **GSAP + ScrollTrigger** for timelines and scroll (opening sequence, camera moves, hero → section transition,
   pinned film reel, Moments parallax); **Framer Motion** for UI transitions (cards, panels, ticket print)
 - **Tailwind CSS** with the design tokens in §5 defined in `tailwind.config` / CSS variables
-- Fonts via `next/font/google` (Bricolage Grotesque with opsz/wdth axes, Geist, Anek Bangla, IBM Plex Mono); self-hosted, `display: swap`
+- Fonts: GC Movark Medium via `next/font/local` (`app/fonts/`), and Geist, Anek Bangla, IBM Plex Mono via `next/font/google`; self-hosted, `display: swap`
 - State: **Zustand** (selected movie, branch, show, seats) — one store shared by the 3D hall, the 2D map and the UI,
   so a seat picked in one place updates everywhere
 - Hosting: **Vercel** (free tier) for the portfolio link
@@ -130,19 +130,21 @@ themes). The **UI stays in the Star purple brand** everywhere (popups, chips, bu
 ### Typography
 All fonts are on Google Fonts under the SIL Open Font License (free for commercial use). **Changed Nov 26 (designer):**
 Fraunces 800 SOFT (a Cooper-like soft serif) read retro and bubbly against the dark 3D hall and the sharp STAR logo,
-so display moved to Bricolage Grotesque 700 and UI to Geist ("option B: big screen").
+so display moved to Bricolage Grotesque 700 and UI to Geist ("option B: big screen"); then (same day) the designer supplied
+**GC Movark** (Glyphonic, `references/GC-Movark-Family`) for titles at **500**. GC Movark is a commercial font
+("All rights reserved"): **confirm the licence covers web use before publishing.** Latin only (Bangla titles use Anek Bangla).
 
 | Role | Font | Settings | Use for |
 |------|------|----------|---------|
-| **Display** | **Bricolage Grotesque** | weight **700** (designer), optical size automatic (opsz axis), letter-spacing `-0.03em`, line-height `0.95` | Big moments only: hero movie titles, section titles, the Moments / Film Reel headlines, booking-step titles, ticket movie title, footer headline |
+| **Display** | **GC Movark** (Medium) | weight **500** (designer), letter-spacing `-0.02em`, line-height `0.95` | Big moments only: hero movie titles, section titles, the Moments / Film Reel headlines, booking-step titles, ticket movie title, footer headline |
 | **UI & body** | **Geist** | 400–600 (variable) | Everything functional: navbar, buttons, labels, meta, synopsis, forms, prices, cards' small text |
 | **Bangla** | **Anek Bangla** | 600–700 | All Bangla text and the বাংলা toggle |
 | **Ticket details** | **IBM Plex Mono** | 400–500 | Seat codes (E7), booking ID, countdown, film-reel edge printing |
 
 **Rules**
-- Bricolage **only at 32px and above**. Never for buttons, labels, chips or body text.
-- Bricolage in mixed case or lowercase (lowercase is encouraged for warm headlines, e.g. "your seat is waiting.").
-  **No all-caps** in Bricolage.
+- GC Movark **only at 32px and above**. Never for buttons, labels, chips or body text.
+- GC Movark in mixed case or lowercase (lowercase is encouraged for warm headlines, e.g. "your seat is waiting.").
+  **No all-caps** in GC Movark.
 - Geist for everything users click or read in detail.
 - Eyebrow style (Geist): **sentence case** (no uppercase tracked labels), letter-spacing `0.01em`, 14px, 500 weight,
   `--purple-light`, preceded by a 16px Solar star icon (Bold) in the same colour.
@@ -150,10 +152,10 @@ so display moved to Bricolage Grotesque 700 and UI to Geist ("option B: big scre
 **Type scale**
 | Token | Font | Size |
 |-------|------|------|
-| `display-xl` (hero movie title) | Bricolage 700 | `clamp(72px, 10vw, 150px)`, also capped by viewport height |
-| `display-l` (footer headline) | Bricolage 700 | `clamp(64px, 9vw, 136px)` |
-| `display-m` (section titles) | Bricolage 700 | `clamp(44px, 4.6vw, 72px)` |
-| `display-s` (booking titles, ticket movie title, hall-type names) | Bricolage 700 | 32–48px |
+| `display-xl` (hero movie title) | GC Movark 500 | **Compact** (designer, Nov 26): titles ≤18 chars `min(clamp(48px, 5vw, 80px), 9vh)`, longer titles `min(clamp(40px, 3.8vw, 60px), 7vh)` → 72px / 55px at 1440×900; phones `clamp(32px, 9.2vw, 44px)` / `clamp(26px, 7.2vw, 34px)` |
+| `display-l` (footer headline) | GC Movark 500 | `clamp(64px, 9vw, 136px)` |
+| `display-m` (section titles) | GC Movark 500 | `clamp(44px, 4.6vw, 72px)` |
+| `display-s` (booking titles, ticket movie title, hall-type names) | GC Movark 500 | 32–48px |
 | `body-l` (synopsis) | Geist 400 | 16px / 1.55 |
 | `body` | Geist 400 | 15px / 1.5 |
 | `ui` (buttons, links) | Geist 500–600 | 13–15px |
@@ -447,7 +449,7 @@ structure, move it into the 3D hall).
 
 **Hero info overlay** (left-aligned, over the dark left wall of the angled view, under **one linear gradient across the whole hero**: dark behind the text column for full contrast, easing to clear just before the screen; no boxed or blurred panel behind the text; the text column always ends before the screen on the right)
 - Eyebrow: [star icon] `Now showing at Star Cineplex`
-- Movie title (`display-xl`, Bricolage)
+- Movie title (`display-xl`, GC Movark)
 - Meta row: `2026 · [A] · 1h 48m · English · [2D]` — rating in an outlined box, format in a purple filled badge
 - Synopsis: max 3 lines, then ellipsis
 - Buttons: **Buy Tickets** (purple filled, ticket icon) · **Full Schedule** (outlined white, calendar icon)
@@ -516,7 +518,7 @@ poster ratio 2:3 (~450px tall). Corner radius 24px (`--radius-card-md`).
 ### 8.5 Now Showing in Theaters
 
 - Section background **`--paper` (light theme)**, title in `--ink`, "Show all" button as the light secondary (ink outline → purple fill). Container 1280px, padding-top 120px.
-- **Header: the title only** — "Now Showing in Theaters", centred, `display-m` (Bricolage). No eyebrow, no pill, no subtitle.
+- **Header: the title only** — "Now Showing in Theaters", centred, `display-m` (GC Movark). No eyebrow, no pill, no subtitle.
 - **Grid of `MovieCard`s, 4 per row.** Initially show **4 cards** (the first row only).
 - Below the grid, centred: a **"Show all" button** (pill, outlined white, 14px; inspired by bKash's centred "See all"),
   with the total count, e.g. `Show all (12) ↓`.
@@ -572,7 +574,7 @@ where one image expands to full screen; nothing in this section opens or expands
 **Pinned centre lockup**
 - The section is ~260vh tall. A centre lockup is `position: sticky` in the middle of the viewport for the whole section:
   - Star Cineplex logo (`/public/brand/logo-white.png`, on the dark background), ~200px wide
-  - 24px below it, the headline: **"Moments made at Star Cineplex"** — `display-m` (Bricolage), 
+  - 24px below it, the headline: **"Moments made at Star Cineplex"** — `display-m` (GC Movark), 
     `--paper`, centred, max 2 lines
 - The lockup fades + rises in (opacity 0→1, `translateY 20px→0`, 700ms) when the section reaches the viewport
   centre, and fades out as the section leaves.
@@ -656,7 +658,7 @@ screen, and a seat is waiting for you. Dark theme (`--night`).
 - Full width, height ≈ 100vh on desktop; the image is `object-fit: cover`, anchored to the screen (centre top).
 
 **Content (on top of the image, centred, below the screen)**
-- Headline (`display-l`, Bricolage 700, `--paper`, capped at `clamp(52px, 6.2vw, 104px)` so each line fits on one row), two lines:
+- Headline (`display-l`, GC Movark 500, `--paper`, capped at `clamp(52px, 6.2vw, 104px)` so each line fits on one row), two lines:
   **"The best seat in the house / is waiting for you."**
   Bangla: **"হলের সেরা আসনটি আপনার অপেক্ষায়।"**
 - Line under it (Geist 18px, `--muted`): "Pick your seat in under a minute."
@@ -733,7 +735,7 @@ on this date** (hide hall types with no shows):
 Each card, top to bottom:
 - **A slowly rotating 3D seat** of that class (turntable, ~8s per rotation, soft studio light, `--night` background).
   On card hover the rotation speeds up slightly and the seat gets a purple rim light.
-- Hall type name (`display-s`, Bricolage 36px) + one line of details (halls, seat count, formats: 2D/3D/Atmos).
+- Hall type name (`display-s`, GC Movark 36px) + one line of details (halls, seat count, formats: 2D/3D/Atmos).
 - Price range (from the table above).
 - **Showtime chips** for this movie/date in that hall type: `7:30 PM · Hall 1`, with an availability dot:
   green "Available", amber "Filling fast" (>70% booked), red "Sold out" (chip disabled).
@@ -900,7 +902,7 @@ _The designer will spec remaining screens one by one. Add them here instead of i
 
 **Page titles & share preview**
 - Titles: "Star Cineplex — Concept Redesign" (home), "Choose your seats · Hall 1 · Star Cineplex" (booking pages), etc.
-- Open Graph / Twitter image (1200×630): the 3D hall front view with the Bricolage headline "The best seat in the house is waiting for you."
+- Open Graph / Twitter image (1200×630): the 3D hall front view with the GC Movark headline "The best seat in the house is waiting for you."
   and a small "Concept redesign" label — so the demo link looks good on LinkedIn/Behance.
 - Favicon: the Star Cineplex star mark (from the logo) on `--purple`.
 
@@ -1044,7 +1046,7 @@ uneven spacing, mixed radii, pointless looping motion, filler visuals, hype copy
 | Decision | Why it stays |
 |----------|--------------|
 | Star Cineplex purple `#7F3E98`, `--purple-light`, the logo | The real brand (§5), not a generic AI purple |
-| Bricolage Grotesque **700** display type (§5 Typography) | A deliberate brand choice for big moments; the 400–600 weight rule applies to UI text only |
+| GC Movark **500** display type (§5 Typography) | A deliberate brand choice for big moments; the 400–600 weight rule applies to UI text only |
 | The 3D hall, the screen light spill, the trailer glow on the hall | The "moment" of every hall screen — exactly where the skill says richness belongs |
 | Gold selected-seat outline/glow `#F5B72E` (§5) | Functional state, the only gold in the UI |
 | Footer seat glow, opening projector beams, cinema doors, ticket print (§8.1, §8.10, §9.4, §9.8) | Storytelling moments of the concept |

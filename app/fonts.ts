@@ -1,13 +1,18 @@
-import { Anek_Bangla, Bricolage_Grotesque, Geist, IBM_Plex_Mono } from "next/font/google";
+import { Anek_Bangla, Geist, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
-// All four are SIL OFL fonts, self-hosted by next/font at build time (§4, §5 Typography).
+// Google fonts (SIL OFL) are self-hosted by next/font at build time; the display face is a local file (§4, §5 Typography).
 
-/** Display — Bricolage Grotesque variable (opsz + wdth axes), titles at weight 700 (designer, Nov 26). */
-export const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  axes: ["opsz", "wdth"],
+/**
+ * Display — GC Movark Medium (500) by Glyphonic, supplied by the designer (references/GC-Movark-Family, Nov 26).
+ * Commercial font ("All rights reserved"): check the licence covers web use before publishing the site.
+ */
+export const movark = localFont({
+  src: "./fonts/GCMovark-Medium.woff2",
+  weight: "500",
+  style: "normal",
   display: "swap",
-  variable: "--font-bricolage",
+  variable: "--font-movark",
 });
 
 /** UI & body — Geist variable (100–900; the UI uses 400–600). */
@@ -33,4 +38,4 @@ export const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
 });
 
-export const fontVariables = [bricolage, geist, anekBangla, plexMono].map((f) => f.variable).join(" ");
+export const fontVariables = [movark, geist, anekBangla, plexMono].map((f) => f.variable).join(" ");

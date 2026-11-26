@@ -25,3 +25,6 @@ Claude outputs/
 # Raw Blender exports (packed copies live in /public/models)
 tools/blender/out/
 __pycache__/
+
+# designer-supplied commercial font family (only app/fonts/GCMovark-Medium.woff2 ships)
+references/GC-Movark-Family/

@@ -216,10 +216,10 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                   text={title}
                   show
                   delay={TITLE_DELAY}
-                  lang={isBnTitle ? "bn" : "en"} /* English titles keep Bricolage in Bangla mode */
+                  lang={isBnTitle ? "bn" : "en"} /* English titles keep GC Movark in Bangla mode */
                   className="display-xl mb-4 text-white md:mb-5" /* hero film title at 700, like every title (designer) */
-                  // display-xl, also capped by viewport height so title + buttons fit above the strip at 1280×720
-                  style={{ fontSize: phone ? (long ? "clamp(30px, 8.5vw, 40px)" : "clamp(40px, 12vw, 56px)") : long ? "min(clamp(56px, 6vw, 96px), 9.5vh)" : "min(clamp(72px, 10vw, 150px), 14vh)" }}
+                  // compact hero title (designer, Nov 26): 72px / 55px at 1440×900 (short / long titles), capped by viewport height
+                  style={{ fontSize: phone ? (long ? "clamp(26px, 7.2vw, 34px)" : "clamp(32px, 9.2vw, 44px)") : long ? "min(clamp(40px, 3.8vw, 60px), 7vh)" : "min(clamp(48px, 5vw, 80px), 9vh)" }}
                 />
               </div>
               <motion.div
