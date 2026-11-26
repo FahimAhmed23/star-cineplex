@@ -34,14 +34,14 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
       ceiling: new THREE.MeshStandardMaterial({ color: "#0c0a10", roughness: 1 }),
       black: new THREE.MeshStandardMaterial({ color: "#050406", roughness: 0.8 }),
       // thin LED strips: bright enough to bloom softly, never brighter than the screen (§8.2)
-      accent: lightMaterial(look.accentLight, look.accentPattern === "diagonal" ? 2.2 : 3.2),
+      accent: lightMaterial(look.accentLight, look.accentPattern === "diagonal" ? 1.6 : 3.2),
       step: lightMaterial(look.accentPattern === "sconces" ? "#ffb25e" : look.accentLight, 2.2),
       down: lightMaterial("#ffe2b0", 4),
       // the light an LED strip throws on the fabric around it (additive, no real lights: cheap on phones)
-      glow: glowMaterial(look.accentLight, 0.2),
+      glow: glowMaterial(look.accentLight, 0.14),
       // the wall is lit where the lights are and falls off towards the back and the floor
       // tinted towards the violet wall, like blue light on purple fabric
-      wash: washMaterial(new THREE.Color(look.accentLight).lerp(new THREE.Color("#9a5cc0"), 0.55).getStyle(), 0.13),
+      wash: washMaterial(new THREE.Color(look.accentLight).lerp(new THREE.Color("#9a5cc0"), 0.55).getStyle(), 0.1),
       speaker: new THREE.MeshStandardMaterial({ color: "#121015", roughness: 0.55, metalness: 0.1 }),
       grille: new THREE.MeshStandardMaterial({ color: "#060508", roughness: 0.9 }),
     };
@@ -271,12 +271,13 @@ function Accents({ layout, look, material, glow, wash }: { layout: HallLayout; l
     switch (look.accentPattern) {
       case "diagonal": {
         // Bashundhara (footer photo): thin blue LED strips from just above the floor to just under the ceiling,
-        // in tall narrow X's (≈1:3) that overlap by half, so they cross twice like a lattice. Front half of the hall,
-        // nearest the screen, where they frame it; the back of the wall stays quiet.
+        // in tall narrow X's (≈1:3) that overlap by half, so they cross twice like a lattice, along the whole wall
+        // (designer, Nov 26: full length, a little dimmer).
         const w = 2.6; // horizontal run of one strip
         const d = w / 2; // spacing between strips
-        const start = room.zFront + 1.0;
-        const n = 5; // strips in each direction
+        const start = room.zFront + 0.8;
+        const usable = room.zBack - 0.8 - start;
+        const n = Math.max(3, Math.floor((usable - w) / d) + 1); // strips in each direction, end to end
         const top = room.height - 0.45;
         const lowAt = (z: number) => floorAt(z) + 0.55;
         for (let i = 0; i < n; i++) {
@@ -295,7 +296,7 @@ function Accents({ layout, look, material, glow, wash }: { layout: HallLayout; l
         }
         // the wall is lit around the lattice and falls off towards the back and the floor
         const zc = start + ((n - 1) * d + w) / 2;
-        const len = (n - 1) * d + w + 3;
+        const len = Math.min(room.depth, (n - 1) * d + w + 3);
         items.push(
           <mesh key={key("wash")} material={wash} position={[x - s * 0.003, room.height * 0.6, zc]} rotation-y={(-s * Math.PI) / 2} renderOrder={1}>
             <planeGeometry args={[len, room.height * 1.1]} />

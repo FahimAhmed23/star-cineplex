@@ -809,7 +809,7 @@ otherwise there is no Preview button.
 **The hall (look, Nov 26):** same layout from `halls.json`, in each branch's real look (§6 Branch hall themes).
 Bashundhara walls follow the footer photo: violet acoustic fabric with soft vertical pleats; thin blue LED strips
 (2–3 cm) from just above the floor to just under the ceiling, in tall narrow X's that overlap by half so they cross
-twice (a lattice) on the front half of each side wall; a soft glow on the fabric around each strip and a violet
+twice (a lattice) along the full length of each side wall, a little dimmer than the screen; a soft glow on the fabric around each strip and a violet
 wash that falls off towards the back and the floor; black box speakers between them, angled down; small floor
 lights along the wall base. The strips stay dimmer than the screen (§8.2). Seat-view lens 50° (wider lenses stretch
 the side walls and push the screen away). A warm "studio" look was tried and rejected. **No projector beam** and
