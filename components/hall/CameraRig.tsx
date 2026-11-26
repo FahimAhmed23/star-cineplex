@@ -37,7 +37,7 @@ const OVERVIEW_ELEVATION = THREE.MathUtils.degToRad(52); // 50–55° looking do
 const MARGIN = 0.92; // seats fill the view with ~8% margin
 const BASE_FOV = 42; // overview + view from seat
 const HERO_FOV = 54;
-const SEAT_FOV = 66; // view from seat: the screen plus the lit walls around it, like the reference video
+const SEAT_FOV = 50; // view from seat: close to a real eye; wider lenses stretch the side walls and push the screen away
 
 function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
