@@ -54,13 +54,17 @@ export function BranchMap() {
 
   const vp = { once: true, amount: 0.3 };
 
-  // the hover card sits beside its star: to the left of stars on the right half, to the right otherwise
+  // the hover card sits beside its whole group of stars, never on top of a neighbour: to the left of the group for
+  // groups on the right half, to the right otherwise, 56px clear of the outermost star
   const cardPos = (slug: string) => {
+    const city = ordered.find((b) => b.slug === slug)!.city;
+    const group = ordered.filter((b) => b.city === city || (city !== "Chattogram" && b.city !== "Chattogram")).map((b) => STARS[b.slug]);
     const p = STARS[slug];
     const left = p.x > 50;
+    const edge = left ? Math.min(...group.map((g) => g.x)) : Math.max(...group.map((g) => g.x));
     return {
       top: `${Math.min(Math.max(p.y, 22), 78)}%`,
-      ...(left ? { right: `calc(${100 - p.x}% + 28px)` } : { left: `calc(${p.x}% + 28px)` }),
+      ...(left ? { right: `calc(${100 - edge}% + 56px)` } : { left: `calc(${edge}% + 56px)` }),
     };
   };
 

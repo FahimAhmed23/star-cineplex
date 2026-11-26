@@ -1385,11 +1385,11 @@ body {
 /* ── Branches: the constellation map (§8.9, Nov 26) ── */
 .branch-row {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   width: 100%;
-  min-height: 32px;
-  padding: 4px 12px;
+  min-height: 44px;
+  padding: 6px 12px;
   margin-inline: -12px;
   border-radius: 10px;
   text-align: left;
@@ -1405,8 +1405,10 @@ body {
 .branch-row[aria-pressed="true"] .branch-row__name {
   color: #fff;
 }
+/* same purple as the dropdown list's hovered option (hero "Tonight at") */
+.branch-row:hover,
 .branch-row[aria-pressed="true"] {
-  background-color: rgb(255 255 255 / 0.05);
+  background-color: rgb(127 62 152 / 0.28);
 }
 /* the zoomed map (§8.9, Nov 27): dots fade out at the top, bottom and left edge */
 .branch-map__land {

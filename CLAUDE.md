@@ -631,14 +631,15 @@ film reel). No functional goal: no map links, no "near me", no showtimes, no but
 **Layout (desktop ≥1024px, dark, `--night`; revised Nov 27):**
 - **Left (440px):** headline **"One Star. Nine homes."** (`display-m`, word reveal, two lines) + "Star Cineplex across
   Bangladesh", then every branch as a list grouped by city — Dhaka 6 · Narayanganj 1 · Chattogram 2 — each row `01`
-  (Plex Mono, `--purple-light`) · name · area, **shown in full, never truncated** (dropped when it repeats the city).
+  (Plex Mono, `--purple-light`) · name · area, **shown in full, never truncated**; rows 44px tall, hover/active fill
+  `rgb(127 62 152 / .28)` (the same purple as the dropdown list's hovered option) (dropped when it repeats the city).
 - **Right (centred in the space between the list and the section's right edge, equal gaps both sides):** a **lightly zoomed map** — the dotted Bangladesh outline (Natural
   Earth via `world-atlas`; `scripts/build-branch-map.mjs` → `data/branch-map.json` `zoom`), cropped so most of the
   country shows with Dhaka, Narayanganj and Chattogram well inside, **dissolving towards the corners** (radial mask).
   A **five-point star on each branch only** (the Dhaka cluster opened up ×3.2 and nudged apart so each star reads, real
   order kept), small city names beside each group. **No lens, no lines, no glow.**
 - **Card only on hover:** hovering a star (or its list row, or keyboard focus) shows that branch's card **beside its
-  star** — its own hall still (§6 themes; `/dev/capture?mode=front&branch=<slug>&blank=1&screen=0.22&lights=0.4&w=960&h=600`
+  star group, 56px clear of the outermost star** so the other stars stay free to hover — its own hall still (§6 themes; `/dev/capture?mode=front&branch=<slug>&blank=1&screen=0.22&lights=0.4&w=960&h=600`
   → `/public/branches/halls/<slug>.webp`), `01`, name, area, one line. Nothing shows when nothing is hovered.
   No other hall cards in this section.
 
