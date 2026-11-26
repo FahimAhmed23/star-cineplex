@@ -1,6 +1,6 @@
 // Builds data/branch-map.json for the branches constellation (CLAUDE.md §8.9): the Bangladesh outline from Natural
 // Earth (via the world-atlas package, public domain) projected to SVG, plus each branch's position on the country
-// map and in the magnified Dhaka lens. Run from the project root:
+// map and in the zoomed Dhaka–Chattogram view. Run from the project root:
 //   npx --yes -p world-atlas@2 -p topojson-client -p d3-geo node scripts/build-branch-map.mjs
 // (or npm i --no-save world-atlas@2 topojson-client d3-geo first). Branch coordinates below are approximate.
 import { createRequire } from "node:module";
@@ -25,7 +25,6 @@ const B = {
   "bali-arcade": [22.3606, 91.8370],
   "finlay-square": [22.3628, 91.8216],
 };
-const LENS = ["bashundhara-city", "shimanto-shambhar", "sks-tower", "sony-square", "military-museum", "centrepoint", "shimanto-tower"];
 
 const W = 1000, H = 820;
 const MAP = [[20, 30], [530, 800]]; // the country, left
@@ -38,24 +37,23 @@ for (const [slug, [lat, lon]] of Object.entries(B)) { const [x, y] = proj([lon, 
 // Chattogram's two branches are ~1.6 km apart: spread them a little so both stars read (art direction)
 pts["bali-arcade"].map.x += 7; pts["finlay-square"].map.x -= 7;
 
-// the Dhaka lens: the 7 Dhaka-area branches at their true relative positions, magnified
-const lens = { cx: 805, cy: 190, r: 160 };
-const lensFeat = { type: "MultiPoint", coordinates: LENS.map((s) => [B[s][1], B[s][0]]) };
-const lp = geoMercator().fitExtent([[lens.cx - lens.r * 0.62, lens.cy - lens.r * 0.7], [lens.cx + lens.r * 0.62, lens.cy + lens.r * 0.7]], lensFeat);
-// spread the dense centre (Panthapath, Dhanmondi, Bijoy Sarani, Mohakhali are 1-2 km apart) with a radial
-// ease around the cluster's middle, then fit the result back into the lens
-const raw = LENS.map((s) => lp([B[s][1], B[s][0]]));
-const core = ["bashundhara-city", "shimanto-shambhar", "military-museum", "sks-tower"].map((s) => lp([B[s][1], B[s][0]]));
-const c = [core.reduce((a, p) => a + p[0], 0) / core.length, core.reduce((a, p) => a + p[1], 0) / core.length];
-const eased = raw.map(([x, y]) => { const dx = x - c[0], dy = y - c[1], d = Math.hypot(dx, dy) || 1; const k = Math.pow(d, 0.55) / d; return [dx * k, dy * k]; });
-const ex = eased.map((p) => p[0]), ey = eased.map((p) => p[1]);
-const cx0 = (Math.min(...ex) + Math.max(...ex)) / 2, cy0 = (Math.min(...ey) + Math.max(...ey)) / 2;
-const sc = (lens.r * 1.32) / Math.max(Math.max(...ex) - Math.min(...ex), Math.max(...ey) - Math.min(...ey));
-LENS.forEach((s, i) => { pts[s].lens = { x: r1(lens.cx + (eased[i][0] - cx0) * sc), y: r1(lens.cy + (eased[i][1] - cy0) * sc) }; });
-// the Dhaka hub on the country map: centre of the 7
-const hub = { x: r1(LENS.reduce((a, s) => a + pts[s].map.x, 0) / LENS.length), y: r1(LENS.reduce((a, s) => a + pts[s].map.y, 0) / LENS.length) };
-// lens scale: km per lens unit, for a small scale note
-const kmPerUnit = (6371 * Math.PI / 180) / (lp.scale() * Math.PI / 180) ;
-writeFileSync("data/branch-map.json", JSON.stringify({ viewBox: [W, H], outline, hub, lens, points: pts, approx: true }, null, 2) + "\n");
-console.log("outline chars", outline.length, "hub", hub, "ctg", pts["bali-arcade"].map, pts["finlay-square"].map);
-console.log(Object.fromEntries(LENS.map(s=>[s,pts[s].lens])));
+// the zoomed view (Nov 27): Dhaka, Narayanganj and Chattogram in one crop of the outline. Stars closer than MIN units
+// are pushed apart (with a weak pull back home) so each one reads; positions are approximate.
+const MIN = 8;
+const P = Object.fromEntries(Object.entries(pts).map(([k, v]) => [k, [v.map.x, v.map.y]]));
+P["bali-arcade"][0] -= 7; P["finlay-square"][0] += 7; // undo the country-map spread; the relaxation spreads them
+const home = Object.fromEntries(Object.entries(P).map(([k, v]) => [k, [...v]]));
+for (let it = 0; it < 400; it++) {
+  const ks = Object.keys(P);
+  for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) {
+    const a = P[ks[i]], b = P[ks[j]];
+    let dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1e-3;
+    if (d < MIN) { const push = (MIN - d) / 2, ux = dx / d, uy = dy / d; a[0] -= ux * push; a[1] -= uy * push; b[0] += ux * push; b[1] += uy * push; }
+  }
+  for (const k of ks) { P[k][0] += (home[k][0] - P[k][0]) * 0.02; P[k][1] += (home[k][1] - P[k][1]) * 0.02; }
+}
+const crop = { x: 220, y: 342, w: 280, h: 290 };
+const r2 = (v) => Math.round(v * 100) / 100;
+const zoom = { crop, points: Object.fromEntries(Object.entries(P).map(([k, [x, y]]) => [k, { x: r2(((x - crop.x) / crop.w) * 100), y: r2(((y - crop.y) / crop.h) * 100) }])) };
+writeFileSync("data/branch-map.json", JSON.stringify({ viewBox: [W, H], outline, points: pts, zoom, approx: true }, null, 2) + "\n");
+console.log("outline chars", outline.length, zoom);

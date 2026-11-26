@@ -1396,29 +1396,53 @@ body {
 .branch-row[aria-pressed="true"] {
   background-color: rgb(255 255 255 / 0.05);
 }
-.branch-star__halo {
-  fill: url(#bm-glow);
-  opacity: 0.55;
-  transition: r 300ms var(--ease-out), opacity 300ms var(--ease-out);
+/* the zoomed map (§8.9, Nov 27): dots fade out at the top, bottom and left edge */
+.branch-map__land {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 80%, transparent 100%),
+    linear-gradient(to right, transparent 0, #000 18%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 80%, transparent 100%),
+    linear-gradient(to right, transparent 0, #000 18%);
+  mask-composite: intersect;
 }
-.branch-star__shape {
-  fill: rgb(250 249 245 / 0.78);
-  transform: scale(1);
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 300ms var(--ease-out), fill 300ms var(--ease-out);
+.branch-map__city {
+  position: absolute;
+  padding-inline: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  pointer-events: none;
 }
-.branch-star[data-on] .branch-star__halo {
-  opacity: 1;
+.branch-map__note {
+  position: absolute;
+  right: 32px;
+  bottom: 40px;
+  font-size: 12px;
+  color: rgb(255 255 255 / 0.35);
 }
-.branch-star[data-on] .branch-star__shape {
+.branch-star {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  cursor: default;
+}
+.branch-star svg {
+  width: 18px;
+  height: 18px;
+  fill: rgb(250 249 245 / 0.8);
+  filter: drop-shadow(0 0 6px rgb(183 132 214 / 0.7));
+  transition: transform 250ms var(--ease-out), fill 250ms var(--ease-out), filter 250ms var(--ease-out);
+}
+.branch-star:hover svg,
+.branch-star[data-on] svg {
   fill: #fff;
-  transform: scale(1.45);
-}
-.branch-map__label {
-  fill: var(--muted);
-  font-size: 15px;
-  font-family: var(--font-sans);
+  transform: scale(1.4);
+  filter: drop-shadow(0 0 10px rgb(183 132 214 / 0.95));
 }
 .branch-card {
   overflow: hidden;
@@ -1427,40 +1451,40 @@ body {
   background: var(--surface-dark);
   backdrop-filter: blur(14px);
 }
+.branch-card--float {
+  position: absolute;
+  z-index: 5;
+  width: 300px;
+  pointer-events: none;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.55);
+}
 @media (prefers-reduced-motion: reduce) {
-  .branch-star__halo,
-  .branch-star__shape,
+  .branch-star svg,
   .branch-row,
   .branch-row__name {
     transition: none;
   }
 }
-.branch-rail {
-  display: flex;
-  gap: 12px;
-  margin: 24px -20px 0;
-  padding: 0 20px 4px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 20px;
-  scrollbar-width: none;
-}
-.branch-rail::-webkit-scrollbar {
-  display: none;
-}
-.branch-rail__card {
-  flex: 0 0 min(84vw, 360px);
-  scroll-snap-align: center;
-  opacity: 0.55;
-  transition: opacity 300ms var(--ease-out);
-}
-.branch-rail__card[data-on] {
-  opacity: 1;
-}
 @media (max-width: 1023px) {
-  /* the map labels scale with the map: too small on phones, and the cards already name each branch */
-  .branch-map__label {
-    display: none;
+  .branch-map__note {
+    position: static;
+    margin-top: 12px;
+  }
+  .branch-card--float {
+    width: 240px;
+  }
+  /* the map is small on phones: smaller stars so Dhaka's six don't sit on each other */
+  .branch-star {
+    width: 22px;
+    height: 22px;
+  }
+  .branch-star svg {
+    width: 10px;
+    height: 10px;
+  }
+  .branch-map__city {
+    padding-inline: 8px;
+    font-size: 11px;
   }
 }
 

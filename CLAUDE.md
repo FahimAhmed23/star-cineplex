@@ -626,25 +626,23 @@ to whole pixels so the photos stay sharp.
 **Purpose:** a pure brand showcase of the 9 branches, **all visible at once** (designer, Nov 26: replaces the pinned
 film reel). No functional goal: no map links, no "near me", no showtimes, no buttons.
 
-**Layout (desktop ≥1024px, dark, `--night`, one screen tall):**
-- **Left:** headline **"One Star. Nine homes."** (`display-m`, word reveal) + "Star Cineplex across Bangladesh", then
-  every branch as a list grouped by city — Dhaka 6 · Narayanganj 1 · Chattogram 2 — each row `01` (Plex Mono,
-  `--purple-light`) · name · area (dropped when it repeats the city).
-- **Right:** **Bangladesh drawn in dots** (real outline from Natural Earth via `world-atlas`, public domain;
-  `scripts/build-branch-map.mjs` → `data/branch-map.json`). Each branch is a **five-point star** (the "Star"). Dhaka's
-  six branches and Narayanganj sit in a **magnified lens** (top right) at their true relative positions, joined by a
-  faint constellation line; a dotted line runs from the Dhaka glow on the map to the lens, a curve to Chattogram's pair.
-- **Card** (bottom right, below the lens): hovering a branch (list row or star) shows that branch's **own hall**
-  — a still from the hall engine in the branch's real look (§6 themes; `/dev/capture?mode=front&branch=<slug>&blank=1
-  &screen=0.22&lights=0.4&w=960&h=600` → `/public/branches/halls/<slug>.webp`) — with `01`, name, area and one line.
-  Default: 01 Bashundhara City.
+**Layout (desktop ≥1024px, dark, `--night`; revised Nov 27):**
+- **Left (440px):** headline **"One Star. Nine homes."** (`display-m`, word reveal, two lines) + "Star Cineplex across
+  Bangladesh", then every branch as a list grouped by city — Dhaka 6 · Narayanganj 1 · Chattogram 2 — each row `01`
+  (Plex Mono, `--purple-light`) · name · area, **shown in full, never truncated** (dropped when it repeats the city).
+- **Right (58vw, bleeding off the right edge):** a **zoomed map** — the dotted Bangladesh outline (Natural Earth via
+  `world-atlas`; `scripts/build-branch-map.mjs` → `data/branch-map.json` `zoom`) cropped to Dhaka, Narayanganj and
+  Chattogram, **fading out at the top, bottom and left**. A **five-point star on each branch only** (neighbouring Dhaka
+  stars nudged apart so each reads), small city names beside each group. **No lens, no lines, no glow.**
+- **Card only on hover:** hovering a star (or its list row, or keyboard focus) shows that branch's card **beside its
+  star** — its own hall still (§6 themes; `/dev/capture?mode=front&branch=<slug>&blank=1&screen=0.22&lights=0.4&w=960&h=600`
+  → `/public/branches/halls/<slug>.webp`), `01`, name, area, one line. Nothing shows when nothing is hovered.
+  No other hall cards in this section.
 
-**Motion (once, on view):** dots and outline fade in, the Dhaka glow and lens grow in, the stars pop in by branch
-order (80ms apart), then the lines draw. Hover: the star grows and its halo brightens; the card swaps (fade + 12px).
-Reduced motion: plain fades.
+**Motion (once, on view):** the map fades in, stars pop in by branch order (70ms apart), then the city names.
+Hover: the star grows and glows; the card fades up 10px. Reduced motion: plain fades.
 
-**Phones / tablets (<1024px):** headline, then the map, then **all nine cards in a swipe row** (scroll-snap); the
-card in view lights its star; tapping a star scrolls to its card. The tiny map labels are hidden (cards name them).
+**Phones / tablets (<1024px):** headline and list, then the map (full width, smaller stars); tapping a star shows its card.
 
 **Copy:** one line per branch in `locales` `home.reelLines` — **placeholder except Bashundhara** ("Where it all
 began, 2004." — founded 9 Oct 2004), drafted from each hall's look and verified locations; the designer will finalise.
