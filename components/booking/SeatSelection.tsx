@@ -304,6 +304,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   const totalText = `৳${total.toLocaleString("en-US")}`;
   const selectedSet = useMemo(() => new Set(sorted), [sorted]);
   const screenY = td && box ? Math.max(td.screen.y, box.y - 44) : 0;
+  // row letters share one column, just left of the widest row
+  const rowX = td ? Math.min(...[...td.seats.values()].map((q) => q.x)) - td.pitch * 1.15 : 0;
 
   // your row and its neighbours, shown at the bottom in the hall view (reference video A)
   const strip = useMemo(() => {
@@ -391,7 +393,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           {[...rowsOf(layout.seats).values()].map((row) => {
             const q = td.seats.get(row[0].id)!;
             return (
-              <span key={row[0].row} aria-hidden className="seatmap__row" style={{ left: q.x - td.pitch * 1.15, top: q.y }}>
+              <span key={row[0].row} aria-hidden className="seatmap__row" style={{ left: rowX, top: q.y }}>
                 {row[0].row}
               </span>
             );
@@ -434,7 +436,6 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
                   zIndex: drag ? 30 - i : 5,
                 }}
               >
-                {glyph >= 14 ? byId.get(id)!.number : ""}
               </span>
             );
           })}
@@ -487,10 +488,12 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             className={`absolute inset-x-0 bottom-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[12px] text-white/70 transition-opacity duration-300 ${inHall ? "opacity-0" : ""}`}
             aria-label={t("booking.legend")}
           >
-            <li className="inline-flex items-center gap-1.5">
-              <span className="legend-g seat-g--free seat-g--premium" />
-              {t("booking.free")}
-            </li>
+            {classes.length === 1 && (
+              <li className="inline-flex items-center gap-1.5">
+                <span className={`legend-g seat-g--free seat-g--${classes[0]}`} />
+                {t("booking.free")}
+              </li>
+            )}
             <li className="inline-flex items-center gap-1.5">
               <span className="legend-g seat-g--taken" />
               {t("booking.booked")}

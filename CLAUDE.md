@@ -940,8 +940,9 @@ hero info below, "Tonight at" chips as a swipeable row, the navbar reduced to lo
 - Seat selection on phones: 2D map first (no WebGL mounted); "View from seat" (eye icon on the seat chips) opens the 3D
   view with a lens wide enough for the whole screen; "Explore in 3D" on capable phones.
 - Checkout on phones: sticky bar (seats · hold timer · total · Pay); tapping the total opens the summary as a sheet.
-- Re-render the stills with the dev page `/dev/capture` (`?mode=portrait&w=1080&h=2340` for the hall,
-  `?turntable=vip&w=1056&h=726` for a seat).
+- Re-render the stills with the dev page `/dev/capture` (`?mode=portrait&w=1080&h=2340&blank=1` for the hall, then paint
+  the screen quad black and re-measure `QUAD` in `PhoneHall.tsx`; `?turntable=vip&w=1056&h=726&angle=3.95` for a seat,
+  the angle gives the three-quarter front view). Last re-render: Nov 26, new hall look and Tripo seats.
 ---
 
 ## 12. Reference index

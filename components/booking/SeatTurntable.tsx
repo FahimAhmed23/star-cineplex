@@ -11,7 +11,7 @@ import type { SeatModel } from "@/lib/hall-layout";
  * §9.3 a slowly turning seat for an experience card (~8s per turn, soft studio light on night). Hover: a bit
  * faster, with a purple rim light. Atmos gets faint sound-wave rings. Rendered inside a drei <View>.
  */
-export function SeatTurntable({ model, color, leather, hover, rings }: { model: SeatModel; color: string; leather: boolean; hover: boolean; rings?: boolean }) {
+export function SeatTurntable({ model, color, leather, hover, rings, angle }: { model: SeatModel; color: string; leather: boolean; hover: boolean; rings?: boolean; /** freeze at this angle (stills, /dev/capture) */ angle?: number }) {
   const geometry = useModelGeometry(SEAT_MODEL_URL[model]);
   const spin = useRef<THREE.Group>(null);
   const rim = useRef<THREE.DirectionalLight>(null);
@@ -37,7 +37,7 @@ export function SeatTurntable({ model, color, leather, hover, rings }: { model: 
 
   useFrame((state, dt) => {
     speed.current += ((hover ? 1.7 : 1) - speed.current) * (1 - Math.exp(-dt * 4));
-    if (spin.current) spin.current.rotation.y += dt * ((Math.PI * 2) / 8) * speed.current;
+    if (spin.current) spin.current.rotation.y = angle ?? spin.current.rotation.y + dt * ((Math.PI * 2) / 8) * speed.current;
     if (rim.current) rim.current.intensity += ((hover ? 3.2 : 0.7) - rim.current.intensity) * (1 - Math.exp(-dt * 5));
     if (ringGroup.current) {
       const t = state.clock.elapsedTime;

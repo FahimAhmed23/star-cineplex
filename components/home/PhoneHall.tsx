@@ -8,10 +8,10 @@ import { type MutableRefObject, useEffect, useLayoutEffect, useRef, useState } f
 const IMG = { src: "/hero/hall-portrait.webp", w: 1080, h: 2340 };
 /** the screen's corners in the still, as fractions (top-left, top-right, bottom-right, bottom-left) */
 const QUAD: [number, number][] = [
-  [0.0111, 0.2513],
-  [0.9889, 0.2513],
-  [0.9574, 0.4444],
-  [0.0426, 0.4444],
+  [-0.0147, 0.2509],
+  [1.0138, 0.2509],
+  [0.9652, 0.4436],
+  [0.0339, 0.4436],
 ];
 const BOX = { w: 1000, h: 428 }; // the flat screen the video is drawn into, before the perspective transform
 

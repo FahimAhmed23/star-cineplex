@@ -17,13 +17,14 @@ export function CaptureLab({ hall, booked }: { hall: Hall; booked: string[] }) {
   const h = Number(q.get("h") ?? 600);
   const lights = Number(q.get("lights") ?? 0.15);
   const movie = movies.find((m) => m.slug === (q.get("movie") ?? "hunger-games-sunrise-on-the-reaping")) ?? movies[0];
+  const blank = q.get("blank") === "1"; // phone hero still: the trailer is laid over the screen in CSS
   const seatModel = q.get("turntable") as "vip" | "premium" | "atmos" | null;
   if (seatModel)
     return (
       <div style={{ width: w, height: h, background: "#07050a" }} data-capture>
         <Canvas dpr={1} gl={{ antialias: true, preserveDrawingBuffer: true }} onCreated={({ gl }) => void (gl.toneMappingExposure = 1.05)}>
           <Suspense fallback={null}>
-            <SeatTurntable model={seatModel} color={seatModel === "vip" ? "#6B1E24" : "#C0262D"} leather={seatModel === "vip"} hover={false} rings={seatModel === "atmos"} />
+            <SeatTurntable model={seatModel} color={seatModel === "vip" ? "#6B1E24" : "#C0262D"} leather={seatModel === "vip"} hover={false} rings={seatModel === "atmos"} angle={q.get("angle") ? Number(q.get("angle")) : undefined} />
           </Suspense>
         </Canvas>
       </div>
@@ -36,8 +37,8 @@ export function CaptureLab({ hall, booked }: { hall: Hall; booked: string[] }) {
         bookedSeats={booked}
         mode={(q.get("mode") as "seat" | "front" | "overview") ?? "seat"}
         seatId={seat}
-        trailer={movie.trailer}
-        poster={movie.trailerPoster}
+        trailer={blank ? undefined : movie.trailer}
+        poster={blank ? undefined : movie.trailerPoster}
         trailerCrop={movie.trailerCrop}
         startAt={Number(q.get("t") ?? 0.3)}
         houseLights={lights}

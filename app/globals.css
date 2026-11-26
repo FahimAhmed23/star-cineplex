@@ -60,7 +60,8 @@
   --color-map-selected: var(--map-selected);
 
   --font-display: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  /* ৳ is not in Outfit: Anek Bangla draws it (only that glyph falls back; its bengali subset loads on demand) */
+  --font-sans: var(--font-outfit), var(--font-anek-bangla), system-ui, sans-serif;
   --font-bangla: var(--font-anek-bangla), var(--font-outfit), sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
