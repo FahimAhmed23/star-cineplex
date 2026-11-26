@@ -197,7 +197,7 @@ comment in the button's CSS/component: `/* Hover effect adapted from Uiverse.io 
 
 **Behaviour:** on hover/focus, a fill layer grows **from the exact centre** of the button (`::before` from 0×0 at
 50%/50% to 100%×100%, same border-radius) while the text colour flips. On press, the button scales to **0.94**.
-**700ms** on a gentle in-out curve, **the same on hover and when the mouse leaves** (designer, Nov 26), grown with `transform: scale` (not width/height); text colour 600ms.
+**450ms** on a gentle in-out curve, **the same on hover and when the mouse leaves** (designer, Nov 26), grown with `transform: scale` (not width/height); text colour 400ms.
 Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 
 | Variant | Rest | Hover fill | Text on hover | Used for |
