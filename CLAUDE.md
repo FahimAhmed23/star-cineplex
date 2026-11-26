@@ -233,6 +233,11 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
   | `--radius-card-lg` | 32px | Large surfaces: ticket (§9.8), checkout summary card, slide-over panels (Prices, About) |
 - Tailwind utilities: `rounded-pill`, `rounded-card-sm`, `rounded-card-md`, `rounded-card-lg`.
 
+### Section spacing
+- Home page: **100px between sections** (designer, Nov 26) — each section starts 100px after the previous one ends
+  (Now Showing, Coming Soon, Branches: 100px top; Coming Soon and Branches 100px bottom before Moments / the footer).
+  Moments keeps its scroll-driven height (its pinned headline, not a gap).
+
 ### Motion tokens
 - `--ease-out`: `cubic-bezier(0.22, 1, 0.36, 1)` — default for UI entering
 - `--ease-in-out`: `cubic-bezier(0.65, 0, 0.35, 1)` — camera moves, splits
@@ -529,7 +534,7 @@ poster ratio 2:3 (~450px tall). Corner radius 24px (`--radius-card-md`).
 
 ### 8.5 Now Showing in Theaters
 
-- Section background **`--paper` (light theme)**, title in `--ink`, "Show all" button as the light secondary (ink outline → purple fill). Container 1280px, padding-top 120px.
+- Section background **`--paper` (light theme)**, title in `--ink`, "Show all" button as the light secondary (ink outline → purple fill). Container 1280px, padding-top 100px (§5 Section spacing).
 - **Header: the title only** — "Now Showing in Theaters", centred, `display-m` (GC Movark). No eyebrow, no pill, no subtitle.
 - **Grid of `MovieCard`s, 4 per row.** Initially show **4 cards** (the first row only).
 - Below the grid, centred: a **"Show all" button** (pill, outlined white, 14px; inspired by bKash's centred "See all"),

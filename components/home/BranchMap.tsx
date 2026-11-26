@@ -169,7 +169,7 @@ export function BranchMap() {
   };
 
   return (
-    <section id="branches" aria-labelledby="branches-title" className="relative scroll-mt-24 overflow-hidden bg-night py-24 max-md:py-20">
+    <section id="branches" aria-labelledby="branches-title" className="relative scroll-mt-24 overflow-hidden bg-night pt-[100px] pb-[100px]">
       <div className="mx-auto grid max-w-[1280px] gap-x-12 gap-y-8 px-8 max-md:px-5 grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
         {/* headline */}
         <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
