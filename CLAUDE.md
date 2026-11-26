@@ -805,7 +805,9 @@ drawn at those pixels, so the 3D hall can fade in exactly underneath them.
 1. The 3D hall fades in under the map from the same camera (450ms), the map fades out.
 2. The camera **dives** into your first seat (2.2s): it descends first, then tilts up to the screen late, and the lens
    widens with the tilt. The trailer plays on the screen.
-3. In the seat: drag to look around (360° / ±30°, eases back after ~2s). A strip of your row (± one row) sits at the
+3. In the seat: grab and drag the hall to look around (open/closed hand cursor; drag left turns you right, like a
+   street-view photo; ±120° left/right, ±25° up/down, a little weight). The view stays where you leave it (reference
+   video A); "Seats" rises from wherever you are looking. A strip of your row (± one row) sits at the
    bottom with your seats in gold. The button becomes **Seats** (grid icon).
 4. **Seats** plays the same move backwards (tilt down, rise) and the map fades back in.
 - The frame from your seat is captured for checkout's "view from your seat" image.

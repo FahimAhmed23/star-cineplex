@@ -151,8 +151,9 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
   const prevMode = useRef<CameraMode>(mode);
   const fovTween = useRef(false); // the dive tweens the lens itself
 
-  // look-around while in a seat: full 360° yaw, ±30° pitch, eases back after ~2s idle
-  const look = useRef({ yaw: 0, pitch: 0, dragging: false, lastInput: 0 });
+  // look-around while in a seat (reference video A): grab and drag the view; it stays where you leave it.
+  // ty/tp = where the drag points, yaw/pitch = the smoothed view following it
+  const look = useRef({ yaw: 0, pitch: 0, ty: 0, tp: 0, dragging: false });
 
   const overview = useMemo(
     () => overviewPose(layout, size.width / size.height, BASE_FOV),
@@ -176,8 +177,14 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
       from.p.copy(camera.position);
       from.l.copy(controls.current.target);
     }
-    look.current.yaw = 0;
-    look.current.pitch = 0;
+    // leaving a seat after looking around: start from where the eye actually points, so nothing jumps
+    if (prevMode.current === "seat" && mode !== "seat") {
+      const d = from.l.distanceTo(from.p) || 10;
+      from.l.copy(camera.position).addScaledVector(camera.getWorldDirection(new THREE.Vector3()), d);
+      from.p.copy(camera.position);
+    }
+    look.current.yaw = look.current.ty = 0;
+    look.current.pitch = look.current.tp = 0;
     // reference video A: map → seat is one continuous dive (descend first, tilt up to the screen late);
     // seat → map is the same move backwards (tilt down first, then rise)
     const from_ = prevMode.current;
@@ -241,30 +248,38 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
   }, [targetPose, camera, mode]);
   // eslint note: size/topdown are read when a tween starts; a new tween starts when they change the target
 
-  // pointer look-around in seat mode
+  // pointer look-around in seat mode: grab the hall and drag it (like a street-view photo), open/closed hand cursor
   useEffect(() => {
     if (mode !== "seat") return;
     const el = gl.domElement;
+    const MAX_YAW = THREE.MathUtils.degToRad(120); // far enough to see the side walls and the rows beside you
+    const MAX_PITCH = THREE.MathUtils.degToRad(25);
+    const K = 0.0024; // radians per pixel: half a screen ≈ 100°
     let px = 0;
     let py = 0;
+    el.style.cursor = "grab";
+    el.style.touchAction = "none";
     const down = (e: PointerEvent) => {
       look.current.dragging = true;
       px = e.clientX;
       py = e.clientY;
-      el.setPointerCapture(e.pointerId);
+      el.style.cursor = "grabbing";
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {}
     };
     const move = (e: PointerEvent) => {
-      if (!look.current.dragging) return;
-      const k = 0.005;
-      look.current.yaw += (e.clientX - px) * k;
-      look.current.pitch = THREE.MathUtils.clamp(look.current.pitch + (e.clientY - py) * k, -Math.PI / 6, Math.PI / 6);
+      const L = look.current;
+      if (!L.dragging) return;
+      // grab convention: drag right pulls the hall right, so you turn to look left
+      L.ty = THREE.MathUtils.clamp(L.ty - (e.clientX - px) * K, -MAX_YAW, MAX_YAW);
+      L.tp = THREE.MathUtils.clamp(L.tp - (e.clientY - py) * K, -MAX_PITCH, MAX_PITCH);
       px = e.clientX;
       py = e.clientY;
-      look.current.lastInput = performance.now();
     };
     const up = () => {
       look.current.dragging = false;
-      look.current.lastInput = performance.now();
+      el.style.cursor = "grab";
     };
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointermove", move);
@@ -275,6 +290,8 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
+      el.style.cursor = "";
+      el.style.touchAction = "";
     };
   }, [mode, gl]);
 
@@ -315,13 +332,10 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
 
     if (mode === "seat") {
       const L = look.current;
-      if (!L.dragging && performance.now() - L.lastInput > 2000) {
-        // ease back to the screen; take the short way round
-        L.yaw = Math.atan2(Math.sin(L.yaw), Math.cos(L.yaw));
-        const k = 1 - Math.exp(-dt * 2.5);
-        L.yaw -= L.yaw * k;
-        L.pitch -= L.pitch * k;
-      }
+      // the view follows the drag with a little weight, and stays where it was left
+      const k = 1 - Math.exp(-dt * 9);
+      L.yaw += (L.ty - L.yaw) * k;
+      L.pitch += (L.tp - L.pitch) * k;
       const dir = tmp.clone().sub(camera.position);
       dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), -L.yaw);
       const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
