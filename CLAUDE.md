@@ -360,6 +360,7 @@ like a tab connected to the top of the screen, with small utility items sitting 
 | Buy Tickets | Tab — primary CTA | The main action |
 | Now Showing · Coming Soon · Showtimes · Prices · Branches | Tab — links | Frequent navigation ("Ticket Prices" shortened to "Prices") |
 | My tickets | Top strip, right | Returning users only |
+| Sound toggle | **Removed from the top strip** (designer, Nov 26); still in the collapsed menu | Rarely needed |
 | EN / বাংলা | Top strip, far right | Set once |
 | Phone 09617660660 | Top strip, left | Rarely needed |
 | About | **Footer** (not in the navbar) | Not part of the booking journey |
@@ -367,14 +368,17 @@ like a tab connected to the top of the screen, with small utility items sitting 
 Note: the current site shows "Branches" twice (utility bar and main nav). Show it **once**, in the tab.
 
 **Shape & style**
-- **Top strip:** full-width, ~36px tall, `#0B0810`. Utility items: 12–13px, `--muted`, white on hover, icons 14px.
-- **Notch tab:** same colour as the strip, attached to it and hanging below it, centred. Height ~60px,
+- **Top strip:** full-width, **40px** tall, `#0B0810`. Utility items: **16px**, `--muted`, white on hover, icons **18px** (designer, Nov 26).
+- **Notch tab:** same colour as the strip, attached to it and hanging below it, centred. Height **68px** (60px on phones),
   bottom corners radius ~14px. Where the tab meets the strip, the sides flare out with **concave (inverted)
   curves** so the tab looks carved from the strip (as in the shape reference).
 - Tab contents, left to right:
-  - Star Cineplex logo (`/public/brand/logo-white.png` on dark, ~28px tall)
+  - Star Cineplex logo (`/public/brand/logo-white.png` on dark, **40px** tall; 32px on phones), then **60px** to the links
   - Links: 14px, `--muted` → white on hover; ~28px gap between links
-  - CTA: white pill button **"Buy Tickets"** with a ticket icon, ink text, 600 weight
+  - CTA: white pill button **"Buy Tickets"** with a ticket icon, ink text, 600 weight, **60px** after the last link
+- **Glow (designer, Nov 26):** one continuous light line traces the bar's silhouette (strip edge → curved corners →
+  tab sides → tab bottom), brightest in the middle, fading low towards the left and right edges, with a soft blurred
+  copy and a purple spill below the tab. Static. Phones: a light along the tab's bottom edge.
 - Width: the tab hugs its content (~760px). The strip is always full width.
 - Language toggle: `EN / বাংলা` — active language white and underlined, the other `--muted`.
   Bangla labels use Anek Bangla.
@@ -910,7 +914,7 @@ _The designer will spec remaining screens one by one. Add them here instead of i
 - Favicon: the Star Cineplex star mark (from the logo) on `--purple`.
 
 **Sound (subtle, muted by default)**
-- A global sound toggle (Solar volume icon) in the navbar's top strip; **off by default**; remembered in `localStorage`.
+- A global sound toggle (Solar volume icon) in the collapsed navbar menu (removed from the top strip, Nov 26); **off by default**; remembered in `localStorage`.
 - When on: a soft projector hum during the opening (§8.1), a low door "thunk" + soft hall ambience when the cinema
   doors open (§9.4), a gentle paper "print" sound on the ticket (§9.8). All very quiet; never on hover.
 - Trailer audio follows its own rules (§8.2 muted, §8.7 on).

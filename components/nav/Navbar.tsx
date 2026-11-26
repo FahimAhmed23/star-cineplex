@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useLang, useT } from "@/lib/i18n";
@@ -33,6 +33,26 @@ export function Navbar({ revealWithIntro = false }: Props) {
   const stage = useUi((s) => s.stage);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // the glow outline follows the tab, whose width hugs its content: measure it
+  const tabRef = useRef<HTMLElement>(null);
+  const [tab, setTab] = useState<{ w: number; l: number; r: number; h: number } | null>(null);
+  useLayoutEffect(() => {
+    const el = tabRef.current;
+    if (!el) return;
+    const measure = () => {
+      const r = el.getBoundingClientRect();
+      const w = document.documentElement.clientWidth;
+      setTab((t) => (t && t.w === w && t.l === r.left && t.r === r.right && t.h === r.height ? t : { w, l: r.left, r: r.right, h: r.height }));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
   const [active, setActive] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -117,32 +137,35 @@ export function Navbar({ revealWithIntro = false }: Props) {
       aria-hidden={hidden || undefined}
       inert={hidden || undefined}
     >
+      {/* the glow (designer, Nov 26): a band of light under the whole navbar, left to right, brightest in the middle */}
+      <span aria-hidden className="nav-glow-band" />
+      {tab && <GlowOutline {...tab} />}
       {/* top strip — hidden on phones */}
-      <div className="nav-bg hidden h-9 items-center justify-between px-6 text-[13px] text-muted md:flex">
-        <a href={`tel:${PHONE}`} className="focus-ring flex items-center gap-1.5 hover:text-white" aria-label={`${t("nav.call")} ${PHONE}`}>
-          <Icon name="phone" size={14} />
+      <div className="nav-bg relative z-[1] hidden h-10 items-center justify-between px-6 text-[16px] text-muted md:flex">
+        <a href={`tel:${PHONE}`} className="focus-ring flex items-center gap-2 hover:text-white" aria-label={`${t("nav.call")} ${PHONE}`}>
+          <Icon name="phone" size={18} />
           <span className="tabular-nums">{PHONE}</span>
         </a>
-        <div className="hidden items-center gap-5 min-[1100px]:flex">
-          <SoundToggle />
-          <button type="button" onClick={openTickets} className="focus-ring flex items-center gap-1.5 hover:text-white">
-            <Icon name="ticket" size={14} />
+        <div className="hidden items-center gap-6 min-[1100px]:flex">
+          <button type="button" onClick={openTickets} className="focus-ring flex items-center gap-2 hover:text-white">
+            <Icon name="ticket" size={18} />
             {t("nav.myTickets")}
           </button>
-          <LangToggle />
+          <LangToggle iconSize={18} />
         </div>
       </div>
 
       {/* the notch tab */}
       <nav
+        ref={tabRef}
         aria-label={t("nav.mainNav")}
-        className={`nav-tab nav-bg relative mx-auto flex h-[60px] w-fit items-center gap-7 rounded-b-[14px] px-5 transition-shadow duration-300 ${scrolled ? "shadow-[0_12px_30px_-12px_rgba(0,0,0,.7)]" : ""}`}
+        className={`nav-tab nav-bg relative z-[1] mx-auto flex h-[60px] w-fit items-center gap-7 rounded-b-[14px] px-5 transition-shadow duration-300 md:h-[68px] ${scrolled ? "shadow-[0_12px_30px_-12px_rgba(0,0,0,.7)]" : ""}`}
       >
-        <Link href="/" className="focus-ring shrink-0" aria-label={t("nav.home")} onClick={(e) => { if (pathname === "/") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); } }}>
-          <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-7 w-auto" priority />
+        <Link href="/" className="focus-ring shrink-0 min-[1100px]:mr-8" /* 60px to the links (designer) */ aria-label={t("nav.home")} onClick={(e) => { if (pathname === "/") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); } }}>
+          <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-8 w-auto md:h-10" priority />
         </Link>
         <div className="hidden items-center gap-7 min-[1100px]:flex">{links}</div>
-        <ButtonLink href="/book" variant="white" size="xs" icon="ticket" className="shrink-0">
+        <ButtonLink href="/book" variant="white" size="xs" icon="ticket" className="shrink-0 min-[1100px]:ml-8" /* 60px from the links */>
           {t("common.buyTickets")}
         </ButtonLink>
         <button
@@ -155,6 +178,8 @@ export function Navbar({ revealWithIntro = false }: Props) {
         >
           <Icon name={menuOpen ? "closeSimple" : "menu"} size={20} />
         </button>
+        {/* lit from below like a cinema canopy (designer, Nov 26): a light edge + a soft purple spill */}
+        <span aria-hidden className="nav-glow" />
       </nav>
 
       {/* collapsed menu (< 1100px): all links, My tickets, language, phone */}
@@ -179,25 +204,66 @@ export function Navbar({ revealWithIntro = false }: Props) {
   );
 }
 
+/**
+ * The navbar's light (designer, Nov 26): one continuous line tracing the bar's silhouette — along the top strip,
+ * round the curved corners, down the tab's sides and along its bottom — brightest in the middle, fading towards the
+ * left and right edges, with a soft blurred copy for the glow. Desktop only (phones have no strip).
+ */
+function GlowOutline({ w, l, r, h }: { w: number; l: number; r: number; h: number }) {
+  const S = 40; // top strip height
+  const R = 14; // flare and corner radius
+  const B = S + h; // tab bottom
+  const d = [
+    `M0 ${S}`,
+    `H${l - R}`,
+    `A${R} ${R} 0 0 1 ${l} ${S + R}`, // concave flare into the tab
+    `V${B - R}`,
+    `A${R} ${R} 0 0 0 ${l + R} ${B}`, // tab's rounded bottom corner
+    `H${r - R}`,
+    `A${R} ${R} 0 0 0 ${r} ${B - R}`,
+    `V${S + R}`,
+    `A${R} ${R} 0 0 1 ${r + R} ${S}`,
+    `H${w}`,
+  ].join(" ");
+  return (
+    <svg aria-hidden className="nav-glow-outline" width={w} height={B + 12} viewBox={`0 0 ${w} ${B + 12}`}>
+      <defs>
+        <linearGradient id="nav-glow-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={w} y2="0">
+          <stop offset="0" stopColor="#B784D6" stopOpacity="0.12" />
+          <stop offset="0.3" stopColor="#B784D6" stopOpacity="0.5" />
+          <stop offset="0.5" stopColor="#E0C4F2" stopOpacity="1" />
+          <stop offset="0.7" stopColor="#B784D6" stopOpacity="0.5" />
+          <stop offset="1" stopColor="#B784D6" stopOpacity="0.12" />
+        </linearGradient>
+        <filter id="nav-glow-blur" x="-5%" y="-50%" width="110%" height="200%">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+      </defs>
+      <path d={d} fill="none" stroke="url(#nav-glow-grad)" strokeWidth="4" filter="url(#nav-glow-blur)" opacity="0.7" />
+      <path d={d} fill="none" stroke="url(#nav-glow-grad)" strokeWidth="1.25" />
+    </svg>
+  );
+}
+
 /** §10 global sound toggle: off by default, remembered. */
-export function SoundToggle() {
+export function SoundToggle({ iconSize = 16 }: { iconSize?: number }) {
   const { t } = useT();
   const on = useSound((s) => s.on);
   return (
-    <button type="button" onClick={toggleSound} aria-pressed={on} className={`focus-ring flex items-center gap-1.5 ${on ? "text-white" : "hover:text-white"}`}>
-      <Icon name={on ? "volumeOn" : "volumeOff"} size={14} />
+    <button type="button" onClick={toggleSound} aria-pressed={on} className={`focus-ring flex items-center gap-2 ${on ? "text-white" : "hover:text-white"}`}>
+      <Icon name={on ? "volumeOn" : "volumeOff"} size={iconSize} />
       {t(on ? "nav.soundOn" : "nav.soundOff")}
     </button>
   );
 }
 
 /** EN / বাংলা — active language white + underlined, the other muted (§7). */
-export function LangToggle() {
+export function LangToggle({ iconSize = 16 }: { iconSize?: number }) {
   const { t, lang } = useT();
   const setLang = useLang((s) => s.setLang);
   return (
-    <div className="flex items-center gap-1.5" role="group" aria-label={t("common.language")}>
-      <Icon name="globe" size={14} />
+    <div className="flex items-center gap-2" role="group" aria-label={t("common.language")}>
+      <Icon name="globe" size={iconSize} />
       <button type="button" onClick={() => setLang("en")} aria-pressed={lang === "en"} className={`focus-ring ${lang === "en" ? "text-white underline underline-offset-4" : "hover:text-white"}`}>
         EN
       </button>

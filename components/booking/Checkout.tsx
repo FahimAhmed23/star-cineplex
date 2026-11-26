@@ -279,7 +279,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
         </div>
 
         {/* right: the ticket summary */}
-        <aside className={`lg:sticky lg:top-[112px] lg:self-start ${sheet ? "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:max-h-[88svh] max-md:overflow-y-auto max-md:px-3 max-md:pt-3 max-md:pb-[88px]" : "max-md:hidden"}`} id="checkout-summary">
+        <aside className={`lg:sticky lg:top-[124px] lg:self-start ${sheet ? "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:max-h-[88svh] max-md:overflow-y-auto max-md:px-3 max-md:pt-3 max-md:pb-[88px]" : "max-md:hidden"}`} id="checkout-summary">
           <div className="ticket-card">
             <div className="p-6">
               <p className={`flex items-center gap-2 text-[14px] font-medium ${left !== null && left <= 120 ? "text-[#8f5d12]" : "text-ink/70"}`} aria-live="off">

@@ -183,7 +183,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="hero-p-early focus-ring absolute top-[76px] left-4 md:top-[112px] md:left-8 z-10 flex items-center gap-2 rounded-pill border border-white/25 bg-black/30 px-4 py-2 text-[14px] font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          className="hero-p-early focus-ring absolute top-[76px] left-4 md:top-[124px] md:left-8 z-10 flex items-center gap-2 rounded-pill border border-white/25 bg-black/30 px-4 py-2 text-[14px] font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/10"
         >
           <Icon name="arrowLeft" size={18} />
           {t("trailer.back")}

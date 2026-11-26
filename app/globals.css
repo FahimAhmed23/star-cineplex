@@ -205,6 +205,59 @@ body {
     display: none;
   }
 }
+/* the tab is lit from below like a cinema canopy (designer, Nov 26): a thin light along its bottom edge, brightest
+   in the middle, and a soft purple spill onto the scene. Static, restrained: it shows the bar's shape, never a halo. */
+.nav-glow {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 1.5px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--purple-light) 30%, #d9b8ee 50%, var(--purple-light) 70%, transparent);
+  opacity: 0.9;
+}
+.nav-glow::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 0;
+  height: 44px;
+  background: radial-gradient(ellipse 50% 100% at 50% 0%, rgb(127 62 152 / 0.42), rgb(127 62 152 / 0.12) 45%, transparent 75%);
+  filter: blur(6px);
+}
+/* full-width band (desktop): a light line along the bottom of the top strip from edge to edge, and a purple spill
+   below the whole bar — both strongest in the middle under the tab, fading low towards the left and right */
+.nav-glow-band {
+  display: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 40px;
+  height: 96px;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 36% 100% at 50% 0%, rgb(127 62 152 / 0.42), rgb(127 62 152 / 0.14) 50%, transparent 100%);
+}
+.nav-glow-outline {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+}
+@media (min-width: 768px) {
+  .nav-glow-band,
+  .nav-glow-outline {
+    display: block;
+  }
+  /* desktop: the outline lights the tab's edge; this line stays for phones */
+  .nav-glow {
+    display: none;
+  }
+}
 .nav-link {
   position: relative;
   font-size: 14px;

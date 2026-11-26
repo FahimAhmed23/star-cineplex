@@ -446,7 +446,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       </p>
 
       {/* header (the column) */}
-      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto w-full max-w-[760px] px-4 md:top-[104px]">
+      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto w-full max-w-[760px] px-4 md:top-[120px]">
         <Link href={`/book?movie=${movie.slug}`} className="focus-ring pointer-events-auto inline-flex items-center gap-1.5 text-[13px] text-white/70 hover:text-white">
           <Icon name="arrowLeft" size={16} />
           {t("booking.changeShowtime")}
