@@ -447,7 +447,9 @@ structure, move it into the 3D hall).
 
 **Trailer carousel (like the current site)**
 - 5–6 featured movies. Each plays ~15–20s of its trailer, then **auto-advances** to the next.
-- Transition between trailers: screen dips to black (300ms), the hero info cross-fades, the next trailer fades in.
+- Transition between trailers: screen dips to black (300ms), the next trailer fades in, and **only the middle of the hero
+  info changes** (title, details, synopsis): the eyebrow "Now showing at Star Cineplex" and the buttons stay on screen
+  and glide if the block's height changes (designer, Nov 26). **40px** between the synopsis and the buttons.
 - Progress indicator bottom-right: a row of short dashes, the active one fills over the trailer's duration
   in `--purple-light`; click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
 

@@ -195,66 +195,77 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       <div
         className={`pointer-events-none absolute inset-x-0 mx-auto max-w-[1440px] px-5 md:px-8 ${phone ? "bottom-[156px]" : "inset-y-0 flex items-center"}`}
       >
-        <AnimatePresence mode="wait">
-          {revealed && (
-            <motion.div
-              key={movie.slug}
-              className="pointer-events-auto relative"
-              // the column always ends before the screen (which starts at ~48% of the width)
-              style={phone ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
-              initial="hidden"
-              animate="show"
-              exit={{ opacity: 0, transition: { duration: 0.25 } }}
-              variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-            >
-              {/* scroll: the synopsis and buttons fade first, then the title (§8.3) */}
-              <div className="hero-p-late">
-                <motion.p variants={item} className="eyebrow mb-3 md:mb-4">
-                  <Icon name="star" size={16} />
-                  {soon ? t("home.comingSoonTitle") : t("hero.eyebrow")}
-                </motion.p>
-                {/* the title lands word by word (designer reference: Aave), then the rest follows */}
-                <RevealText
-                  as="h1"
-                  text={title}
-                  show
-                  delay={TITLE_DELAY}
-                  lang={isBnTitle ? "bn" : "en"} /* English titles keep GC Movark in Bangla mode */
-                  className="display-xl mb-4 text-white md:mb-5" /* hero film title at 700, like every title (designer) */
-                  // compact hero title (designer, Nov 26): 72px / 55px at 1440×900 (short / long titles), capped by viewport height
-                  style={{ fontSize: phone ? (long ? "clamp(26px, 7.2vw, 34px)" : "clamp(32px, 9.2vw, 44px)") : long ? "min(clamp(40px, 3.8vw, 60px), 7vh)" : "min(clamp(48px, 5vw, 80px), 9vh)" }}
-                />
-              </div>
+        {revealed && (
+          <motion.div
+            className="pointer-events-auto relative"
+            // the column always ends before the screen (which starts at ~48% of the width)
+            style={phone ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
+            initial="hidden"
+            animate="show"
+            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+          >
+            {/* the eyebrow and the buttons stay put when the trailer changes; only the middle swaps (designer, Nov 26).
+                They glide (layout) when the middle's height changes, since the block stays centred. */}
+            {/* scroll: the synopsis and buttons fade first, then the title (§8.3) */}
+            <motion.p layout="position" variants={item} className="hero-p-late eyebrow mb-3 md:mb-4">
+              <Icon name="star" size={16} />
+              {soon ? t("home.comingSoonTitle") : t("hero.eyebrow")}
+            </motion.p>
+            <AnimatePresence mode="wait">
               <motion.div
-                className="hero-p-early"
-                variants={{ show: { transition: { delayChildren: reduced ? 0 : revealDuration(title, TITLE_DELAY) - 0.15, staggerChildren: 0.1 } } }}
+                key={movie.slug}
+                initial="hidden"
+                animate="show"
+                exit={{ opacity: 0, transition: { duration: 0.25 } }}
+                variants={{ show: { transition: { staggerChildren: 0.1 } } }}
               >
-                <motion.ul variants={item} className="mb-5 flex max-md:text-[13px] flex-wrap items-center gap-x-2.5 gap-y-2 text-[14px] font-medium text-white/85" aria-label="Details">
-                  <li>{movie.releaseDate.slice(0, 4)}</li>
-                  <Dot />
-                  {movie.certificate && (
-                    <>
-                      <li className="rounded-[4px] border border-white/60 px-1.5 text-[12px] leading-5" title={t("hero.certificate", { c: movie.certificate, meaning: t(`hero.certificateMeaning.${movie.certificate}`) })}>
-                        {movie.certificate}
-                        <span className="sr-only">: {t(`hero.certificateMeaning.${movie.certificate}`)}</span>
-                      </li>
-                      <Dot />
-                    </>
-                  )}
-                  {runtime && (
-                    <>
-                      <li>{runtime}</li>
-                      <Dot />
-                    </>
-                  )}
-                  <li>{movie.language}</li>
-                  <Dot />
-                  <li className="rounded-[4px] bg-purple px-1.5 text-[12px] leading-5 font-semibold text-white">{movie.format}</li>
-                </motion.ul>
-                <motion.p variants={item} className="body-l mb-7 line-clamp-3 text-white/75 max-md:hidden">
-                  {movie.synopsis}
-                </motion.p>
-                <motion.div variants={item} className="mb-6 flex flex-wrap gap-3 max-md:mb-0 max-md:[&_.btn]:flex-1">
+                <div className="hero-p-late">
+                  {/* the title lands word by word (designer reference: Aave), then the rest follows */}
+                  <RevealText
+                    as="h1"
+                    text={title}
+                    show
+                    delay={TITLE_DELAY}
+                    lang={isBnTitle ? "bn" : "en"} /* English titles keep GC Movark in Bangla mode */
+                    className="display-xl mb-4 text-white md:mb-5" /* hero film title at 700, like every title (designer) */
+                    // compact hero title (designer, Nov 26): 72px / 55px at 1440×900 (short / long titles), capped by viewport height
+                    style={{ fontSize: phone ? (long ? "clamp(26px, 7.2vw, 34px)" : "clamp(32px, 9.2vw, 44px)") : long ? "min(clamp(40px, 3.8vw, 60px), 7vh)" : "min(clamp(48px, 5vw, 80px), 9vh)" }}
+                  />
+                </div>
+                <motion.div
+                  className="hero-p-early"
+                  variants={{ show: { transition: { delayChildren: reduced ? 0 : revealDuration(title, TITLE_DELAY) - 0.15, staggerChildren: 0.1 } } }}
+                >
+                  <motion.ul variants={item} className="mb-5 flex max-md:text-[13px] flex-wrap items-center gap-x-2.5 gap-y-2 text-[14px] font-medium text-white/85" aria-label="Details">
+                    <li>{movie.releaseDate.slice(0, 4)}</li>
+                    <Dot />
+                    {movie.certificate && (
+                      <>
+                        <li className="rounded-[4px] border border-white/60 px-1.5 text-[12px] leading-5" title={t("hero.certificate", { c: movie.certificate, meaning: t(`hero.certificateMeaning.${movie.certificate}`) })}>
+                          {movie.certificate}
+                          <span className="sr-only">: {t(`hero.certificateMeaning.${movie.certificate}`)}</span>
+                        </li>
+                        <Dot />
+                      </>
+                    )}
+                    {runtime && (
+                      <>
+                        <li>{runtime}</li>
+                        <Dot />
+                      </>
+                    )}
+                    <li>{movie.language}</li>
+                    <Dot />
+                    <li className="rounded-[4px] bg-purple px-1.5 text-[12px] leading-5 font-semibold text-white">{movie.format}</li>
+                  </motion.ul>
+                  <motion.p variants={item} className="body-l line-clamp-3 text-white/75 max-md:hidden">
+                    {movie.synopsis}
+                  </motion.p>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
+            {/* 40px above the buttons (designer, Nov 26) */}
+            <motion.div layout="position" variants={item} className="hero-p-early mt-10 mb-6 flex flex-wrap gap-3 max-md:mt-1 max-md:mb-0 max-md:[&_.btn]:flex-1">
                   {soon ? (
                     // Coming Soon in the trailer view: a non-clickable release badge instead of Buy Tickets (§8.6)
                     <span className="inline-flex items-center gap-2 rounded-pill border border-white/25 px-6 py-[14px] text-[15px] font-semibold text-white">
@@ -269,11 +280,9 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                   <ButtonLink href="/book" variant="secondary" icon="calendar">
                     {t("common.fullSchedule")}
                   </ButtonLink>
-                </motion.div>
-              </motion.div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
       </div>
 
       {/* trailer ended: Replay + Buy Tickets on the screen area (the screen fills ~48–94% of the width) */}
