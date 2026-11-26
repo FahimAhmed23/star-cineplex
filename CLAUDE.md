@@ -632,7 +632,7 @@ film reel). No functional goal: no map links, no "near me", no showtimes, no but
 - **Left (440px):** headline **"One Star. Nine homes."** (`display-m`, word reveal, two lines) + "Star Cineplex across
   Bangladesh", then every branch as a list grouped by city — Dhaka 6 · Narayanganj 1 · Chattogram 2 — each row `01`
   (Plex Mono, `--purple-light`) · name · area, **shown in full, never truncated** (dropped when it repeats the city).
-- **Right (60vw, bleeding off the right edge):** a **lightly zoomed map** — the dotted Bangladesh outline (Natural
+- **Right (centred in the space between the list and the section's right edge, equal gaps both sides):** a **lightly zoomed map** — the dotted Bangladesh outline (Natural
   Earth via `world-atlas`; `scripts/build-branch-map.mjs` → `data/branch-map.json` `zoom`), cropped so most of the
   country shows with Dhaka, Narayanganj and Chattogram well inside, **dissolving towards the corners** (radial mask).
   A **five-point star on each branch only** (the Dhaka cluster opened up ×3.2 and nudged apart so each star reads, real

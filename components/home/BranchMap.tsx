@@ -117,8 +117,8 @@ export function BranchMap() {
         </div>
       </div>
 
-      {/* right: the zoomed map, bleeding off the right edge and fading out at the edges */}
-      <div className="branch-map max-lg:relative max-lg:mt-10 max-lg:px-5 lg:absolute lg:inset-y-0 lg:right-0 lg:flex lg:w-[60vw] lg:justify-end">
+      {/* right: the map, centred between the list and the section's right edge, fading out towards the corners */}
+      <div className="branch-map max-lg:relative max-lg:mt-10 max-lg:px-5 lg:absolute lg:inset-y-0 lg:right-0 lg:left-[calc(max(0px,(100%_-_1280px)/2)_+_472px)] lg:flex lg:justify-center">
         <div
           className="relative max-lg:w-full lg:h-full"
           style={{ aspectRatio: `${CROP.w} / ${CROP.h}` }}
