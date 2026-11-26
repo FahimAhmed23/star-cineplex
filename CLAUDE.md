@@ -780,7 +780,8 @@ Plays between choosing a showtime and the seat selection. Total ≈ 1.8s.
 2D-first on every device; the 3D hall is the **Preview**, not the picking surface.
 
 **Layout:** one centred column (760px max) over `--night`:
-- **Top:** "← Change showtime", movie title, `date · time · Hall`, and a **ticket stepper** `– 2 tickets +` (1–10).
+- **Top:** "← Change showtime", movie title, `date · time · Hall`, and a **ticket stepper** `– 1 ticket +` (1–10;
+  starts at 1 ticket, designer Nov 26).
 - **Middle:** the seat map, with the screen arc and row letters.
 - **Bottom:** legend (Free · Booked · Yours · class + price), the summary line `Row H · Seats 10–11` / `2 × ৳550`,
   then **Preview** (eye icon, secondary) and **Continue · ৳1,100** (primary; the price digits roll when it changes).
@@ -790,7 +791,7 @@ Plays between choosing a showtime and the seat selection. Total ≈ 1.8s.
 drawn at those pixels, so the 3D hall can fade in exactly underneath them.
 
 **Picking (video B):** your N seats are **one block**.
-- It starts on the best available group (centre, middle rows, together).
+- It starts on the best available seat for 1 ticket (centre, middle rows); more tickets grow it into a group.
 - **Drag** the gold seats: they lift and stack under the pointer, a **dashed gold ghost** shows where they'll land
   (snapped to the nearest free run in that row or the next), with a glass tooltip `Row E · 13–14` (Plex Mono).
   Release to drop; the seats glide in with a 40ms stagger.

@@ -47,9 +47,9 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   const { full3D } = useDevice();
 
   // ── the block of seats ──
-  const [count, setCount] = useState(() => Math.min(MAX_SEATS, Math.max(1, initialSeats.length || 2)));
+  const [count, setCount] = useState(() => Math.min(MAX_SEATS, Math.max(1, initialSeats.length || 1)));
   const [group, setGroup] = useState<string[]>(() =>
-    initialSeats.length ? initialSeats : (bestAvailable(hall, layout.seats, booked, 2) ?? spreadPick(hall, layout.seats, booked, 2) ?? []),
+    initialSeats.length ? initialSeats : (bestAvailable(hall, layout.seats, booked, 1) ?? spreadPick(hall, layout.seats, booked, 1) ?? []),
   );
   const sorted = useMemo(
     () => [...group].filter((id) => byId.has(id)).sort((a, b) => byId.get(a)!.rowIndex - byId.get(b)!.rowIndex || byId.get(a)!.col - byId.get(b)!.col),
