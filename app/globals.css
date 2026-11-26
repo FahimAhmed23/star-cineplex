@@ -645,31 +645,26 @@ body {
   cursor: pointer;
   user-select: none;
   transition:
-    color 250ms var(--ease-out),
-    border-color 250ms var(--ease-out),
-    transform 150ms var(--ease-out);
+    color 450ms var(--ease-out),
+    border-color 450ms var(--ease-out),
+    transform 200ms var(--ease-out);
 }
 .btn::before {
   content: "";
   position: absolute;
   z-index: -1;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
+  inset: 0;
   border-radius: inherit;
   background: var(--btn-fill);
-  transform: translate(-50%, -50%);
-  transition:
-    width 250ms var(--ease-out),
-    height 250ms var(--ease-out);
+  transform: scale(0);
+  /* smoother hover (designer, Nov 26): 550ms on a soft ease, grown with transform instead of width/height */
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn:where(:hover, :focus-visible):not(:disabled, [aria-disabled="true"]) {
   color: var(--btn-fg-hover);
 }
 .btn:where(:hover, :focus-visible):not(:disabled, [aria-disabled="true"])::before {
-  width: 100%;
-  height: 100%;
+  transform: scale(1);
 }
 .btn:active:not(:disabled, [aria-disabled="true"]) {
   transform: scale(0.94);
@@ -753,10 +748,9 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .btn::before {
-    width: 100%;
-    height: 100%;
+    transform: none;
     opacity: 0;
-    transition: opacity 200ms linear;
+    transition: opacity 300ms linear;
   }
   .btn:where(:hover, :focus-visible):not(:disabled, [aria-disabled="true"])::before {
     opacity: 1;
@@ -1454,4 +1448,84 @@ body {
   .branch-map__label {
     display: none;
   }
+}
+
+/* ── Dropdown (designer, Nov 26): pill trigger, dark glass list 4px away, purple-tinted rows ── */
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding-inline: 16px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgb(255 255 255 / 0.15);
+  background: rgb(255 255 255 / 0.05);
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 200ms var(--ease-out), background-color 200ms var(--ease-out);
+}
+.dropdown-trigger:hover {
+  border-color: rgb(255 255 255 / 0.3);
+}
+.dropdown-trigger.is-open {
+  border-color: rgb(183 132 214 / 0.6);
+  background: rgb(127 62 152 / 0.18);
+}
+.dropdown-trigger:focus-visible {
+  border-radius: var(--radius-pill);
+}
+.dropdown-chevron {
+  color: var(--muted);
+  transition: transform 250ms var(--ease-out);
+}
+.dropdown-trigger.is-open .dropdown-chevron {
+  transform: rotate(180deg);
+  color: #fff;
+}
+.dropdown-list {
+  position: absolute;
+  left: 0;
+  z-index: 40;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(360px, 90vw);
+  max-height: min(360px, 60vh);
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(18 12 24 / 0.92);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.7);
+  outline: none;
+  scrollbar-width: thin;
+}
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: rgb(255 255 255 / 0.78);
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.dropdown-option.is-active {
+  background: rgb(127 62 152 / 0.28);
+  color: #fff;
+}
+.dropdown-option[aria-selected="true"] {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* trailer progress (designer, Nov 26): fills with the brand purple over 15s, a soft glow so it reads on the dark */
+.hero-progress {
+  background: linear-gradient(90deg, var(--purple), #9a5cc0);
+  box-shadow: 0 0 8px rgb(127 62 152 / 0.6);
 }

@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { usePanels } from "@/lib/panels";
 import type { Hall, PriceBand, SeatClass } from "@/lib/types";
 import { SlideOver } from "./SlideOver";
+import { Dropdown } from "@/components/ui/Dropdown";
 
 const BANDS: PriceBand[] = ["matinee", "evening", "weekend"];
 const CLASS_KEY: Record<SeatClass, string> = { premium: "booking.classPremium", "semi-recliner": "booking.classSemiRecliner", vip: "booking.classVip" };
@@ -41,19 +42,19 @@ export function PricesPanel() {
 
   return (
     <SlideOver open={open === "prices"} onClose={close} title={t("prices.title")} width={560}>
-      <label className="block">
-        <span className="text-[13px] text-muted">{t("prices.branch")}</span>
-        <span className="relative mt-2 block">
-          <select value={branch} onChange={(e) => setBranch(e.target.value)} className="focus-ring h-11 w-full appearance-none rounded-pill border border-white/15 bg-white/5 pr-10 pl-4 text-[15px] text-white">
-            {branches.map((b) => (
-              <option key={b.slug} value={b.slug} className="bg-[#0b0810]">
-                {(lang === "bn" && b.nameBn) || b.name}
-              </option>
-            ))}
-          </select>
-          <Icon name="chevronDown" size={16} className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-muted" />
+      <div>
+        <span className="text-[13px] text-muted" aria-hidden>
+          {t("prices.branch")}
         </span>
-      </label>
+        <Dropdown
+          label={t("prices.branch")}
+          value={branch}
+          onChange={setBranch}
+          size="lg"
+          className="mt-2"
+          options={branches.map((b) => ({ value: b.slug, label: (lang === "bn" && b.nameBn) || b.name, lang: lang === "bn" ? "bn" : undefined }))}
+        />
+      </div>
 
       <div className="mt-6 overflow-x-auto">
         <table className="w-full text-left text-[14px]">

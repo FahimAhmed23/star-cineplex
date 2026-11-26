@@ -59,6 +59,7 @@ export const ICONS = {
   minus: "minus-circle-linear",
   plus: "add-circle-linear",
   widget: "widget-linear",
+  check: "check-linear",
 };
 
 const names = Object.values(ICONS);

@@ -16,7 +16,7 @@ import { RevealText, revealDuration } from "@/components/ui/RevealText";
 
 const Hall3D = dynamic(() => import("@/components/hall/Hall3D"), { ssr: false });
 
-const SLIDE_MS = 18_000; // each trailer plays ~15–20s, then the carousel advances (§8.2)
+const SLIDE_MS = 15_000; // each trailer plays 15s, then the carousel advances (designer, Nov 26)
 const DIP_MS = 300; // screen dips to black between trailers
 const START_AT = 0.18; // skip studio logos / title cards at the start of each trailer
 
@@ -91,7 +91,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       last = now;
       if (!paused && !dipping && !covered) progress.current = Math.min(1, progress.current + dt / SLIDE_MS);
       bars.current.forEach((el, i) => {
-        if (el) el.style.transform = `scaleX(${i === index ? progress.current : 0})`;
+        if (el) el.style.transform = `translateY(-50%) scaleX(${i === index ? progress.current : 0})`; // keep the bar centred on its track
       });
       if (progress.current >= 1 && !dipping) goTo(index + 1);
       else raf = requestAnimationFrame(loop);
@@ -345,16 +345,18 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                     <button
                       type="button"
                       onClick={() => i !== index && goTo(i)}
-                      className="focus-ring group relative block h-6 w-8"
+                      className="focus-ring group relative block h-6 w-10"
                       aria-label={t("hero.showTrailer", { n: i + 1, total: movies.length })}
                       aria-current={i === index || undefined}
                     >
-                      <span className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 rounded-pill bg-white/30 transition-colors group-hover:bg-white/60" />
+                      <span className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-pill bg-white/25 transition-colors group-hover:bg-white/50" />
                       <span
                         ref={(el) => {
                           bars.current[i] = el;
                         }}
-                        className="absolute inset-x-0 top-1/2 h-[2px] origin-left -translate-y-1/2 scale-x-0 rounded-pill bg-purple-light"
+                        className="hero-progress absolute inset-x-0 top-1/2 h-[3px] origin-left rounded-pill"
+                        // transform only (Tailwind 4 scale/translate classes would stack on it and hide the fill)
+                        style={{ transform: "translateY(-50%) scaleX(0)" }}
                       />
                     </button>
                   </li>

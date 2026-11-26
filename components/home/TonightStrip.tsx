@@ -8,6 +8,7 @@ import { demoDateFor, formatTime, localIso, nowHhmm } from "@/lib/demo-date";
 import { useDoors } from "@/lib/doors";
 import { useT } from "@/lib/i18n";
 import type { Format } from "@/lib/types";
+import { Dropdown } from "@/components/ui/Dropdown";
 
 /** Minimal showtime row sent to the browser (no booked-seat lists). */
 export interface ShowLite {
@@ -80,21 +81,19 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
             <Icon name="star" size={16} />
             {t("hero.tonightAt")}
           </span>
-          <label className="relative">
-            <span className="sr-only">{t("hero.branchLabel")}</span>
-            <select
-              value={branch}
-              onChange={(e) => pick(e.target.value)}
-              className="focus-ring h-10 w-[200px] cursor-pointer md:w-[248px] appearance-none rounded-pill border border-white/15 bg-white/5 pr-10 pl-4 text-[14px] font-medium text-white transition-colors hover:border-white/30"
-            >
-              {branches.map((b) => (
-                <option key={b.slug} value={b.slug} className="bg-[#0b0810]">
-                  {lang === "bn" ? `${b.nameBn}, ${b.areaBn}` : `${b.name}, ${b.area.split(",")[0]}`}
-                </option>
-              ))}
-            </select>
-            <Icon name="chevronDown" size={16} className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-muted" />
-          </label>
+          {/* themed list, opening upward (the strip sits at the bottom of the hero) */}
+          <Dropdown
+            label={t("hero.branchLabel")}
+            value={branch}
+            onChange={pick}
+            placement="up"
+            className="w-[200px] md:w-[248px]"
+            options={branches.map((b) => ({
+              value: b.slug,
+              label: lang === "bn" ? `${b.nameBn}, ${b.areaBn}` : `${b.name}, ${b.area.split(",")[0]}`,
+              lang: lang === "bn" ? "bn" : undefined,
+            }))}
+          />
         </div>
 
         <div className="relative min-w-0 flex-1">

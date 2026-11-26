@@ -197,7 +197,8 @@ comment in the button's CSS/component: `/* Hover effect adapted from Uiverse.io 
 
 **Behaviour:** on hover/focus, a fill layer grows **from the exact centre** of the button (`::before` from 0×0 at
 50%/50% to 100%×100%, same border-radius) while the text colour flips. On press, the button scales to **0.94**.
-250ms, `--ease-out`. Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
+**550ms** on a soft ease (designer, Nov 26: the old 250ms felt too fast), grown with `transform: scale` (not width/height); text colour 450ms.
+Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 
 | Variant | Rest | Hover fill | Text on hover | Used for |
 |---------|------|-----------|---------------|----------|
@@ -446,12 +447,12 @@ structure, move it into the 3D hall).
   from the video's average colour if possible, otherwise a soft white/purple).
 
 **Trailer carousel (like the current site)**
-- 5–6 featured movies. Each plays ~15–20s of its trailer, then **auto-advances** to the next.
+- 5–6 featured movies. Each plays **15s** of its trailer, then **auto-advances** to the next.
 - Transition between trailers: screen dips to black (300ms), the next trailer fades in, and **only the middle of the hero
   info changes** (title, details, synopsis): the eyebrow "Now showing at Star Cineplex" and the buttons stay on screen
   and glide if the block's height changes (designer, Nov 26). **40px** between the synopsis and the buttons.
-- Progress indicator bottom-right: a row of short dashes, the active one fills over the trailer's duration
-  in `--purple-light`; click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
+- Progress indicator bottom-right: a row of short dashes (3px), the active one fills over the 15s with the brand
+  **`--purple`** (soft glow so it reads on the dark); click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
 
 **Hero info overlay** (left-aligned, over the dark left wall of the angled view, under **one linear gradient across the whole hero**: dark behind the text column for full contrast, easing to clear just before the screen; no boxed or blurred panel behind the text; the text column always ends before the screen on the right)
 - Eyebrow: [star icon] `Now showing at Star Cineplex`
@@ -466,6 +467,8 @@ structure, move it into the 3D hall).
 
 **"Tonight at" showtimes strip** (pinned to the bottom of the hero, full width, dark bar)
 - Left: [star icon] `Tonight at` label + branch dropdown (default: nearest or last-used branch; demo default Bashundhara City).
+  **Themed dropdown** (`components/ui/Dropdown.tsx`, also in the Prices panel): pill trigger that stays fully round
+  when open, a dark glass list **4px** away (opens upward here), purple-tinted rows, a check on the current choice.
 - Right: a horizontally scrollable row of **ticket-shaped showtime chips**: `time | movie title | format badge`,
   with a dashed divider between time and title, and **semicircle notches cut out of the left and right edges**
   (like a ticket stub, as in the reference).
