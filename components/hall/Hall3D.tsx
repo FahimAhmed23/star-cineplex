@@ -1,6 +1,6 @@
 "use client";
 
-import { AdaptiveDpr, Html, PerformanceMonitor } from "@react-three/drei";
+import { Html, PerformanceMonitor } from "@react-three/drei";
 import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useMemo, useRef, useState } from "react";
@@ -66,7 +66,8 @@ export interface Hall3DProps {
  */
 export default function Hall3D(props: Hall3DProps) {
   const { active = true, className } = props;
-  const [dpr, setDpr] = useState(1.5);
+  // sharp by default; a busy machine steps down to 1.5, never to a blurry 1× (Nov 26)
+  const [dpr, setDpr] = useState(2);
   const maxDpr = typeof navigator !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent) ? 1.5 : 2;
   return (
     <Canvas
@@ -81,8 +82,7 @@ export default function Hall3D(props: Hall3DProps) {
       }}
     >
       <color attach="background" args={["#07050a"]} />
-      <PerformanceMonitor onIncline={() => setDpr(2)} onDecline={() => setDpr(1)} />
-      <AdaptiveDpr pixelated />
+      <PerformanceMonitor onIncline={() => setDpr(2)} onDecline={() => setDpr(1.5)} />
       <Suspense fallback={null}>
         <Scene {...props} />
       </Suspense>

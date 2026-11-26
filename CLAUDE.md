@@ -197,7 +197,7 @@ comment in the button's CSS/component: `/* Hover effect adapted from Uiverse.io 
 
 **Behaviour:** on hover/focus, a fill layer grows **from the exact centre** of the button (`::before` from 0×0 at
 50%/50% to 100%×100%, same border-radius) while the text colour flips. On press, the button scales to **0.94**.
-**550ms** on a soft ease (designer, Nov 26: the old 250ms felt too fast), grown with `transform: scale` (not width/height); text colour 450ms.
+**700ms** on a gentle in-out curve, **the same on hover and when the mouse leaves** (designer, Nov 26), grown with `transform: scale` (not width/height); text colour 600ms.
 Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 
 | Variant | Rest | Hover fill | Text on hover | Used for |
@@ -452,7 +452,7 @@ structure, move it into the 3D hall).
   info changes** (title, details, synopsis): the eyebrow "Now showing at Star Cineplex" and the buttons stay on screen
   and glide if the block's height changes (designer, Nov 26). **40px** between the synopsis and the buttons.
 - Progress indicator bottom-right: a row of short dashes (3px), the active one fills over the 15s with the brand
-  **`--purple`** (soft glow so it reads on the dark); click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
+  **`--purple`** (soft glow so it reads on the dark); trailers already played stay full, later ones empty; click a dash to jump. Pause/play button beside it (pausing stops auto-advance).
 
 **Hero info overlay** (left-aligned, over the dark left wall of the angled view, under **one linear gradient across the whole hero**: dark behind the text column for full contrast, easing to clear just before the screen; no boxed or blurred panel behind the text; the text column always ends before the screen on the right)
 - Eyebrow: [star icon] `Now showing at Star Cineplex`
@@ -906,7 +906,10 @@ _The designer will spec remaining screens one by one. Add them here instead of i
 
 - 3D: InstancedMesh for seats (one draw call per seat class), baked/simple lighting, bloom only on emissive parts.
 - Target 60fps on a mid-range laptop and 30fps+ on mid-range Android; cap DPR at 2 (1.5 on mobile).
-- Trailers: 720p H.264, ≤ 8MB each, poster frame shown until playable. Never autoplay with sound — the only
+- Trailers: 720p H.264 — **the designer's original files, remuxed without re-encoding** (`-c copy -movflags +faststart`:
+  no quality loss, starts before the whole file loads; Nov 26: the earlier ≤8MB re-encode halved the bitrate and looked
+  blocky). Poster frame shown until playable. The 3D screen samples the video with mipmaps + 8× anisotropy, the canvas
+  renders at up to 2× (a busy machine steps down to 1.5×, never a blurry or pixelated 1×), the picture at full strength. Never autoplay with sound — the only
   exception is the Trailer view (§8.7), which starts with sound because the user clicked "Play Trailer".
 - Lazy-load everything below the hero.
 - Keyboard: all hero controls reachable by Tab; Escape skips the intro.

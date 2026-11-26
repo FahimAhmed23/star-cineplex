@@ -53,6 +53,7 @@ export function Screen({ layout, src, poster, crop, startAt = 0, loop = true, on
     if (!poster) return setPosterTex(null);
     const tex = new THREE.TextureLoader().load(poster);
     tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     setPosterTex(tex);
     return () => tex.dispose();
   }, [poster]);
@@ -67,7 +68,11 @@ export function Screen({ layout, src, poster, crop, startAt = 0, loop = true, on
     if (videoRef) videoRef.current = el;
     const tex = new THREE.VideoTexture(el);
     tex.colorSpace = THREE.SRGBColorSpace;
-    tex.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
+    // the 1280px video is shown smaller than its size: mipmaps keep edges clean instead of shimmering (Nov 26)
+    tex.generateMipmaps = true;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     const onPlaying = () => setVideoTex(tex);
     const onError = () => setVideoTex(null);
     // seek past the studio logos first, then play (so the first frame shown is already the film)
@@ -170,7 +175,7 @@ export function Screen({ layout, src, poster, crop, startAt = 0, loop = true, on
     }
     avg.current.lerp(target.current, 1 - Math.exp(-dt * 3));
     // stays just under the bloom threshold: bloom is for the light strips, not a haze around the picture
-    if (matRef.current) matRef.current.color.setScalar(Math.max(0.04, level.current) * (map ? 0.93 : 0.8));
+    if (matRef.current) matRef.current.color.setScalar(Math.max(0.04, level.current) * (map ? 1 : 0.8)); // the picture at full strength
     if (light.current) {
       light.current.color.copy(avg.current);
       light.current.intensity = 1.6 * level.current;

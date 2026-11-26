@@ -91,7 +91,8 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       last = now;
       if (!paused && !dipping && !covered) progress.current = Math.min(1, progress.current + dt / SLIDE_MS);
       bars.current.forEach((el, i) => {
-        if (el) el.style.transform = `translateY(-50%) scaleX(${i === index ? progress.current : 0})`; // keep the bar centred on its track
+        // trailers already played stay full, the current one fills, later ones are empty (designer, Nov 26)
+        if (el) el.style.transform = `translateY(-50%) scaleX(${i < index ? 1 : i === index ? progress.current : 0})`;
       });
       if (progress.current >= 1 && !dipping) goTo(index + 1);
       else raf = requestAnimationFrame(loop);

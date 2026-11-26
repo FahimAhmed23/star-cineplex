@@ -645,8 +645,8 @@ body {
   cursor: pointer;
   user-select: none;
   transition:
-    color 450ms var(--ease-out),
-    border-color 450ms var(--ease-out),
+    color 600ms cubic-bezier(0.45, 0, 0.2, 1),
+    border-color 600ms cubic-bezier(0.45, 0, 0.2, 1),
     transform 200ms var(--ease-out);
 }
 .btn::before {
@@ -657,8 +657,8 @@ body {
   border-radius: inherit;
   background: var(--btn-fill);
   transform: scale(0);
-  /* smoother hover (designer, Nov 26): 550ms on a soft ease, grown with transform instead of width/height */
-  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* smooth both ways (designer, Nov 26): 700ms on a gentle in-out curve, the same on hover and when the mouse leaves */
+  transition: transform 700ms cubic-bezier(0.45, 0, 0.2, 1);
 }
 .btn:where(:hover, :focus-visible):not(:disabled, [aria-disabled="true"]) {
   color: var(--btn-fg-hover);
@@ -1491,7 +1491,7 @@ body {
   min-width: 100%;
   width: max-content;
   max-width: min(360px, 90vw);
-  max-height: min(360px, 60vh);
+  max-height: min(400px, 60vh); /* all nine branches fit without scrolling on most screens */
   overflow-y: auto;
   padding: 6px;
   border-radius: 16px;
@@ -1500,7 +1500,19 @@ body {
   backdrop-filter: blur(14px);
   box-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.7);
   outline: none;
+  /* the scroller blends in (designer, Nov 26): no track, a pill in the rows' hover colour */
   scrollbar-width: thin;
+  scrollbar-color: rgb(127 62 152 / 0.55) transparent;
+}
+.dropdown-list::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdown-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dropdown-list::-webkit-scrollbar-thumb {
+  background: rgb(127 62 152 / 0.55);
+  border-radius: 9999px;
 }
 .dropdown-option {
   display: flex;
