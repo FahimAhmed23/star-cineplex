@@ -746,95 +746,6 @@ body {
   transform: none;
 }
 
-/* ───────────────────────── Film Reel (§8.9) — the lights go down again ───────────────────────── */
-.reel {
-  background: var(--night);
-}
-.reel.is-static .reel-scroller {
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-.reel-strip {
-  --fh: calc(62vh - 84px);
-  --fw: calc(var(--fh) * 16 / 9);
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: max-content;
-  height: 62vh;
-  padding-inline: max(32px, calc((100vw - 1280px) / 2 + 32px)) calc((100vw - var(--fw)) / 2);
-  background-color: #0d0a10;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Crect width='14' height='10' rx='2.5' fill='%23FAF9F5' fill-opacity='.85'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Crect width='14' height='10' rx='2.5' fill='%23FAF9F5' fill-opacity='.85'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-position: 0 8px, 0 calc(100% - 8px);
-}
-.reel-frame {
-  --k: 1;
-  position: relative;
-  flex: none;
-  width: var(--fw);
-  height: var(--fh);
-  scroll-snap-align: center;
-  transform: scale(calc(0.96 + 0.04 * var(--k)));
-  filter: brightness(calc(0.5 + 0.5 * var(--k)));
-}
-.reel-picture {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 4px;
-  background: var(--night);
-}
-/* placeholder until branch photos exist: a purple/amber light leak from one corner */
-.reel-leak {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 95% at var(--leak), rgb(183 132 214 / 0.5), rgb(224 164 58 / 0.22) 38%, transparent 72%);
-}
-/* film grain + a gentle flicker on the picture only, never on the text */
-.reel-picture::after {
-  content: "";
-  position: absolute;
-  inset: -20%;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.07;
-  mix-blend-mode: overlay;
-  animation: reel-grain 0.9s steps(4) infinite, reel-flicker 3.2s ease-in-out infinite;
-}
-@keyframes reel-grain {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-6%, 4%); }
-  50% { transform: translate(4%, -6%); }
-  75% { transform: translate(-3%, -2%); }
-}
-@keyframes reel-flicker {
-  0%, 100% { opacity: 0.07; }
-  50% { opacity: 0.1; }
-}
-.reel-caption {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 32px;
-  border-radius: 0 0 4px 4px;
-  background: linear-gradient(to top, rgb(7 5 10 / 0.85), transparent);
-}
-.reel-edge {
-  position: absolute;
-  top: -21px;
-  left: 8px;
-  font: 10px/1 var(--font-plex-mono), monospace;
-  letter-spacing: 0.08em;
-  color: rgb(224 164 58 / 0.6);
-  white-space: nowrap;
-}
-.reel-edge--bottom {
-  top: auto;
-  bottom: -21px;
-}
-
 /* ───────────────────────── Footer (§8.10) — the best seat in the house ───────────────────────── */
 .footer-photo {
   filter: brightness(0.4);
@@ -902,9 +813,6 @@ body {
   .footer-logo,
   .footer-photo {
     transition: none;
-  }
-  .reel-picture::after {
-    animation: none;
   }
   .footer.is-on .footer-seat {
     animation: none;
@@ -1313,11 +1221,6 @@ body {
   .pay-card { padding: 14px; gap: 10px; }
 }
 @media (max-width: 767px) {
-  /* Film Reel: portrait frames that fit the phone width */
-  .reel-strip { --fw: 84vw; --fh: min(calc(84vw * 5 / 4), calc(62vh - 84px)); }
-  .reel-caption { padding: 20px; }
-}
-@media (max-width: 767px) {
   /* checkout summary as a sheet over the dimmed page: notches take the dimmed paper colour */
   #checkout-summary .ticket-card__tear::before,
   #checkout-summary .ticket-card__tear::after { background: rgb(150 149 147); }
@@ -1405,4 +1308,98 @@ body {
 .rolling__reel { display: flex; flex-direction: column; transition: transform 500ms var(--ease-out); }
 @media (prefers-reduced-motion: reduce) {
   .rolling__reel, .seat-g--chip { transition: none; }
+}
+
+/* ── Branches: the constellation map (§8.9, Nov 26) ── */
+.branch-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 12px;
+  margin-inline: -12px;
+  border-radius: 10px;
+  text-align: left;
+  transition: background-color 200ms var(--ease-out);
+}
+.branch-row__name {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgb(255 255 255 / 0.72);
+  transition: color 200ms var(--ease-out);
+}
+.branch-row:hover .branch-row__name,
+.branch-row[aria-pressed="true"] .branch-row__name {
+  color: #fff;
+}
+.branch-row[aria-pressed="true"] {
+  background-color: rgb(255 255 255 / 0.05);
+}
+.branch-star__halo {
+  fill: url(#bm-glow);
+  opacity: 0.55;
+  transition: r 300ms var(--ease-out), opacity 300ms var(--ease-out);
+}
+.branch-star__shape {
+  fill: rgb(250 249 245 / 0.78);
+  transform: scale(1);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 300ms var(--ease-out), fill 300ms var(--ease-out);
+}
+.branch-star[data-on] .branch-star__halo {
+  opacity: 1;
+}
+.branch-star[data-on] .branch-star__shape {
+  fill: #fff;
+  transform: scale(1.45);
+}
+.branch-map__label {
+  fill: var(--muted);
+  font-size: 15px;
+  font-family: var(--font-sans);
+}
+.branch-card {
+  overflow: hidden;
+  border-radius: var(--radius-card-sm);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: var(--surface-dark);
+  backdrop-filter: blur(14px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .branch-star__halo,
+  .branch-star__shape,
+  .branch-row,
+  .branch-row__name {
+    transition: none;
+  }
+}
+.branch-rail {
+  display: flex;
+  gap: 12px;
+  margin: 24px -20px 0;
+  padding: 0 20px 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 20px;
+  scrollbar-width: none;
+}
+.branch-rail::-webkit-scrollbar {
+  display: none;
+}
+.branch-rail__card {
+  flex: 0 0 min(84vw, 360px);
+  scroll-snap-align: center;
+  opacity: 0.55;
+  transition: opacity 300ms var(--ease-out);
+}
+.branch-rail__card[data-on] {
+  opacity: 1;
+}
+@media (max-width: 1023px) {
+  /* the map labels scale with the map: too small on phones, and the cards already name each branch */
+  .branch-map__label {
+    display: none;
+  }
 }

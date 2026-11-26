@@ -56,8 +56,23 @@
     "reelTitle": "One Star. Nine homes.",
     "reelSub": "Star Cineplex across Bangladesh",
     "reelLines": {
-      "bashundhara-city": "Where it all began, 2004."
-    }
+      "bashundhara-city": "Where it all began, 2004.",
+      "shimanto-shambhar": "Blue seats, blue light, Dhanmondi.",
+      "sks-tower": "Warm leather recliners in Mohakhali.",
+      "sony-square": "Red hexagons, Mirpur nights.",
+      "military-museum": "A starry hall at Bijoy Sarani.",
+      "centrepoint": "Lavender light, next to the airport.",
+      "shimanto-tower": "Red light in Jalkuri.",
+      "bali-arcade": "Chattogram's first, at Chawkbazar.",
+      "finlay-square": "By the No 2 Gate, Chattogram."
+    },
+    "mapDhaka": "Dhaka & Narayanganj",
+    "mapCtg": "Chattogram",
+    "cityDhaka": "Dhaka",
+    "cityNarayanganj": "Narayanganj",
+    "cityChattogram": "Chattogram",
+    "mapLabel": "Star Cineplex branches across Bangladesh",
+    "mapNote": "Positions approximate"
   },
   "booking": {
     "stepShowtime": "Showtime",

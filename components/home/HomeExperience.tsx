@@ -7,7 +7,7 @@ import { Navbar } from "@/components/nav/Navbar";
 import { useUi } from "@/lib/store";
 import type { Hall, Movie } from "@/lib/types";
 import { ComingSoon } from "./ComingSoon";
-import { FilmReel } from "./FilmReel";
+import { BranchMap } from "./BranchMap";
 import { Footer } from "./Footer";
 import { Moments } from "./Moments";
 import { HallHero, type HeroMovie } from "./HallHero";
@@ -131,7 +131,7 @@ export function HomeExperience({ movies, allMovies, ...hero }: Props) {
           <NowShowing movies={nowShowing} onPlayTrailer={openTrailer} />
           <ComingSoon movies={comingSoon} onPlayTrailer={openTrailer} />
           <Moments />
-          <FilmReel />
+          <BranchMap />
           <Footer />
         </div>
       </main>

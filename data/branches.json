@@ -1,5 +1,5 @@
 {
-  "_note": "9 branches from starcineplex.com (CLAUDE.md §6). Theme hex values are approximations sampled from references/branches/*.jpg — tune visually. reelLine copy is placeholder except Bashundhara (§8.9). Bangla names need the designer's review.",
+  "_note": "9 branches from starcineplex.com (CLAUDE.md §6). Theme hex values are approximations sampled from references/branches/*.jpg — tune visually. Branch-map copy lives in locales home.reelLines: placeholder except Bashundhara (§8.9), drafted from each hall's look and verified locations. Bangla names need the designer's review.",
   "branches": [
     {
       "slug": "bashundhara-city",

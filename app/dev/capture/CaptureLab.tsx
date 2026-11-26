@@ -29,11 +29,14 @@ export function CaptureLab({ hall, booked }: { hall: Hall; booked: string[] }) {
         </Canvas>
       </div>
     );
+  // ?branch=<slug>: the same hall in another branch's look (stills for the branch map, §8.9)
+  const branch = q.get("branch");
+  const shown = branch ? { ...hall, branch, look: undefined } : hall;
   return (
     <div style={{ width: w, height: h, position: "relative", background: "#07050a" }} data-capture>
       <Hall3D
         className="!absolute inset-0"
-        hall={hall}
+        hall={shown}
         bookedSeats={booked}
         mode={(q.get("mode") as "seat" | "front" | "overview") ?? "seat"}
         seatId={seat}
@@ -42,6 +45,7 @@ export function CaptureLab({ hall, booked }: { hall: Hall; booked: string[] }) {
         trailerCrop={movie.trailerCrop}
         startAt={Number(q.get("t") ?? 0.3)}
         houseLights={lights}
+        screenBrightness={q.get("screen") ? Number(q.get("screen")) : undefined}
         active
       />
     </div>

@@ -42,6 +42,8 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
       // the wall is lit where the lights are and falls off towards the back and the floor
       // tinted towards the violet wall, like blue light on purple fabric
       wash: washMaterial(new THREE.Color(look.accentLight).lerp(new THREE.Color("#9a5cc0"), 0.55).getStyle(), 0.1),
+      // the soft pool of light around a small wall light (hexagons, stars, downlights, sconces)
+      spot: washMaterial(look.accentLight, 0.5),
       speaker: new THREE.MeshStandardMaterial({ color: "#121015", roughness: 0.55, metalness: 0.1 }),
       grille: new THREE.MeshStandardMaterial({ color: "#060508", roughness: 0.9 }),
     };
@@ -122,7 +124,7 @@ export function Room({ layout, look }: { layout: HallLayout; look: RoomLook }) {
 
       {/* the screen itself (surface, trim, masking) lives in Screen.tsx */}
 
-      <Accents layout={layout} look={look} material={mats.accent} glow={mats.glow} wash={mats.wash} />
+      <Accents layout={layout} look={look} material={mats.accent} glow={mats.glow} wash={mats.wash} spot={mats.spot} />
       <WallDetails layout={layout} speaker={mats.speaker} grille={mats.grille} floorLight={mats.step} />
     </group>
   );
@@ -250,7 +252,7 @@ function WallDetails({ layout, speaker, grille, floorLight }: { layout: HallLayo
   return <group>{items}</group>;
 }
 
-function Accents({ layout, look, material, glow, wash }: { layout: HallLayout; look: RoomLook; material: THREE.Material; glow: THREE.Material; wash: THREE.Material }) {
+function Accents({ layout, look, material, glow, wash, spot }: { layout: HallLayout; look: RoomLook; material: THREE.Material; glow: THREE.Material; wash: THREE.Material; spot: THREE.Material }) {
   const { room, tiers } = layout;
   const W = room.width;
   const z0 = room.zFront + 0.8;
@@ -268,6 +270,18 @@ function Accents({ layout, look, material, glow, wash }: { layout: HallLayout; l
   for (const s of [-1, 1]) {
     const x = s * (W / 2 - 0.01);
     const key = (i: number | string) => `${s}-${i}`;
+    const light = (id: string, a: [number, number], b: [number, number], thickness = 0.026) => {
+      items.push(<Bar key={key(id)} x={x} a={a} b={b} material={material} thickness={thickness} />);
+      items.push(<Glow key={key(`g-${id}`)} x={x - s * 0.004} a={a} b={b} material={glow} width={Math.max(0.45, thickness * 8)} />);
+    };
+    // the wall is lit around its lights and falls off towards the floor (Bashundhara adds its own, sized to the lattice)
+    if (look.accentPattern !== "diagonal" && look.accentPattern !== "sconces") {
+      items.push(
+        <mesh key={key("wash")} material={wash} position={[x - s * 0.003, room.height * 0.62, (z0 + z1) / 2]} rotation-y={(-s * Math.PI) / 2} renderOrder={1}>
+          <planeGeometry args={[span + 3, room.height * 1.1]} />
+        </mesh>,
+      );
+    }
     switch (look.accentPattern) {
       case "diagonal": {
         // Bashundhara (footer photo): thin blue LED strips from just above the floor to just under the ceiling,
@@ -304,41 +318,70 @@ function Accents({ layout, look, material, glow, wash }: { layout: HallLayout; l
         );
         break;
       }
+      // every branch (§6 themes): thin light + a glow on the fabric around it, the same treatment as Bashundhara
       case "zigzag": {
-        const n = Math.max(6, Math.round(span / 1.6));
-        for (let i = 0; i < n; i++) {
-          const a = z0 + (i / n) * span;
-          const b = z0 + ((i + 1) / n) * span;
-          const mid = (yLow + yHigh) / 2 + floorAt(a) / 2;
-          items.push(<Bar key={key(i)} x={x} a={[a, i % 2 ? mid + 0.6 : mid - 0.6]} b={[b, i % 2 ? mid - 0.6 : mid + 0.6]} material={material} />);
+        // Shimanto Shambhar: blue zig-zag lines along the wall
+        const step = 1.5;
+        const n = Math.floor(span / step);
+        for (const [row, mid] of [[0, room.height * 0.52], [1, room.height * 0.52 + 0.55]] as const) {
+          for (let i = 0; i < n; i++) {
+            const a = z0 + i * step;
+            const up = i % 2 === 0;
+            const ya = Math.max(mid + (up ? -0.7 : 0.7), floorAt(a) + 0.8);
+            const yb = Math.max(mid + (up ? 0.7 : -0.7), floorAt(a + step) + 0.8);
+            light(`z${row}-${i}`, [a, ya], [a + step, yb]);
+          }
         }
         break;
       }
       case "columns": {
-        const n = Math.max(4, Math.round(span / 3));
+        // vertical LED columns, floor to ceiling
+        const n = Math.max(4, Math.round(span / 2.2));
         for (let i = 0; i <= n; i++) {
           const z = z0 + (i / n) * span;
-          items.push(<Bar key={key(i)} x={x} a={[z, floorAt(z) + 0.4]} b={[z + 0.001, yHigh]} material={material} thickness={0.12} />);
+          light(`c${i}`, [z, floorAt(z) + 0.4], [z + 0.001, yHigh], 0.06);
         }
         break;
       }
       case "lines": {
-        for (let k = 0; k < 3; k++) {
-          const y = yLow + 1 + k * ((yHigh - yLow - 1) / 3);
-          items.push(<Bar key={key(k)} x={x} a={[z0, y]} b={[z1, y + 1.2]} material={material} />);
+        // Centrepoint / Bali Arcade: a band of triangles (the purple triangle-lattice), along the whole wall
+        const step = 1.8;
+        const n = Math.floor(span / step);
+        const lo = room.height * 0.42;
+        const hi = room.height * 0.42 + 1.6;
+        light("top", [z0, hi], [z0 + n * step, hi]);
+        light("bottom", [z0, lo], [z0 + n * step, lo]);
+        for (let i = 0; i < n; i++) {
+          const a = z0 + i * step;
+          light(`t${i}`, [a, i % 2 ? hi : lo], [a + step, i % 2 ? lo : hi]);
         }
         break;
       }
       case "hexagon":
       case "stars":
       case "downlights": {
-        const n = Math.max(6, Math.round(span / 1.8));
+        const pat = look.accentPattern;
+        const n = Math.max(6, Math.round(span / (pat === "stars" ? 0.9 : pat === "hexagon" ? 1.3 : 1.8)));
         for (let i = 0; i < n; i++) {
           const z = z0 + ((i + 0.5) / n) * span;
-          const y = floorAt(z) + (look.accentPattern === "downlights" ? yHigh - floorAt(z) - 0.4 : 2.2 + (i % 2) * 1.4);
+          const y =
+            pat === "downlights"
+              ? yHigh - 0.2
+              : pat === "stars"
+                ? room.height * (0.5 + 0.4 * ((i * 7919) % 97) / 97) // scattered high, like a night sky
+                : Math.max(floorAt(z) + 2, room.height * 0.45) + (i % 3) * 0.9; // hexagons in a loose honeycomb
+          const r = pat === "stars" ? 0.04 : pat === "hexagon" ? 0.22 : 0.1;
           items.push(
-            <mesh key={key(i)} material={material} position={[x, y, z]} rotation-y={(-s * Math.PI) / 2}>
-              <circleGeometry args={[look.accentPattern === "stars" ? 0.05 : 0.14, look.accentPattern === "hexagon" ? 6 : 10]} />
+            <mesh key={key(`d${i}`)} material={material} position={[x - s * 0.01, y, z]} rotation-y={(-s * Math.PI) / 2}>
+              <circleGeometry args={[r, pat === "hexagon" ? 6 : 12]} />
+            </mesh>,
+          );
+          // the pool of light it throws on the wall (downlights: a scallop washing down)
+          const gw = pat === "downlights" ? 1.4 : r * 7;
+          const gh = pat === "downlights" ? 3.2 : r * 7;
+          items.push(
+            <mesh key={key(`g${i}`)} material={spot} position={[x - s * 0.005, pat === "downlights" ? y - gh * 0.4 : y, z]} rotation-y={(-s * Math.PI) / 2} renderOrder={1}>
+              <planeGeometry args={[gw, gh]} />
             </mesh>,
           );
         }
@@ -352,6 +395,11 @@ function Accents({ layout, look, material, glow, wash }: { layout: HallLayout; l
           items.push(
             <mesh key={key(i)} material={material} position={[x - s * 0.04, floorAt(z) + 2.3, z]}>
               <boxGeometry args={[0.06, 0.4, 0.12]} />
+            </mesh>,
+          );
+          items.push(
+            <mesh key={key(`sg${i}`)} material={spot} position={[x - s * 0.005, floorAt(z) + 2.3, z]} rotation-y={(-s * Math.PI) / 2} renderOrder={1}>
+              <planeGeometry args={[1.2, 2.2]} />
             </mesh>,
           );
           items.push(

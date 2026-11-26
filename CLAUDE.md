@@ -606,54 +606,34 @@ Starting layout (desktop; `x` = % of viewport width, `y` = vh from the section t
 - Reduced motion: no parallax — tiles sit still in the same layout and simply fade in.
 - Mobile: headline pinned near the top; tiles in two loose staggered columns below it with gentle parallax (0.9–1.1).
 
-### 8.9 Branches — "The Film Reel" (showcase section)
+### 8.9 Branches — "One Star. Nine homes." (the constellation map, rebuilt Nov 26)
 
-**Purpose:** a pure brand showcase of the 9 branches. **No functional goal:** no map, no "near me", no showtimes,
-no buttons. It should make people feel "Star Cineplex is everywhere, and it's mine."
+**Purpose:** a pure brand showcase of the 9 branches, **all visible at once** (designer, Nov 26: replaces the pinned
+film reel). No functional goal: no map links, no "near me", no showtimes, no buttons.
 
-**Theme:** dark, continuing straight on from Moments (`--night`).
+**Layout (desktop ≥1024px, dark, `--night`, one screen tall):**
+- **Left:** headline **"One Star. Nine homes."** (`display-m`, word reveal) + "Star Cineplex across Bangladesh", then
+  every branch as a list grouped by city — Dhaka 6 · Narayanganj 1 · Chattogram 2 — each row `01` (Plex Mono,
+  `--purple-light`) · name · area (dropped when it repeats the city).
+- **Right:** **Bangladesh drawn in dots** (real outline from Natural Earth via `world-atlas`, public domain;
+  `scripts/build-branch-map.mjs` → `data/branch-map.json`). Each branch is a **five-point star** (the "Star"). Dhaka's
+  six branches and Narayanganj sit in a **magnified lens** (top right) at their true relative positions, joined by a
+  faint constellation line; a dotted line runs from the Dhaka glow on the map to the lens, a curve to Chattogram's pair.
+- **Card** (bottom right, below the lens): hovering a branch (list row or star) shows that branch's **own hall**
+  — a still from the hall engine in the branch's real look (§6 themes; `/dev/capture?mode=front&branch=<slug>&blank=1
+  &screen=0.22&lights=0.4&w=960&h=600` → `/public/branches/halls/<slug>.webp`) — with `01`, name, area and one line.
+  Default: 01 Bashundhara City.
 
-**Header** (top-left of the pinned area, 1280px container)
-- Headline: **"One Star. Nine homes."** — `display-m` (Fraunces), white.
-- Sub-line: "Star Cineplex across Bangladesh" — 16px, `--muted`.
+**Motion (once, on view):** dots and outline fade in, the Dhaka glow and lens grow in, the stars pop in by branch
+order (80ms apart), then the lines draw. Hover: the star grows and its halo brightens; the card swaps (fade + 12px).
+Reduced motion: plain fades.
 
-**The film strip**
-- The section **pins** (sticky, 100vh) while vertical scroll drives a **horizontal film strip** moving right → left
-  (GSAP ScrollTrigger, `scrub: 0.6`). Scroll length ≈ the strip's width, so each frame gets roughly one screen of scroll.
-- The strip is a full-bleed horizontal band, ~62vh tall, vertically centred below the header:
-  - Film base: near-black `#0D0A10` with a faint warm tint.
-  - **Sprocket holes** along the top and bottom edges: rounded rectangles ~14×10px every 28px, `--paper` at 85% opacity.
-  - **Edge printing** in the margin between the holes and the frames, like real film stock: tiny amber
-    (`#E0A43A` at 60%) monospace text, e.g. `STAR CINEPLEX 35MM ▸ 01`, repeating along the strip.
-  - **Frames:** 9 branch frames, ~16:9, separated by a thin 16px black gutter.
-- **Frame content** (one frame = one branch):
-  - The branch photo, full-bleed in the frame (`/public/branches/<slug>.jpg`). Until photos exist: a typographic
-    placeholder — `--night` background with a soft purple/amber **light leak** gradient from one corner.
-  - Bottom-left overlay on a soft dark gradient: frame number `01` (small, `--purple-light`), the **branch name**
-    (`display-s`, Fraunces ~48px), the area/city (16px, `--muted`), and **one short line of copy** (regular, 15px, `--paper` at 80%).
-- **Motion while scrolling:**
-  - The frame nearest the centre of the viewport is the "active" one: full brightness, scale 1.
-    Other frames: brightness 50%, scale 0.96. Interpolate smoothly as frames pass the centre.
-  - A frame counter `03 / 09` sits at the bottom-right of the pinned area and ticks as the active frame changes.
-  - Very subtle film grain + gentle brightness flicker (±3%) on the strip only. Never on the text.
-- After the 9th frame, one final **end frame** with the Star Cineplex logo (white version) centred, then the pin
-  releases and the page continues to the footer.
+**Phones / tablets (<1024px):** headline, then the map, then **all nine cards in a swipe row** (scroll-snap); the
+card in view lights its star; tapping a star scrolls to its card. The tiny map labels are hidden (cards name them).
 
-**Frame order and copy** (copy is **placeholder**; the designer will finalise it):
-| # | Branch | Area / city | Line (placeholder) |
-|---|--------|-------------|--------------------|
-| 01 | Bashundhara City | Panthapath, Dhaka | "Where it all began, 2004." (fact: the first Star Cineplex) |
-| 02 | Shimanto Shambhar | Dhanmondi 2, Dhaka | TBD |
-| 03 | SKS Tower | Mohakhali, Dhaka | TBD |
-| 04 | Sony Square | Mirpur, Dhaka | TBD |
-| 05 | Bangladesh Military Museum | Bijoy Shoroni, Dhaka | TBD |
-| 06 | Centrepoint | Uttara, Dhaka | TBD |
-| 07 | Shimanto Tower | Narayanganj | TBD |
-| 08 | Bali Arcade | Chattogram | TBD |
-| 09 | Finlay Square | Chattogram | TBD |
-
-- Reduced motion: no pinning; the frames sit in a horizontally scrollable strip (native scroll with snap).
-- Mobile: no pinning; a native horizontal swipe strip with scroll-snap, one frame ~85vw wide, sprocket holes kept.
+**Copy:** one line per branch in `locales` `home.reelLines` — **placeholder except Bashundhara** ("Where it all
+began, 2004." — founded 9 Oct 2004), drafted from each hall's look and verified locations; the designer will finalise.
+Branch positions are approximate (note under the map).
 
 ### 8.10 Footer — "The best seat in the house"
 
@@ -1011,7 +991,7 @@ Rule: **follow the written spec; use reference images for look and feel only.**
 - [ ] Real IMDb ratings for the featured movies (placeholders until then).
 - [ ] Coming Soon: confirm the release-date pill in place of the rating.
 - [x] Branch photos for the film reel: **not available — use the typographic light-leak placeholders (§8.9)** for all 9 frames.
-- [ ] One-line copy for film-reel frames 02–09.
+- [ ] One-line copy for branches 02–09 (placeholders drafted Nov 26, in `locales` `home.reelLines`).
 - [ ] Real seat map of Bashundhara **Hall 6 Atmos** (currently approximate).
 - [ ] Matinee cutoff time (assumed: shows before 5:00 PM).
 
@@ -1027,7 +1007,7 @@ Build in this order. Finish, run and check each phase before starting the next; 
 | 1 | **3D hall engine**: seat/door/silhouette models (Blender scripts → compressed `.glb`, §4), hall built from the grid patterns, seat models per class, lighting, screen with video texture, seated silhouettes, camera rig | Hall 1 and VIP Hall 5 render correctly from data at 60fps on a laptop |
 | 2 | Navbar (§7) + opening sequence (§8.1) + hero with trailer carousel and "Tonight at" strip (§8.2) | Opening → hero works end to end; skip works; plays once per session |
 | 3 | Scroll transition (§8.3), `MovieCard` (§8.4), Now Showing (§8.5), Coming Soon (§8.6), Trailer view (§8.7) | All card states and the trailer view work, including Back and the URL |
-| 4 | Moments (§8.8), Film Reel (§8.9), Footer (§8.10) | Light/dark transitions feel smooth; reel pins and releases correctly |
+| 4 | Moments (§8.8), Branches (§8.9, now the constellation map), Footer (§8.10) | Light/dark transitions feel smooth |
 | 5 | Booking: §9.2–9.3 (showtime + "Choose your experience"), cinema doors (§9.4) | Every entry point (§9.1) lands correctly |
 | 6 | Seat selection (§9.5): hover popup, select, view from seat, 2D map, best available, seat-gap hint | Selection stays in sync between 3D and 2D; keyboard works in 2D |
 | 7 | Checkout (§9.6), payment mock (§9.7), ticket (§9.8), states (§9.9) | Full flow from Buy Tickets to the ticket; timer expiry and payment failure both work |
