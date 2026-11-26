@@ -858,6 +858,19 @@ body {
 .footer-fade-bottom {
   background: linear-gradient(to top, var(--night) 0%, var(--night) 18%, transparent 55%);
 }
+.footer-edge {
+  height: 200px;
+  background: linear-gradient(
+    to bottom,
+    var(--night) 0%,
+    rgb(7 5 10 / 0.9) 15%,
+    rgb(7 5 10 / 0.7) 32%,
+    rgb(7 5 10 / 0.45) 50%,
+    rgb(7 5 10 / 0.22) 68%,
+    rgb(7 5 10 / 0.08) 84%,
+    transparent 100%
+  );
+}
 .footer-vignette {
   background: linear-gradient(to right, rgb(0 0 0 / 0.3), transparent 22%, transparent 78%, rgb(0 0 0 / 0.3));
 }

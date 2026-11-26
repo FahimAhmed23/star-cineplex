@@ -239,7 +239,8 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
   Moments keeps its scroll-driven height (its pinned headline, not a gap).
   **Exceptions:** Coming Soon → Moments is **200px** (Coming Soon bottom padding; designer, Nov 26), and Branches →
   footer is **200px** (Branches bottom padding; designer, Nov 27), where the footer hall's top fade is an eased
-  black gradient so the section's black melts into the image.
+  black gradient so the section's black melts into the image, plus a 200px eased fade pinned to the footer's top
+  edge (`.footer-edge`, it doesn't move with the parallax, so the clipped image top never shows a hard line).
 
 ### Motion tokens
 - `--ease-out`: `cubic-bezier(0.22, 1, 0.36, 1)` — default for UI entering

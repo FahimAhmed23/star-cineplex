@@ -95,6 +95,10 @@ export function Footer() {
         </div>
       </div>
 
+      {/* a fade pinned to the footer's top edge (it doesn't move with the parallax): the hall image is shifted up while
+          the footer scrolls in, and its own top fade gets clipped, so this keeps the black-to-hall join soft */}
+      <div className="footer-edge pointer-events-none absolute inset-x-0 top-0 z-[1]" aria-hidden />
+
       {/* headline over the seats */}
       <div className="relative z-10 mx-auto -mt-[15vw] max-w-[1200px] px-8 text-center">
         <h2 className="footer-title display-l text-paper">
