@@ -153,9 +153,9 @@ so display moved to Bricolage Grotesque 700 and UI to Geist ("option B: big scre
 | Token | Font | Size |
 |-------|------|------|
 | `display-xl` (hero movie title) | GC Movark 500 | **Compact** (designer, Nov 26): titles ≤18 chars `min(clamp(48px, 5vw, 80px), 9vh)`, longer titles `min(clamp(40px, 3.8vw, 60px), 7vh)` → 72px / 55px at 1440×900; phones `clamp(32px, 9.2vw, 44px)` / `clamp(26px, 7.2vw, 34px)` |
-| `display-l` (footer headline) | GC Movark 500 | `clamp(64px, 9vw, 136px)` |
-| `display-m` (section titles) | GC Movark 500 | `clamp(44px, 4.6vw, 72px)` |
-| `display-s` (booking titles, ticket movie title, hall-type names) | GC Movark 500 | 32–48px |
+| `display-l` (footer headline) | GC Movark 500 | **Compact:** `clamp(40px, 4.2vw, 68px)` → 60px at 1440 |
+| `display-m` (section titles) | GC Movark 500 | **Compact:** `clamp(32px, 3.2vw, 52px)` → 46px at 1440 |
+| `display-s` (booking titles, ticket movie title, hall-type names) | GC Movark 500 | **Compact:** `clamp(32px, 2.4vw, 36px)` → 35px at 1440 (hall-type card names 32px) |
 | `body-l` (synopsis) | Geist 400 | 16px / 1.55 |
 | `body` | Geist 400 | 15px / 1.5 |
 | `ui` (buttons, links) | Geist 500–600 | 13–15px |
@@ -658,7 +658,7 @@ screen, and a seat is waiting for you. Dark theme (`--night`).
 - Full width, height ≈ 100vh on desktop; the image is `object-fit: cover`, anchored to the screen (centre top).
 
 **Content (on top of the image, centred, below the screen)**
-- Headline (`display-l`, GC Movark 500, `--paper`, capped at `clamp(52px, 6.2vw, 104px)` so each line fits on one row), two lines:
+- Headline (`display-l`, GC Movark 500, `--paper`, compact `clamp(40px, 4.2vw, 68px)`, each line on one row), two lines:
   **"The best seat in the house / is waiting for you."**
   Bangla: **"হলের সেরা আসনটি আপনার অপেক্ষায়।"**
 - Line under it (Geist 18px, `--muted`): "Pick your seat in under a minute."
@@ -735,7 +735,7 @@ on this date** (hide hall types with no shows):
 Each card, top to bottom:
 - **A slowly rotating 3D seat** of that class (turntable, ~8s per rotation, soft studio light, `--night` background).
   On card hover the rotation speeds up slightly and the seat gets a purple rim light.
-- Hall type name (`display-s`, GC Movark 36px) + one line of details (halls, seat count, formats: 2D/3D/Atmos).
+- Hall type name (`display-s`, GC Movark 32px) + one line of details (halls, seat count, formats: 2D/3D/Atmos).
 - Price range (from the table above).
 - **Showtime chips** for this movie/date in that hall type: `7:30 PM · Hall 1`, with an availability dot:
   green "Available", amber "Filling fast" (>70% booked), red "Sold out" (chip disabled).

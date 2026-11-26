@@ -97,7 +97,7 @@ export function Footer() {
 
       {/* headline over the seats */}
       <div className="relative z-10 mx-auto -mt-[15vw] max-w-[1200px] px-8 text-center">
-        <h2 className="footer-title display-l text-paper" style={{ fontSize: "clamp(52px, 6.2vw, 104px)" }}>
+        <h2 className="footer-title display-l text-paper">
           {/* words land one after another once the projector has lit the screen (1.1s) */}
           <RevealText className="block" text={t("footer.headline1")} show={on} delay={1.1} />
           <RevealText className="block" text={t("footer.headline2")} show={on} delay={revealDuration(t("footer.headline1"), 1.1) - 0.2} />

@@ -102,7 +102,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                 )}
               </div>
               <div className="p-6">
-                <h3 className="display-s text-white" style={{ fontSize: 36 }}>
+                <h3 className="display-s text-white" style={{ fontSize: 32 }}>
                   {t(`booking.hall${g.type[0].toUpperCase()}${g.type.slice(1)}`)}
                 </h3>
                 <p className="mt-2 text-[14px] text-muted">{hallsLine(g)}</p>
