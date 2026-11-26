@@ -237,6 +237,7 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 - Home page: **100px between sections** (designer, Nov 26) — each section starts 100px after the previous one ends
   (Now Showing, Coming Soon, Branches: 100px top; Coming Soon and Branches 100px bottom before Moments / the footer).
   Moments keeps its scroll-driven height (its pinned headline, not a gap).
+  **Exception:** Coming Soon → Moments is **200px** (Coming Soon bottom padding; designer, Nov 26).
 
 ### Motion tokens
 - `--ease-out`: `cubic-bezier(0.22, 1, 0.36, 1)` — default for UI entering
