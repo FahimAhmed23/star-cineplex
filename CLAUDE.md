@@ -14,7 +14,7 @@ multiplex chain (9 branches). Built as a **portfolio case study** by a product d
 moment with the trailer playing on the screen — while keeping booking fast and simple.
 
 - Not affiliated with Star Cineplex. Add a small footer note: "Concept redesign — not affiliated with Star Cineplex."
-- The footer must include an **About** link (moved out of the navbar, see §7) and the icon credit (§5 Icons).
+- The footer must include an **About** link (moved out of the navbar, see §7); the icon credit (§5 Icons) lives in the About panel.
 - Desktop first, then a dedicated mobile pass (see §11).
 - No real payments or backend. Data comes from local JSON files.
 
@@ -164,7 +164,7 @@ so display moved to Bricolage Grotesque 700 and UI to Geist ("option B: big scre
 
 ### Icons — Solar (by 480 Design)
 - **Icon set:** **Solar** only (the same set the designer uses in Figma). Do not mix in other icon libraries.
-- **License:** CC BY 4.0 — free for commercial use **with attribution**. Add this credit in the footer's small print:
+- **License:** CC BY 4.0 — free for commercial use **with attribution**. Add this credit in the About panel (footer → About; moved out of the small print Nov 27):
   "Icons: Solar by 480 Design (CC BY 4.0)".
 - **How to load:** `@iconify/react` (`<Icon icon="solar:…" />`) or the MIT-licensed `@solar-icons/react` wrapper.
   **Do not use the `solar-icon-set` npm package** (GPL-3.0).
@@ -692,14 +692,15 @@ screen, and a seat is waiting for you. Dark theme (`--night`).
 **Links area (solid `--night`, below the headline, max-width 1200px)**
 | Column | Items |
 |--------|-------|
-| Brand | White logo, one short line: "Movies, made memorable since 2004." |
+| Brand | White logo (72px tall, designer Nov 27), one short line: "Movies, made memorable since 2004." |
 | Explore | Now Showing, Coming Soon, Showtimes, Prices, Branches (same targets as the navbar, §7) |
 | Help | My tickets, **About** (case-study note + credits panel, §7), Contact: the phone number from the navbar strip |
 | Follow | Facebook, Instagram, YouTube icons (Solar/brand icons, 24px; links to Star Cineplex's official pages — placeholders until confirmed) |
 
 **Small print (bottom row, 13px, `--muted`, separated by a 1px line at 10% white)**
 - Left: "© Star Cineplex. Concept redesign — not affiliated with Star Cineplex."
-- Right: "Icons: Solar by 480 Design (CC BY 4.0)" · "Design: Fahim Ahmed" (portfolio credit) · EN/বাংলা toggle repeated.
+- Right: "Design: Fahim Ahmed" (portfolio credit) · EN/বাংলা toggle repeated. (Designer, Nov 27: the Solar icon credit
+  moved out of the small print; it stays in the **About** panel's credits, which satisfies CC BY 4.0 attribution.)
 
 **Mobile:** image height ≈ 70vh with the same gradients, headline `display-m`, the four columns stack into two
 columns, no accordions (Explore + Help side by side, Follow as an icon row), small print stacked and centred.

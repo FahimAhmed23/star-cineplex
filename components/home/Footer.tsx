@@ -120,7 +120,7 @@ export function Footer() {
       <div className="relative z-10 mx-auto mt-24 max-w-[1200px] px-8">
         <div className="grid grid-cols-2 gap-10 border-t border-white/10 pt-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="col-span-2 md:col-span-1">
-            <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-9 w-auto" />
+            <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-[72px] w-auto" />
             <p className="mt-4 max-w-[260px] text-[15px] text-muted">{t("footer.brandLine")}</p>
           </div>
 
@@ -175,7 +175,6 @@ export function Footer() {
         <div className="mt-14 flex flex-col gap-4 border-t border-white/10 py-8 text-[13px] text-muted md:flex-row md:items-center md:justify-between">
           <p>{t("footer.copyright")}</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span>{t("footer.iconCredit")}</span>
             <span>{t("footer.designCredit")}</span>
             <LangToggle />
           </div>
