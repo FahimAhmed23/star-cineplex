@@ -7,7 +7,7 @@
   --purple-light: #b784d6;
   --paper: #faf9f5;
   --ink: #231f20;
-  --night: #07050a;
+  --night: #121015;
   --surface-dark: rgba(18, 12, 24, 0.72);
   --surface-blur: 14px;
   --muted: #a59cb0;
@@ -294,10 +294,10 @@ body {
   --hero-text-end: calc(max(0px, (100vw - 1440px) / 2) + 32px + min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px)));
   background: linear-gradient(
     to right,
-    rgb(7 5 10 / 0.94) 0%,
-    rgb(7 5 10 / 0.9) calc(var(--hero-text-end) - 120px),
-    rgb(7 5 10 / 0.72) var(--hero-text-end),
-    rgb(7 5 10 / 0.25) calc(var(--hero-text-end) + 6vw),
+    rgb(18 16 21 / 0.94) 0%,
+    rgb(18 16 21 / 0.9) calc(var(--hero-text-end) - 120px),
+    rgb(18 16 21 / 0.72) var(--hero-text-end),
+    rgb(18 16 21 / 0.25) calc(var(--hero-text-end) + 6vw),
     transparent calc(var(--hero-text-end) + 12vw)
   );
 }
@@ -349,7 +349,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(7 5 10 / 0.95) 0%, rgb(7 5 10 / 0.82) 40%, rgb(7 5 10 / 0) 72%);
+  background: linear-gradient(to top, rgb(18 16 21 / 0.95) 0%, rgb(18 16 21 / 0.82) 40%, rgb(18 16 21 / 0) 72%);
   opacity: 0;
   transition: opacity 300ms var(--ease-out);
 }
@@ -570,7 +570,7 @@ body {
 }
 /* §9.3 showtimes as ticket stubs (designer, Nov 27): notches cut in the card's own surface colour */
 .ticket-chip--show {
-  --notch: #0e0c11;
+  --notch: #19171c;
   cursor: pointer;
   transition:
     transform 200ms var(--ease-out),
@@ -817,15 +817,15 @@ body {
     linear-gradient(in oklab to bottom,
       rgb(250 249 245) 0vh,
       rgb(248 247 243) 9vh,
-      rgb(236 235 231) 18vh,
-      rgb(210 209 207) 27vh,
-      rgb(173 172 170) 36vh,
-      rgb(128 127 128) 45vh,
-      rgb(84 82 85) 54vh,
-      rgb(47 45 48) 63vh,
-      rgb(21 19 24) 72vh,
-      rgb(9 7 12) 81vh,
-      rgb(7 5 10) 90vh) no-repeat,
+      rgb(237 236 232) 18vh,
+      rgb(212 211 208) 27vh,
+      rgb(176 175 174) 36vh,
+      rgb(134 132 133) 45vh,
+      rgb(92 90 92) 54vh,
+      rgb(56 54 58) 63vh,
+      rgb(31 29 34) 72vh,
+      rgb(20 18 23) 81vh,
+      rgb(18 16 21) 90vh) no-repeat,
     var(--night);
 }
 .moments-lockup {
@@ -888,13 +888,13 @@ body {
   background: linear-gradient(
     to bottom,
     var(--night) 0%,
-    rgb(7 5 10 / 0.94) 4%,
-    rgb(7 5 10 / 0.82) 8%,
-    rgb(7 5 10 / 0.64) 12%,
-    rgb(7 5 10 / 0.44) 16%,
-    rgb(7 5 10 / 0.26) 20%,
-    rgb(7 5 10 / 0.12) 23.5%,
-    rgb(7 5 10 / 0.04) 26%,
+    rgb(18 16 21 / 0.94) 4%,
+    rgb(18 16 21 / 0.82) 8%,
+    rgb(18 16 21 / 0.64) 12%,
+    rgb(18 16 21 / 0.44) 16%,
+    rgb(18 16 21 / 0.26) 20%,
+    rgb(18 16 21 / 0.12) 23.5%,
+    rgb(18 16 21 / 0.04) 26%,
     transparent 28%
   );
 }
@@ -906,11 +906,11 @@ body {
   background: linear-gradient(
     to bottom,
     var(--night) 0%,
-    rgb(7 5 10 / 0.9) 15%,
-    rgb(7 5 10 / 0.7) 32%,
-    rgb(7 5 10 / 0.45) 50%,
-    rgb(7 5 10 / 0.22) 68%,
-    rgb(7 5 10 / 0.08) 84%,
+    rgb(18 16 21 / 0.9) 15%,
+    rgb(18 16 21 / 0.7) 32%,
+    rgb(18 16 21 / 0.45) 50%,
+    rgb(18 16 21 / 0.22) 68%,
+    rgb(18 16 21 / 0.08) 84%,
     transparent 100%
   );
 }
@@ -1230,7 +1230,7 @@ body {
 .seat-check {
   display: grid; place-items: center; width: 20px; height: 20px; border-radius: 999px;
   background: var(--gold); color: #1a1206; font-size: 12px; font-weight: 800;
-  box-shadow: 0 0 0 2px rgb(7 5 10 / 0.6), 0 0 14px rgb(245 183 46 / 0.55);
+  box-shadow: 0 0 0 2px rgb(18 16 21 / 0.6), 0 0 14px rgb(245 183 46 / 0.55);
 }
 .seg-btn { height: 32px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .seg-btn.is-on { background: rgb(255 255 255 / 0.14); color: #fff; }

@@ -106,7 +106,7 @@ do that well or load too slowly; plain Three.js would split 3D and UI into two w
 | `--purple-light` | `#B784D6` | Added: glows, hover, progress bars on dark |
 | `--paper` | `#FAF9F5` | Star Cineplex background (light/transactional screens) |
 | `--ink` | `#231F20` | Star Cineplex text colour |
-| `--night` | `#07050A` | Added: cinema darkness (hall, opening) |
+| `--night` | `#121015` | Added: cinema darkness (hall, opening). Lifted a touch towards grey (designer, Nov 27; was `#07050A`) |
 | `--surface-dark` | `rgba(18,12,24,.72)` + 14px blur | Added: glass panels on dark |
 | `--muted` | `#A59CB0` | Added: secondary text on dark |
 

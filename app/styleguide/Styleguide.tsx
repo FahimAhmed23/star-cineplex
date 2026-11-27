@@ -22,7 +22,7 @@ const COLORS = [
   ["--purple-light", "#B784D6"],
   ["--paper", "#FAF9F5"],
   ["--ink", "#231F20"],
-  ["--night", "#07050A"],
+  ["--night", "#121015"],
   ["--muted", "#A59CB0"],
   ["--gold", "#F5B72E"],
   ["--imdb", "#F5C518"],

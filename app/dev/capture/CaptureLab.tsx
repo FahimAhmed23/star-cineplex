@@ -21,7 +21,7 @@ export function CaptureLab({ hall, booked }: { hall: Hall; booked: string[] }) {
   const seatModel = q.get("turntable") as "vip" | "premium" | "atmos" | null;
   if (seatModel)
     return (
-      <div style={{ width: w, height: h, background: "#07050a" }} data-capture>
+      <div style={{ width: w, height: h, background: "#121015" }} data-capture>
         <Canvas dpr={1} gl={{ antialias: true, preserveDrawingBuffer: true }} onCreated={({ gl }) => void (gl.toneMappingExposure = 1.05)}>
           <Suspense fallback={null}>
             <SeatTurntable model={seatModel} color={seatModel === "vip" ? "#6B1E24" : "#C0262D"} leather={seatModel === "vip"} hover={false} rings={seatModel === "atmos"} angle={q.get("angle") ? Number(q.get("angle")) : undefined} />
@@ -33,7 +33,7 @@ export function CaptureLab({ hall, booked }: { hall: Hall; booked: string[] }) {
   const branch = q.get("branch");
   const shown = branch ? { ...hall, branch, look: undefined } : hall;
   return (
-    <div style={{ width: w, height: h, position: "relative", background: "#07050a" }} data-capture>
+    <div style={{ width: w, height: h, position: "relative", background: "#121015" }} data-capture>
       <Hall3D
         className="!absolute inset-0"
         hall={shown}

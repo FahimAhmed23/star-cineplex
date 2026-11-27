@@ -81,7 +81,7 @@ export default function Hall3D(props: Hall3DProps) {
         gl.toneMappingExposure = 1.05;
       }}
     >
-      <color attach="background" args={["#07050a"]} />
+      <color attach="background" args={["#121015"]} />
       <PerformanceMonitor onIncline={() => setDpr(2)} onDecline={() => setDpr(1.5)} />
       <Suspense fallback={null}>
         <Scene {...props} />
