@@ -9,7 +9,9 @@ import { useT } from "@/lib/i18n";
 import { EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
 import { useUi } from "@/lib/store";
 
-const SEEN_KEY = "sc-intro-seen";
+/** played already in this page load? (a module flag: a refresh / new visit plays it again; moving between pages
+ *  inside the site, e.g. back home from booking, doesn't) — designer, Nov 27 */
+let playedThisLoad = false;
 /** the logo is "born" by this point; the curtain may rise from here once the hall is ready */
 const MIN_HOLD = 3.2;
 /** past this, the curtain rises as soon as the hall is ready (it never rises on an empty hall) */
@@ -20,7 +22,7 @@ const MAX_HOLD = 5;
  * a purple velvet curtain fills the screen → a projector light warms up in its middle → the Star Cineplex logo is
  * born inside the light → while the 3D hall and first trailer load, it holds (the light breathes) → the whole curtain
  * rises in one piece, bottom first edge leading → the hall shows, then the navbar, the hero text and "Tonight at".
- * 3.2–5s, skippable (button or Escape), once per session.
+ * 3.2–5s, skippable (button or Escape), on every page load (refresh included).
  */
 export function OpeningSequence() {
   const { t } = useT();
@@ -33,11 +35,10 @@ export function OpeningSequence() {
   const breathe = useRef<gsap.core.Tween | null>(null);
   const started = useRef(0);
 
-  // once per session; returning visitors go straight to the hero's final state
+  // every page load (refresh included); not again when coming back home from another page of the site
   useLayoutEffect(() => {
-    let seen = false;
+    let seen = playedThisLoad;
     try {
-      seen = sessionStorage.getItem(SEEN_KEY) === "1";
       // a shared trailer link (/?trailer=…) goes straight to the Trailer view (§8.7)
       if (new URLSearchParams(location.search).has("trailer")) seen = true;
     } catch {}
@@ -46,18 +47,14 @@ export function OpeningSequence() {
   }, [setStage]);
 
   const finish = useCallback(() => {
-    try {
-      sessionStorage.setItem(SEEN_KEY, "1");
-    } catch {}
+    playedThisLoad = true;
     setShow(false);
   }, []);
 
   const skip = useCallback(() => {
     tl.current?.kill();
     breathe.current?.kill();
-    try {
-      sessionStorage.setItem(SEEN_KEY, "1");
-    } catch {}
+    playedThisLoad = true;
     setStage("revealed");
     if (root.current) gsap.to(root.current, { opacity: 0, duration: 0.35, ease: "none", onComplete: () => setShow(false) });
     else setShow(false);

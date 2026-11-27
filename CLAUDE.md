@@ -423,8 +423,8 @@ My tickets, language toggle and the phone number.
 ### 8.1 Opening sequence — "Curtain Up" (designer, Nov 27; replaces "House Lights Down")
 
 **It doubles as the page loader:** while it plays, the 3D hall and the first trailer load behind it.
-Skippable at any time ("Skip intro ›", bottom-right, or Escape). Plays once per session (`sessionStorage`);
-returning visitors go straight to the hero's final state.
+Skippable at any time ("Skip intro ›", bottom-right, or Escape). Plays on **every page load, refresh included**
+(designer, Nov 27); moving between pages inside the site (e.g. back home from booking) doesn't replay it.
 
 | Step | Time | What happens |
 |------|------|--------------|
