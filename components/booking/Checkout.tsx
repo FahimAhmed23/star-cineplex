@@ -172,7 +172,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
         {/* left: details + payment */}
         <div>
           <Stepper step={3} tone="light" className="max-lg:justify-center" />
-          <h1 className="display-m mt-8 max-md:mt-5">{t("checkout.title")}</h1>
+          <h1 className="display-m mt-8 max-md:mt-5 max-[821px]:text-center">{t("checkout.title")}</h1>
 
           {failed && (
             <div role="alert" className="mt-8 flex gap-3 rounded-card-sm border border-[#e5484d]/30 bg-[#e5484d]/8 p-4 text-[15px]">

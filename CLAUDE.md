@@ -870,7 +870,7 @@ Seat models: converted from the designer's Tripo models (`scripts/convert-tripo-
 **Transition in:** "Continue" fades the 3D hall out and the page settles into the **light theme** (`--paper`),
 600ms. The immersive part is over; paying should feel calm and clear.
 
-**Layout (desktop):** two columns in a 1120px container.
+**Layout (desktop):** two columns in a 1120px container. Up to 820px wide the "Confirm and pay" title is centred, like the stepper above it (designer, Nov 27).
 
 **Right column — ticket summary card (sticky)**
 - Ticket-shaped card with **semicircle notches** on the left and right edges and a dashed tear line, the same
