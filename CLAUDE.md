@@ -564,6 +564,11 @@ poster ratio 2:3 (~450px tall). Corner radius 24px (`--radius-card-md`).
   - `Show less` collapses back to 4 cards and scrolls the section title back into view.
   - If there are 4 or fewer movies, hide the button.
 - Cards enter on first scroll into view: fade up 24px, 80ms stagger.
+- **375–575px screens (designer, Nov 27, after the official app):** one horizontally scrollable row with snap (cards
+  ~64vw, max 300px, 16px gap, 20px corners). On the poster: certificate tag (paper, ink) + format tag (purple) top-left,
+  a round 40px play button top-right (→ Trailer view). Below the card: title (Outfit 600 20px, ink, 2 lines), the
+  first genre as a white pill + "+N", then ★ IMDb rating · language · runtime. The in-card title/hover details and
+  the IMDb pill are hidden there. 576px and up keep the grid.
 
 ### 8.6 Coming Soon
 

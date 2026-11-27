@@ -10,6 +10,8 @@ import { RevealText } from "@/components/ui/RevealText";
  * Now Showing in Theaters (CLAUDE.md §8.5): centred title and every film in a grid (2 per row on phones, 4 from
  * 768px). Designer, Nov 27: all films are shown at once on every screen; the "Show all" button was removed.
  * Cards rise in after the title (designer reference: Aave), row by row.
+ * 375–575px (designer, Nov 27): one horizontally scrollable row; each card carries its tags + a play button on the
+ * poster and the title, genres and language · runtime below it (MovieCard `strip`).
  */
 export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayTrailer: (m: Movie, el: HTMLElement) => void }) {
   const { t } = useT();
@@ -31,7 +33,7 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
               viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.25 + (i % 4) * 0.09 }}
             >
-              <MovieCard movie={m} variant="now" onPlayTrailer={onPlayTrailer} />
+              <MovieCard movie={m} variant="now" onPlayTrailer={onPlayTrailer} strip />
             </motion.div>
           ))}
         </div>

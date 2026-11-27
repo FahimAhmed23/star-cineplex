@@ -22,13 +22,15 @@ interface Props {
   priority?: boolean;
   /** hidden copies (collapsed grid, off-screen slides) stay out of the tab order */
   inert?: boolean;
+  /** Now Showing on 375–575px screens: tags + play on the poster, title / genres / meta below it (designer, Nov 27) */
+  strip?: boolean;
 }
 
 /**
  * MovieCard (CLAUDE.md §8.4): a full-bleed 2:3 poster; on hover it lifts, the poster darkens and the
  * details slide up inside the card (meta, genres, Play trailer). Touch: first tap reveals, second acts.
  */
-export function MovieCard({ movie, variant, onPlayTrailer, priority, inert }: Props) {
+export function MovieCard({ movie, variant, onPlayTrailer, priority, inert, strip }: Props) {
   const { t, lang } = useT();
   const [touchOpen, setTouchOpen] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,7 @@ export function MovieCard({ movie, variant, onPlayTrailer, priority, inert }: Pr
 
   return (
     <article
-      className={`movie-card group ${touchOpen ? "is-open" : ""}`}
+      className={`movie-card group ${strip ? "movie-card--strip" : ""} ${touchOpen ? "is-open" : ""}`}
       data-card-slug={movie.slug}
       inert={inert || undefined}
       onMouseLeave={() => setTouchOpen(false)}
@@ -97,6 +99,18 @@ export function MovieCard({ movie, variant, onPlayTrailer, priority, inert }: Pr
           />
         )}
 
+        {strip && (
+          <>
+            <ul className="movie-card__tags" aria-hidden>
+              {movie.certificate && <li className="movie-card__tag movie-card__tag--cert">{movie.certificate}</li>}
+              <li className="movie-card__tag movie-card__tag--format">{movie.format}</li>
+            </ul>
+            <button type="button" className="movie-card__play-icon focus-ring" aria-label={t("cards.trailerFor", { title })} onClick={playTrailer}>
+              <Icon name="play" size={14} />
+            </button>
+          </>
+        )}
+
         <div className="movie-card__info">
           <h3 className="movie-card__title" lang={lang === "bn" && movie.titleBn ? "bn" : "en"}>
             {title}
@@ -127,6 +141,31 @@ export function MovieCard({ movie, variant, onPlayTrailer, priority, inert }: Pr
           </div>
         </div>
       </div>
+
+      {strip && (
+        <div className="movie-card__below">
+          <h3 className="movie-card__below-title" lang={lang === "bn" && movie.titleBn ? "bn" : "en"}>
+            <Link href={`/book?movie=${movie.slug}`} className="focus-ring">
+              {title}
+            </Link>
+          </h3>
+          <ul className="movie-card__below-genres" aria-label={t("cards.genres")}>
+            {movie.genres.slice(0, 1).map((g) => (
+              <li key={g}>{g}</li>
+            ))}
+            {movie.genres.length > 1 && <li>+{movie.genres.length - 1}</li>}
+          </ul>
+          <p className="movie-card__below-meta">
+            {movie.imdbRating != null && (
+              <span className="movie-card__below-rating" aria-label={t("cards.imdb", { r: movie.imdbRating.toFixed(1) })}>
+                <Icon name="star" size={14} />
+                {movie.imdbRating.toFixed(1)}
+              </span>
+            )}
+            <span>{[movie.language, runtime].filter(Boolean).join(" · ")}</span>
+          </p>
+        </div>
+      )}
     </article>
   );
 }
