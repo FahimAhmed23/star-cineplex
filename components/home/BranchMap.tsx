@@ -82,7 +82,7 @@ export function BranchMap() {
           </h2>
           <RevealText as="p" className="mt-3 block text-[16px] text-muted max-lg:text-center" text={t("home.reelSub")} delay={0.35} stagger={0.04} />
 
-          <div className="mt-10 space-y-4">
+          <div className="mt-10 max-[821px]:mt-8 space-y-4">
             {groups.map(([city, list], gi) => (
               <motion.div
                 key={city}

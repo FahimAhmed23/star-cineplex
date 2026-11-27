@@ -513,8 +513,9 @@ body {
     display: flex;
     gap: 16px;
     margin-inline: -32px;
-    padding: 8px 32px 16px;
+    padding: 0 32px 16px;
     overflow-x: auto;
+    overflow-y: hidden; /* swipe sideways only — no vertical scroll inside the row (designer, Nov 27) */
     scroll-snap-type: x mandatory;
     scroll-padding-inline: 32px;
     overscroll-behavior-x: contain;
@@ -1990,5 +1991,6 @@ body {
   #nav-menu > div:first-child { gap: 4px; }
   #nav-menu .flex.flex-wrap > button { min-height: 40px; }
   .footer-link { display: inline-flex; align-items: center; min-height: 40px; }
+  .footer-link.size-10 { justify-content: center; } /* social icons: centred in their circle */
   .footer li:has(> .footer-link) { margin-block: 0; }
 }

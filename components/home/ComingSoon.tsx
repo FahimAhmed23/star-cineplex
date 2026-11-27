@@ -106,7 +106,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   return (
     <section ref={section} id="coming-soon" aria-labelledby="coming-soon-title" className="theme-light relative z-10 scroll-mt-24 pt-[100px] pb-[200px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="mx-auto max-w-[1280px] px-8">
-        <h2 id="coming-soon-title" className="display-m mb-14 text-center text-ink">
+        <h2 id="coming-soon-title" className="display-m mb-14 max-[821px]:mb-8 text-center text-ink">
           <RevealText text={t("home.comingSoonTitle")} />
         </h2>
 

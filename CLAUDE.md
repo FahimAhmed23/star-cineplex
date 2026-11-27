@@ -240,6 +240,11 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
   | `--radius-card-lg` | 32px | Large surfaces: ticket (§9.8), checkout summary card, slide-over panels (Prices, About) |
 - Tailwind utilities: `rounded-pill`, `rounded-card-sm`, `rounded-card-md`, `rounded-card-lg`.
 
+### Section title gaps on 375–820px (Nov 27)
+- Title → content is **32px** in Now Showing, Coming Soon, Moments and Branches up to 820px wide (56px / 40px above).
+- The Now Showing phone row scrolls sideways only (no vertical scroll inside it); footer social icons sit centred in
+  their 40px circles.
+
 ### Dropdown on phones (Nov 27)
 - Below 768px every themed dropdown opens as a **floating panel like the navbar menu**: 20px from the left and right
   screen edges, `--night`, 24px corners, 1px white/10 border, right above or below the trigger (whichever side has

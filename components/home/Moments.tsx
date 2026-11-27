@@ -110,7 +110,7 @@ export function Moments() {
           </h2>
         </div>
         {/* one slow row, looping; holding a finger (or the mouse) on it pauses it */}
-        <div aria-hidden className="moments-marquee mt-10">
+        <div aria-hidden className="moments-marquee mt-10 max-[821px]:mt-8">
           <div className="moments-marquee__track">
             {[...MARQUEE, ...MARQUEE].map((src, i) => (
               <div key={i} className="moments-marquee__tile">

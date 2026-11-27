@@ -20,7 +20,7 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   return (
     <section id="now-showing" aria-labelledby="now-showing-title" className="theme-light relative z-10 scroll-mt-24 overflow-x-clip pt-[100px] max-md:pt-[60px] [overflow-anchor:none]">
       <div className="mx-auto max-w-[1280px] px-8">
-        <h2 id="now-showing-title" className="display-m mb-14 scroll-mt-32 text-center text-ink">
+        <h2 id="now-showing-title" className="display-m mb-14 max-[821px]:mb-8 scroll-mt-32 text-center text-ink">
           <RevealText text={t("home.nowShowingTitle")} />
         </h2>
 
