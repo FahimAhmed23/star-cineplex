@@ -121,6 +121,7 @@ export function TonightStrip({
             options={branches.map((b) => ({
               value: b.slug,
               label: lang === "bn" ? `${b.nameBn}, ${b.areaBn}` : `${b.name}, ${b.area.split(",")[0]}`,
+              short: lang === "bn" ? b.nameBn : b.name, // phones: just the name, never cut off
               lang: lang === "bn" ? "bn" : undefined,
             }))}
           />

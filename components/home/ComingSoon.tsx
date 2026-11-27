@@ -104,7 +104,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   const offset = -pos * (cardW + GAP);
 
   return (
-    <section ref={section} id="coming-soon" aria-labelledby="coming-soon-title" className="theme-light relative z-10 scroll-mt-24 pt-[100px] pb-[200px]">
+    <section ref={section} id="coming-soon" aria-labelledby="coming-soon-title" className="theme-light relative z-10 scroll-mt-24 pt-[100px] pb-[200px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="mx-auto max-w-[1280px] px-8">
         <h2 id="coming-soon-title" className="display-m mb-14 text-center text-ink">
           <RevealText text={t("home.comingSoonTitle")} />
@@ -181,7 +181,7 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
                 <button
                   type="button"
                   onClick={() => manual(() => go(i - active))}
-                  className="focus-ring grid h-6 place-items-center px-1"
+                  className="focus-ring grid h-6 place-items-center px-1 max-md:h-10"
                   aria-label={t("cards.goTo", { n: i + 1 })}
                   aria-current={i === active || undefined}
                 >

@@ -2,6 +2,7 @@
 
 > Read this whole file before every task. It is the source of truth for scope, design and behaviour.
 > If something here conflicts with a prompt, ask before changing direction.
+> **§11b (responsive and QA decisions, Nov 27) overrides any earlier section it contradicts.**
 
 ---
 
@@ -980,6 +981,53 @@ hero info below, "Tonight at" chips as a swipeable row, the navbar reduced to lo
 - Re-render the stills with the dev page `/dev/capture` (`?mode=portrait&w=1080&h=2340&blank=1` for the hall, then paint
   the screen quad black and re-measure `QUAD` in `PhoneHall.tsx`; `?turntable=vip&w=1056&h=726&angle=3.95` for a seat,
   the angle gives the three-quarter front view). Last re-render: Nov 26, new hall look and Tripo seats.
+---
+
+## 11b. Responsive and QA decisions (designer, Nov 27) — these override earlier sections
+
+Breakpoints used: **phone < 768px**, **compact < 1024px** (phones + tablets), **desktop ≥ 1024px**, menu < 1100px.
+
+**Buttons (all screens):** label weight **500** (was 600). Phones: every button 40px tall, 16px label, 18px icon.
+
+**Navbar**
+- Desktop ≥ 1100px: strip text 14px, icons 16px. 768–1099px: strip text 12px, icons 14px.
+- The top strip shows on **every** screen. Below 1100px it holds only the call icon + number (left) and EN / বাংলা
+  (right); "Customer Service" and My tickets move out (My tickets stays in the menu).
+- Below 1024px: strip 32px + tab 52px (navbar 84px), logo 32px, no Buy Tickets in the tab. Content starts **40px
+  under the navbar** (124px) on the showtime, seat, checkout and ticket pages.
+- Menu (< 1100px): full width with 20px side margins, solid `--night`, everything centred, links 18px semibold
+  (40px tap height), then a full-width **white** Buy Tickets right after Branches, then My tickets + Sound. The number
+  and language are not repeated in the menu.
+
+**Home**
+- Hero below 1024px: the still hall (no live 3D), no sound/pause/dash controls, buttons 40px above "Tonight at",
+  the trailer screen centred in the space between the navbar and the film info. Synopsis hidden on phones only.
+- "Tonight at" on phones: smaller chips (36px); the branch button shows the branch name only.
+- Now Showing: **all films at once on every screen, no Show all.** Below 1024px cards have no hover/tap-to-reveal
+  state: a tap acts straight away.
+- Section gaps on phones: 60px.
+- Moments below 1024px: logo + title, then one slow marquee row of the 5 photos (70s loop, pauses on touch/hover;
+  reduced motion: a swipeable row).
+- Branches below 1024px: no map; title, sub-line and list centred.
+- Footer on phones: logo and brand line centred; links with 40px tap height.
+
+**Booking**
+- Stepper on phones: labels under the numbers on all booking pages; centred on checkout below 1024px.
+- Showtime page on phones: 20px side margins, films 2 per row, the three date chips share the card width.
+- Seat page — **zoomable map** on phones and on screens shorter than 900px (e.g. 1280×720 laptops): opens on the
+  whole hall ("Tap the seats to zoom in"); a tap there zooms in; zoomed in, seats show their numbers, row letters stay
+  pinned on the left, one finger pans, two fingers pinch, a tap places your seats (no dragging the block). Toolbar:
+  Row "Go to", fit, zoom out, zoom in (40px). The map is re-laid out with CSS `zoom` once it settles, so it stays sharp.
+  Preview while zoomed eases back to the whole hall first, and Seats returns to the previous zoom.
+  Ticket stepper on phones: 40px tall, 14px text. The "seat was just taken" note sits just under the header.
+- Checkout: mandatory fields marked with a red `*` (no "optional" text). The ticket summary's notches are real cuts
+  (masks). The Pay button names the method ("Pay ৳550 with bKash" / "by card"). Selected payment card in brand purple;
+  Card shows the Visa + Mastercard logos (`/public/payments/`, Iconify "logos", CC0). Seat hold timer: amber from
+  5:00, red under 2:00 with "Seats are released when the timer ends". Phones: payment method is a dropdown (bKash by
+  default, opens upward), tighter spacing so it fits one screen, and the summary sheet has no Pay button (the bottom
+  bar has it).
+- Ticket: the date shows the real date under "Today"; 20px side margins on phones.
+
 ---
 
 ## 12. Reference index

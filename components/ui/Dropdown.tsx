@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 
-export type DropdownOption = { value: string; label: string; lang?: string; disabled?: boolean; hint?: string };
+export type DropdownOption = { value: string; label: string; lang?: string; disabled?: boolean; hint?: string; /** shorter text for the closed button on phones */ short?: string };
 
 /**
  * Themed dropdown (designer, Nov 26) in place of the browser's own <select> list, which can't take the brand style:
@@ -110,7 +110,14 @@ export function Dropdown({
         className={`dropdown-trigger focus-ring ${h} ${open ? "is-open" : ""}`}
       >
         <span className="truncate" lang={current?.lang}>
-          {current?.label}
+          {current?.short ? (
+            <>
+              <span className="md:hidden">{current.short}</span>
+              <span className="max-md:hidden">{current.label}</span>
+            </>
+          ) : (
+            current?.label
+          )}
         </span>
         <Icon name="chevronDown" size={16} className="dropdown-chevron shrink-0" />
       </button>

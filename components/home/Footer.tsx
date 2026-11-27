@@ -119,7 +119,7 @@ export function Footer() {
       {/* links */}
       <div className="relative z-10 mx-auto mt-24 max-w-[1200px] px-8">
         <div className="grid grid-cols-2 gap-10 border-t border-white/10 pt-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 max-md:flex max-md:flex-col max-md:items-center max-md:text-center md:col-span-1">
             <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-[72px] w-auto" />
             <p className="mt-4 max-w-[260px] text-[15px] text-muted">{t("footer.brandLine")}</p>
           </div>

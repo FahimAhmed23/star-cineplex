@@ -1,5 +1,6 @@
 "use client";
 
+import { useMedia } from "@/lib/device";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
@@ -17,6 +18,19 @@ gsap.registerPlugin(ScrollTrigger);
  *   left outer  x 2–18  · speed 0.85      left inner  x 21–32 · speed 1.25
  *   right inner x 67–79 · speed 1.3       right outer x 82–98 · speed 0.9 (one slow photo steps in to x 72, clear of the fast lane)
  */
+/** phones + tablets: the five premiere photos, once each (the row is doubled for a seamless loop) */
+const MARQUEE = ["red-carpet-group", "cosplay-duel", "guest-lineup", "spiderman-guests", "event-crowd"] as const;
+
+/**
+ * How wide the photo is actually drawn, in vw. The photos are 3:2; a taller tile (4:5, 1:1, 3:4) crops a 3:2 photo
+ * with object-fit: cover, so the photo is drawn wider than the tile. Asking for only the tile's width made the
+ * browser stretch a too-small image (the blur, Nov 27).
+ */
+function tileDrawnVw(tile: { w: number; ratio: string }) {
+  const [a, b] = tile.ratio.split("/").map((n) => parseFloat(n));
+  return Math.ceil(tile.w * Math.max(1, 1.5 / (a / b)));
+}
+
 const TILES = [
   { src: "cosplay-duel", ratio: "3 / 2", focus: "50% 50%", w: 16, x: 2, y: 10, speed: 0.85 },
   { src: "red-carpet-group", ratio: "4 / 3", focus: "50% 50%", w: 16, x: 2, y: 80, speed: 0.85 },
@@ -41,10 +55,12 @@ export function Moments() {
   const section = useRef<HTMLElement>(null);
   const tiles = useRef<(HTMLDivElement | null)[]>([]);
   const [lockupOn, setLockupOn] = useState(false);
+  // phones + tablets: logo and title, then one slow marquee row of the photos (designer, Nov 27)
+  const compact = useMedia("(max-width: 1023px)");
 
   useLayoutEffect(() => {
     const el = section.current;
-    if (!el) return;
+    if (!el || compact) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // the lockup fades in once the section reaches the middle of the viewport, out as it leaves
@@ -82,7 +98,30 @@ export function Moments() {
       parallax?.kill();
       io.disconnect();
     };
-  }, []);
+  }, [compact]);
+
+  if (compact) {
+    return (
+      <section id="moments" aria-labelledby="moments-title" className="moments moments--compact relative overflow-clip">
+        <div className="flex flex-col items-center px-6 text-center">
+          <Image src="/brand/logo-brand-dark.png" alt="Star Cineplex" width={1200} height={499} className="mb-5 h-auto w-[160px] md:w-[200px]" />
+          <h2 id="moments-title" className="display-m max-w-[11ch] text-paper">
+            <RevealText text={t("home.momentsTitle")} />
+          </h2>
+        </div>
+        {/* one slow row, looping; holding a finger (or the mouse) on it pauses it */}
+        <div aria-hidden className="moments-marquee mt-10">
+          <div className="moments-marquee__track">
+            {[...MARQUEE, ...MARQUEE].map((src, i) => (
+              <div key={i} className="moments-marquee__tile">
+                <Image src={`/moments/${src}.jpg`} alt="" fill sizes="(max-width: 767px) 300px, 390px" quality={90} className="object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={section} id="moments" aria-labelledby="moments-title" className="moments relative h-[260vh] overflow-clip">
@@ -109,10 +148,10 @@ export function Moments() {
           >
             <div className="moments-tile relative overflow-hidden" style={{ aspectRatio: tile.ratio }}>
               <Image
-                src={`/moments/${tile.src}.webp`}
+                src={`/moments/${tile.src}.jpg`}
                 alt=""
                 fill
-                sizes={`${tile.w}vw`}
+                sizes={`${tileDrawnVw(tile)}vw`}
                 quality={90}
                 className="object-cover"
                 style={{ objectPosition: tile.focus }}

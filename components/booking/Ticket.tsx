@@ -10,7 +10,7 @@ import { Icon } from "@/components/ui/Icon";
 import { formatPhone, getBooking, type Booking } from "@/lib/booking";
 import { playSound } from "@/lib/sound";
 import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
-import { formatTime, showDateLabel } from "@/lib/demo-date";
+import { dateLocale, formatTime, showDateLabel } from "@/lib/demo-date";
 import { useT } from "@/lib/i18n";
 import type { SeatClass } from "@/lib/types";
 
@@ -107,7 +107,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
   return (
     <div className="theme-light min-h-[100svh]">
       <Navbar />
-      <main className="mx-auto max-w-[1120px] px-8 pt-[128px] pb-24">
+      <main className="mx-auto max-w-[1120px] px-8 pt-[128px] pb-24 max-lg:pt-[124px] max-md:px-5">
         <div className="text-center">
           <p className="inline-flex items-center gap-2 text-[14px] font-medium text-[#237a51]">
             <Icon name="checkCircleDuo" size={20} />
@@ -136,7 +136,19 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                   <dl className="mt-6 grid grid-cols-3 gap-x-6 gap-y-4 text-[14px]">
                     <div>
                       <dt className="ticket__label">{t("ticket.date")}</dt>
-                      <dd className="font-semibold">{showDateLabel(b.date, t, lang)}</dd>
+                      <dd className="font-semibold">
+                        {/* the real date too: tickets get screenshotted and checked later (QA, Nov 27) */}
+                        {(() => {
+                          const day = showDateLabel(b.date, t, lang);
+                          const full = new Date(`${b.date}T00:00:00`).toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric", month: "short" });
+                          return day === full ? full : (
+                            <>
+                              {day}
+                              <span className="block text-[12px] font-normal text-ink/65">{full}</span>
+                            </>
+                          );
+                        })()}
+                      </dd>
                     </div>
                     <div>
                       <dt className="ticket__label">{t("ticket.time")}</dt>

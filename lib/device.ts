@@ -50,3 +50,16 @@ export function useDevice() {
 export function deviceNow() {
   return typeof window === "undefined" ? SERVER : read();
 }
+
+/** true while a media query matches (SSR: false). Used for layout-only switches, e.g. the hero below 1024px. */
+export function useMedia(query: string) {
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}

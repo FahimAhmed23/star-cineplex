@@ -72,15 +72,15 @@ export function BranchMap() {
     <section
       id="branches"
       aria-labelledby="branches-title"
-      className="relative scroll-mt-24 overflow-hidden bg-night pt-[100px] pb-[200px]"
+      className="relative scroll-mt-24 overflow-hidden bg-night pt-[100px] pb-[200px] max-md:pt-[60px] max-md:pb-[60px]"
     >
       {/* left: headline + every branch, grouped by city */}
       <div className="pointer-events-none relative z-10 mx-auto max-w-[1280px] px-8 max-md:px-5">
-        <div className="pointer-events-auto lg:w-[440px]">
-          <h2 id="branches-title" className="display-m max-w-[6em] text-white">
+        <div className="pointer-events-auto max-lg:mx-auto max-lg:max-w-[440px] lg:w-[440px]">
+          <h2 id="branches-title" className="display-m max-w-[6em] text-white max-lg:mx-auto max-lg:text-center">
             <RevealText text={t("home.reelTitle")} />
           </h2>
-          <RevealText as="p" className="mt-3 block text-[16px] text-muted" text={t("home.reelSub")} delay={0.35} stagger={0.04} />
+          <RevealText as="p" className="mt-3 block text-[16px] text-muted max-lg:text-center" text={t("home.reelSub")} delay={0.35} stagger={0.04} />
 
           <div className="mt-10 space-y-4">
             {groups.map(([city, list], gi) => (
@@ -122,7 +122,7 @@ export function BranchMap() {
       </div>
 
       {/* right: the map, centred between the list and the section's right edge, fading out towards the corners */}
-      <div className="branch-map max-lg:relative max-lg:mt-10 max-lg:px-5 lg:absolute lg:inset-y-0 lg:right-0 lg:left-[calc(max(0px,(100%_-_1280px)/2)_+_472px)] lg:flex lg:justify-center">
+      <div className="branch-map max-lg:hidden max-lg:relative max-lg:mt-10 max-lg:px-5 lg:absolute lg:inset-y-0 lg:right-0 lg:left-[calc(max(0px,(100%_-_1280px)/2)_+_472px)] lg:flex lg:justify-center">
         <div
           className="relative max-lg:w-full lg:h-full"
           style={{ aspectRatio: `${CROP.w} / ${CROP.h}` }}

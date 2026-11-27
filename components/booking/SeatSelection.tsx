@@ -12,7 +12,8 @@ import { RollingNumber } from "@/components/ui/RollingNumber";
 import { saveSeatView, startHold } from "@/lib/booking";
 import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
 import { dateLocale, formatTime } from "@/lib/demo-date";
-import { deviceNow, useDevice } from "@/lib/device";
+import { deviceNow, useDevice, useMedia } from "@/lib/device";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { markDoorsReady } from "@/lib/doors";
 import { buildLayout } from "@/lib/hall-layout";
 import { seatPrice } from "@/lib/halls";
@@ -35,6 +36,9 @@ type Stage = "map" | "toHall" | "hall" | "toMap";
  * A) "Preview": the 3D hall fades in exactly under the map (the map IS the hall seen from above), the camera dives
  *    into your seat with the trailer playing, a strip of your row stays at the bottom; "Seats" flies back up.
  */
+type View = { z: number; x: number; y: number };
+const FIT: View = { z: 1, x: 0, y: 0 };
+
 export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: { show: Showtime; hallId: string; initialSeats?: string[]; taken?: string[] }) {
   const { t, lang } = useT();
   const router = useRouter();
@@ -48,7 +52,10 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   const booked = useMemo(() => new Set(show.bookedSeats), [show.bookedSeats]);
   const byId = useMemo(() => new Map(layout.seats.map((s) => [s.id, s])), [layout.seats]);
   const classes = useMemo(() => [...new Set(hall.rows.map((r) => r.class))], [hall]);
-  const { full3D } = useDevice();
+  const { full3D, phone } = useDevice();
+  // the zoomable map (toolbar, tap to zoom, pan): phones, and short laptop screens where the whole hall would be tiny
+  const shortScreen = useMedia("(max-height: 899px)");
+  const zoomUi = phone || shortScreen;
 
   // ── the block of seats ──
   const [count, setCount] = useState(() => Math.min(MAX_SEATS, Math.max(1, initialSeats.length || 1)));
@@ -174,8 +181,17 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
     });
   }, [sorted, capture, later]);
 
-  const preview = () => {
+  const savedView = useRef<View | null>(null);
+  const previewRef = useRef<(skipZoom?: boolean) => void>(() => {});
+  const preview = (skipZoom = false) => {
     if (!full3D || !sorted.length || stage !== "map") return;
+    // phones: ease back to the whole-hall view first, so the 3D hall lines up under the map (designer, Nov 27)
+    if (!skipZoom && viewRef.current.z !== 1) {
+      savedView.current = viewRef.current;
+      setView(FIT);
+      later(320, () => previewRef.current(true));
+      return;
+    }
     if (!hallReady) {
       pendingPreview.current = true;
       setHallOn(true);
@@ -196,7 +212,13 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
     if (stage !== "hall") return;
     setStage("toMap");
     setCamMode("topdown"); // rise back to the map's camera
-    later(DIVE_MS, () => setStage("map"));
+    later(DIVE_MS, () => {
+      setStage("map");
+      // phones: back to where they were zoomed
+      const v = savedView.current;
+      savedView.current = null;
+      if (v) later(60, () => setView(v));
+    });
   };
 
   // ── moving the block: drag, tap, keys ──
@@ -320,6 +342,131 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
   // row letters share one column, just left of the widest row
   const rowX = td ? Math.min(...[...td.seats.values()].map((q) => q.x)) - td.pitch * 1.15 : 0;
 
+  // ── phones (< 768px): zoom + pan the map (designer, Nov 27, after starcineplex.com's mobile picker) ──
+  // Opens on the whole hall; a tap there zooms in around it, a tap when zoomed places your seats. One finger pans,
+  // two fingers pinch, the toolbar has Row "Go to", fit, zoom out and zoom in.
+  const [view, setView] = useState<View>(FIT);
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  previewRef.current = preview;
+  const [gesturing, setGesturing] = useState(false);
+  const zMax = Math.max(3, 34 / glyph);
+  const zMid = Math.min(2, zMax);
+  const area = useMemo(() => {
+    if (!td || !box) return null;
+    const qs = [...td.seats.values()];
+    return {
+      x0: rowX - glyph,
+      x1: Math.max(...qs.map((q) => q.x)) + glyph,
+      y0: screenY - 40,
+      y1: Math.max(...qs.map((q) => q.y)) + glyph,
+      top: box.y - 98, // just under the header + toolbar
+      bottom: box.y + box.h + 8,
+      vw: box.vw,
+      vh: box.vh,
+    };
+  }, [td, box, rowX, screenY, glyph]);
+  const clampView = useCallback(
+    (v: View): View => {
+      if (!area) return v;
+      const z = Math.min(zMax, Math.max(1, v.z));
+      if (z <= 1.001) return FIT;
+      const pad = 12;
+      const axis = (lo: number, hi: number, a0: number, a1: number, t: number) => {
+        if ((hi - lo) * z <= a1 - a0 - 2 * pad) return (a0 + a1) / 2 - ((lo + hi) / 2) * z;
+        return Math.min(a0 + pad - lo * z, Math.max(a1 - pad - hi * z, t));
+      };
+      return { z, x: axis(area.x0, area.x1, 0, area.vw, v.x), y: axis(area.y0, area.y1, area.top, area.bottom, v.y) };
+    },
+    [area, zMax],
+  );
+  useEffect(() => setView((v) => clampView(v)), [clampView]);
+  const zoomAt = (z: number, px: number, py: number, from = view) => {
+    const mx = (px - from.x) / from.z;
+    const my = (py - from.y) / from.z;
+    setView(clampView({ z, x: px - mx * z, y: py - my * z }));
+  };
+  const centre = () => ({ x: (area?.vw ?? 0) / 2, y: area ? (area.top + area.bottom) / 2 : 0 });
+  const zoomStep = (dir: 1 | -1) => {
+    const levels = [1, zMid, zMax];
+    const next = dir > 0 ? levels.find((l) => l > view.z + 0.01) ?? zMax : [...levels].reverse().find((l) => l < view.z - 0.01) ?? 1;
+    const c = centre();
+    zoomAt(next, c.x, c.y);
+  };
+  const [rowPick, setRowPick] = useState("");
+  const goRow = (row: string) => {
+    setRowPick(row);
+    const first = layout.seats.find((s) => s.row === row);
+    const q = first && td?.seats.get(first.id);
+    if (!q) return;
+    const c = centre();
+    const z = Math.max(view.z, zMid);
+    const mx = (c.x - view.x) / view.z;
+    setView(clampView({ z, x: c.x - mx * z, y: c.y - q.y * z }));
+  };
+  const toMap = (p: { x: number; y: number }) => (zoomUi ? { x: (p.x - view.x) / view.z, y: (p.y - view.y) / view.z } : p);
+  // touch: one finger pans (when zoomed), two pinch, a still tap zooms in (whole hall) or places your seats (zoomed)
+  const touches = useRef(new Map<number, { x: number; y: number }>());
+  const gesture = useRef<{ v0: View; x: number; y: number; moved: boolean; pinch?: { d0: number; mx: number; my: number } } | null>(null);
+  const tDown = (e: React.PointerEvent) => {
+    if (stage !== "map" || !td) return;
+    touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+    const pts = [...touches.current.values()];
+    if (pts.length === 1) gesture.current = { v0: view, x: e.clientX, y: e.clientY, moved: false };
+    else if (pts.length === 2 && gesture.current) {
+      const [a, b] = pts;
+      gesture.current = { ...gesture.current, v0: view, moved: true, pinch: { d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 } };
+    }
+  };
+  const tMove = (e: React.PointerEvent) => {
+    const g = gesture.current;
+    if (!g || !touches.current.has(e.pointerId)) return;
+    touches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const pts = [...touches.current.values()];
+    if (g.pinch && pts.length >= 2) {
+      const [a, b] = pts;
+      const z = g.v0.z * (Math.hypot(a.x - b.x, a.y - b.y) / g.pinch.d0);
+      setGesturing(true);
+      zoomAt(Math.min(zMax, Math.max(1, z)), g.pinch.mx, g.pinch.my, g.v0);
+      return;
+    }
+    const dx = e.clientX - g.x;
+    const dy = e.clientY - g.y;
+    if (!g.moved && Math.hypot(dx, dy) > 6) g.moved = true;
+    if (g.moved && g.v0.z > 1) {
+      setGesturing(true);
+      setView(clampView({ z: g.v0.z, x: g.v0.x + dx, y: g.v0.y + dy }));
+    }
+  };
+  const tUp = (e: React.PointerEvent) => {
+    const g = gesture.current;
+    touches.current.delete(e.pointerId);
+    if (touches.current.size > 0) return;
+    gesture.current = null;
+    setGesturing(false);
+    if (!g || g.moved || e.type === "pointercancel") return;
+    if (view.z <= 1.001) return zoomAt(zMid, e.clientX, e.clientY);
+    const s = nearest(toMap({ x: e.clientX, y: e.clientY }));
+    if (s && !booked.has(s.id) && !sorted.includes(s.id)) commit(groupAround(layout.seats, booked, s, count));
+  };
+  const zoomed = zoomUi && view.z > 1.001;
+  // sharp zoom: the layer is scaled with a transform only while it moves; once it settles it is re-laid out at
+  // the new size with CSS zoom (zr), so seats and numbers are drawn crisp instead of stretched (designer, Nov 27)
+  const [zr, setZr] = useState(1);
+  const [snap, setSnap] = useState(false);
+  useEffect(() => {
+    if (!zoomUi || gesturing || Math.abs(zr - view.z) < 0.001) return;
+    const id = window.setTimeout(() => {
+      setSnap(true);
+      setZr(view.z);
+      requestAnimationFrame(() => requestAnimationFrame(() => setSnap(false)));
+    }, 320);
+    return () => window.clearTimeout(id);
+  }, [zoomUi, gesturing, view.z, zr]);
+
   // your row and its neighbours, shown at the bottom in the hall view (reference video A)
   const strip = useMemo(() => {
     if (!sorted.length) return null;
@@ -372,12 +519,14 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           aria-describedby="seatmap-help"
           onPointerDown={(e) => {
             setHover(null);
-            onDown(e);
+            if (zoomUi) tDown(e);
+            else onDown(e);
           }}
-          onPointerMove={onMove}
+          onPointerMove={zoomUi ? tMove : onMove}
           onPointerLeave={() => setHover(null)}
-          onPointerUp={onUp}
-          onPointerCancel={() => {
+          onPointerUp={zoomUi ? tUp : onUp}
+          onPointerCancel={(e) => {
+            if (zoomUi) return tUp(e);
             downAt.current = null;
             setDrag(null);
             setGhost(null);
@@ -389,11 +538,26 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             transition: `opacity ${mapVisible ? 300 : 350}ms ease ${stage === "toHall" ? 300 : 0}ms`,
             pointerEvents: mapVisible ? "auto" : "none",
             ["--g" as string]: `${glyph}px`,
+            // phones: the map lives in its own window between the toolbar and the footer
+            clipPath: zoomUi && area ? `inset(${area.top}px 0 ${area.vh - area.bottom}px 0)` : undefined,
           }}
         >
           <p id="seatmap-help" className="sr-only">
             {t("booking.mapHelp")}
           </p>
+          <div
+            className="absolute inset-0"
+            style={
+              zoomUi
+                ? {
+                    transformOrigin: "0 0",
+                    transform: `translate(${view.x}px, ${view.y}px) scale(${view.z / zr})`,
+                    transition: gesturing || snap ? "none" : "transform 300ms var(--ease-out)",
+                  }
+                : undefined
+            }
+          >
+          <div className="absolute inset-0" style={zoomUi && zr !== 1 ? { zoom: zr } : undefined}>
           {/* the screen */}
           {/* the light falling from the screen over the front rows */}
           <span
@@ -426,7 +590,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           {[...rowsOf(layout.seats).values()].map((row) => {
             const q = td.seats.get(row[0].id)!;
             return (
-              <span key={row[0].row} aria-hidden className="seatmap__row" style={{ left: rowX, top: q.y }}>
+              <span key={row[0].row} aria-hidden className="seatmap__row" style={{ left: rowX, top: q.y, visibility: zoomed ? "hidden" : undefined }}>
                 {row[0].row}
               </span>
             );
@@ -438,9 +602,11 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
               <span
                 key={s.id}
                 aria-hidden
-                className={`seat-g ${booked.has(s.id) ? "seat-g--taken" : `seat-g--free seat-g--${s.class}`} ${hoverSet.has(s.id) && !drag ? "is-hover" : ""}`}
+                className={`seat-g ${booked.has(s.id) ? "seat-g--taken" : `seat-g--free seat-g--${s.class}`} ${hoverSet.has(s.id) && !drag ? "is-hover" : ""} ${zoomed ? "seat-g--num" : ""}`}
                 style={{ left: q.x, top: q.y }}
-              />
+              >
+                {zoomed && !booked.has(s.id) ? s.number : null}
+              </span>
             );
           })}
           {/* ghost: where the block will land */}
@@ -480,6 +646,23 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
               </span>
             );
           })}
+          </div>
+          </div>
+          {/* phones, zoomed: row letters stay pinned on the left while the map pans */}
+          {zoomed &&
+            [...rowsOf(layout.seats).values()].map((row) => {
+              const y = td.seats.get(row[0].id)!.y * view.z + view.y;
+              return (
+                <span key={`pin-${row[0].row}`} aria-hidden className="seatmap__pin" style={{ top: y, transition: gesturing ? "none" : "top 300ms var(--ease-out)" }}>
+                  {row[0].row}
+                </span>
+              );
+            })}
+          {zoomUi && !zoomed && area && stage === "map" && (
+            <span className="seatmap__hint" style={{ top: area.bottom - 44 }}>
+              {t("booking.tapToZoom")}
+            </span>
+          )}
         </div>
       )}
       <p aria-live="polite" className="sr-only">
@@ -488,7 +671,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
 
       {/* header (the column) */}
       {/* 60px under the navbar, like the step-1 page */}
-      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto w-full max-w-[760px] px-4 md:top-[168px]">
+      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[124px] z-10 mx-auto w-full max-w-[760px] px-4 lg:top-[168px]">
         <Link href={`/book?movie=${movie.slug}`} className="focus-ring pointer-events-auto inline-flex items-center gap-1.5 text-[13px] text-white/70 hover:text-white">
           <Icon name="arrowLeft" size={16} />
           {t("booking.changeShowtime")}
@@ -508,11 +691,37 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             </button>
           </div>
         </div>
+        {/* phones: Row "Go to", fit, zoom out, zoom in */}
+        {zoomUi && (
+          <div className={`mt-3 flex items-center justify-between gap-3 transition-opacity duration-300 ${inHall ? "opacity-0" : "pointer-events-auto"}`}>
+            <div className="flex items-center gap-2 text-[13px] text-muted">
+              {t("booking.row")}
+              <Dropdown
+                label={t("booking.goToRow")}
+                value={rowPick}
+                options={[{ value: "", label: t("booking.goTo") }, ...[...rowsOf(layout.seats).values()].map((r) => ({ value: r[0].row, label: r[0].row }))]}
+                onChange={(v) => v && goRow(v)}
+                className="w-[112px]"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button type="button" className="map-tool focus-ring" onClick={() => setView(FIT)} disabled={!zoomed || inHall} aria-label={t("booking.zoomFit")}>
+                <Icon name="fit" size={18} />
+              </button>
+              <button type="button" className="map-tool focus-ring" onClick={() => zoomStep(-1)} disabled={!zoomed || inHall} aria-label={t("booking.zoomOut")}>
+                <Icon name="zoomOut" size={18} />
+              </button>
+              <button type="button" className="map-tool focus-ring" onClick={() => zoomStep(1)} disabled={view.z >= zMax - 0.01 || inHall} aria-label={t("booking.zoomIn")}>
+                <Icon name="zoomIn" size={18} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* §9.9 a seat was taken while choosing */}
       {takenNote && (
-        <div role="alert" className="absolute inset-x-0 top-[180px] z-20 flex justify-center px-4">
+        <div role="alert" className="absolute inset-x-0 z-20 flex justify-center px-4" style={{ top: box ? box.y - 98 : 180 }} /* just under the header */>
           <div className="glass flex items-center gap-3 rounded-pill border border-white/10 py-2 pr-2 pl-4 text-[14px] text-white">
             <Icon name="info" size={18} className="text-gold" />
             {t(taken.length > 1 ? "booking.justTakenMany" : "booking.justTaken", { seat: taken.join(", ") })}
@@ -603,7 +812,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             <Button
               variant="secondary"
               icon={inHall ? "widget" : "eye"}
-              onClick={inHall ? backToSeats : preview}
+              onClick={inHall ? backToSeats : () => preview()}
               disabled={stage === "toHall" || stage === "toMap" || !sorted.length}
               loading={waiting}
               className="shrink-0"

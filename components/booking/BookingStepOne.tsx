@@ -115,7 +115,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
     <>
       <Navbar />
       {/* everything centred; content starts 60px below the navbar (strip 40 + tab 68 on desktop, tab 60 on phones) */}
-      <main className="mx-auto max-w-[1280px] px-8 pt-[120px] pb-32 text-center max-md:px-5 md:pt-[168px]">
+      <main className="mx-auto max-w-[1280px] px-8 pt-[124px] pb-32 text-center max-md:px-5 lg:pt-[168px]">
         <Stepper step={1} className="justify-center" />
         <h1 className="display-m mt-8 mb-12 text-white">
           <RevealText text={t("booking.title")} show delay={0.1} />
@@ -124,9 +124,9 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
         {/* 1. Branch */}
         {/* the branch/date card takes the width of the film row below it (designer, Nov 27): both sit in one grid
             that is as wide as the wider of the two */}
-        <div className="mx-auto grid w-fit max-w-full">
+        <div className="mx-auto grid w-fit max-w-full max-md:w-full">
         {/* branch and date side by side */}
-        <div className="pick-card mx-2 grid grid-cols-[1fr_auto_1fr] max-md:grid-cols-1">
+        <div className="pick-card mx-2 max-md:mx-0 grid grid-cols-[1fr_auto_1fr] max-md:grid-cols-1">
         <section aria-labelledby="pick-branch" className="px-10 py-7 max-md:px-6">
           <h2 id="pick-branch" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.branch")}
@@ -154,7 +154,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
           <h2 id="pick-date" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.date")}
           </h2>
-          <div className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto">
+          <div className="date-chips no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto">
             {(days ?? Array.from({ length: BOOKABLE_DAYS }, () => null)).map((d, i) => (
               <button
                 key={i}
@@ -178,7 +178,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
             {t("booking.movie")}
           </h2>
           {days && dayMovies.length === 0 && <p className="text-[15px] text-muted">{t("booking.noShows")}</p>}
-          <div ref={moviesRow} className="no-scrollbar flex items-start justify-[safe_center] gap-4 overflow-x-auto px-2 pt-2 pb-4">
+          <div ref={moviesRow} className="no-scrollbar flex items-start justify-[safe_center] gap-4 overflow-x-auto px-2 pt-2 pb-4 max-md:grid max-md:grid-cols-2 max-md:overflow-visible max-md:px-0">
             {dayMovies.map((m) => {
               const on = m.slug === chosen;
               return (
@@ -188,7 +188,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
                   data-movie={m.slug}
                   onClick={() => pickMovie(m.slug)}
                   aria-pressed={on}
-                  className={`poster-pick focus-ring flex w-[140px] shrink-0 flex-col text-left ${on ? "is-on" : ""}`}
+                  className={`poster-pick focus-ring flex w-[140px] max-md:w-full shrink-0 flex-col text-left ${on ? "is-on" : ""}`}
                 >
                   <span className="poster-pick__frame relative block aspect-[2/3] overflow-hidden rounded-card-sm">
                     <Image src={m.poster} alt="" fill sizes="140px" className="object-cover" />

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { useDevice } from "@/lib/device";
+import { useDevice, useMedia } from "@/lib/device";
 import { useT } from "@/lib/i18n";
 import { useUi } from "@/lib/store";
 import type { Hall, Movie } from "@/lib/types";
@@ -42,6 +42,9 @@ interface Props {
  * the movie info on the left and the "Tonight at" strip pinned to the bottom. Also the Trailer view (§8.7).
  * Scroll fades (§8.3) read the --p custom property set on the sticky wrapper.
  */
+/** top and bottom of the screen in the phone/tablet still, as fractions of its height (PhoneHall QUAD) */
+const SCREEN_Y = [0.2509, 0.4436] as const;
+
 export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, trailerSound, onBack }: Props) {
   const { t, lang } = useT();
   const stage = useUi((s) => s.stage);
@@ -49,6 +52,44 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
   const setHallReady = useUi((s) => s.setHallReady);
   const reduced = useReducedMotion();
   const { phone } = useDevice();
+  // below 1024px (phones + tablets) the hero is the still hall with the screen near the top and the info under it
+  const compact = useMedia("(max-width: 1023px)");
+  const [vw, setVw] = useState(0);
+  useEffect(() => {
+    const on = () => setVw(document.documentElement.clientWidth);
+    on();
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  // below 1024px the info sits 40px above "Tonight at" (designer, Nov 27) and the screen sits just above the info,
+  // lifted no higher than ~20px under the navbar (100px phones, 108px tablets)
+  const heroRef = useRef<HTMLElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const [dims, setDims] = useState({ h: 0, info: 0, strip: 0 });
+  useEffect(() => {
+    if (!compact) return;
+    const measure = () =>
+      setDims((d) => {
+        const n = { h: heroRef.current?.clientHeight ?? 0, info: infoRef.current?.offsetHeight ?? 0, strip: stripRef.current?.offsetHeight ?? 0 };
+        return n.h === d.h && n.info === d.info && n.strip === d.strip ? d : n;
+      });
+    measure();
+    const ro = new ResizeObserver(measure);
+    [heroRef.current, infoRef.current, stripRef.current].forEach((el) => el && ro.observe(el));
+    return () => ro.disconnect();
+  }, [compact, stage]);
+  const stillH = (vw * 2340) / 1080;
+  const infoTopIdeal = dims.h - dims.strip - 40 - dims.info;
+  // the screen sits in the middle of the free space between the navbar and the info (no empty ceiling on tablets)
+  const navTop = 84 + 20;
+  const screenH = (SCREEN_Y[1] - SCREEN_Y[0]) * stillH;
+  const wantTop = navTop + Math.max(0, (infoTopIdeal - 24 - navTop - screenH) / 2);
+  const maxShift = Math.max(0, SCREEN_Y[0] * stillH - navTop);
+  const shift = Math.min(maxShift, Math.max(0, SCREEN_Y[0] * stillH - wantTop));
+  const screenTop = SCREEN_Y[0] * stillH - shift;
+  const screenBottom = SCREEN_Y[1] * stillH - shift;
+  const infoTop = Math.max(screenBottom + 24, infoTopIdeal);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -130,10 +171,10 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
   };
 
   return (
-    <section className="relative h-[100svh] min-h-[640px] overflow-hidden bg-night" aria-label={single ? title : t("hero.eyebrow")}>
+    <section ref={heroRef} className="relative h-[100svh] min-h-[640px] overflow-hidden bg-night" aria-label={single ? title : t("hero.eyebrow")}>
       {/* the hall: slight scale + black overlay while the next section covers it (§8.3) */}
       <div className="hero-p-scale absolute inset-0">
-        {phone ? (
+        {compact ? (
           // §11 phones: a still of the hall with the trailer on its screen — no live 3D
           <PhoneHall
             src={movie.trailer}
@@ -147,6 +188,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
             playing={!paused && !covered && !ended}
             brightness={brightness}
             onReady={() => setHallReady(true)}
+            shift={shift}
           />
         ) : (
         <Hall3D
@@ -175,9 +217,9 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       <div aria-hidden className="hero-p-dim pointer-events-none absolute inset-0 bg-black" />
 
       {/* one smooth left-to-right gradient over the whole hero: dark behind the text, clear before the screen */}
-      <div aria-hidden className="hero-fade pointer-events-none absolute inset-0 max-md:hidden" />
+      <div aria-hidden className="hero-fade pointer-events-none absolute inset-0 max-lg:hidden" />
       {/* phones: the info sits under the screen, on a fade to night */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-night via-night/85 to-transparent md:hidden" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-night via-night/85 to-transparent lg:hidden" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-night/90 to-transparent" />
 
       {/* trailer view: Back chip top-left (§8.7) */}
@@ -188,7 +230,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="hero-p-early focus-ring absolute top-[76px] left-4 md:top-[124px] md:left-8 z-10 flex items-center gap-2 rounded-pill border border-white/25 bg-black/30 px-4 py-2 text-[14px] font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          className="hero-p-early focus-ring absolute top-[100px] left-4 lg:top-[124px] md:left-8 z-10 flex items-center gap-2 rounded-pill border border-white/25 bg-black/30 px-4 py-2 text-[14px] font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/10"
         >
           <Icon name="arrowLeft" size={18} />
           {t("trailer.back")}
@@ -198,13 +240,15 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       {/* hero info */}
       {/* desktop: always centred on the screen's height, whatever the display (designer, Nov 26) */}
       <div
-        className={`pointer-events-none absolute inset-x-0 mx-auto max-w-[1440px] px-5 md:px-8 ${phone ? "bottom-[156px]" : "inset-y-0 flex items-center"}`}
+        className={`pointer-events-none absolute inset-x-0 mx-auto max-w-[1440px] px-5 md:px-8 ${compact ? "" : "inset-y-0 flex items-center"}`}
+        style={compact ? { top: infoTop } : undefined}
       >
         {revealed && (
           <motion.div
+            ref={infoRef}
             className="pointer-events-auto relative"
             // the column always ends before the screen (which starts at ~48% of the width)
-            style={phone ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
+            style={compact ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
             initial="hidden"
             animate="show"
             variants={{ show: { transition: { delayChildren: D.text, staggerChildren: 0.1 } } }}
@@ -234,7 +278,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
                     lang={isBnTitle ? "bn" : "en"} /* English titles keep GC Movark in Bangla mode */
                     className="display-xl mb-4 text-white md:mb-5" /* hero film title at 700, like every title (designer) */
                     // compact hero title (designer, Nov 26): 72px / 55px at 1440×900 (short / long titles), capped by viewport height
-                    style={{ fontSize: phone ? (long ? "clamp(26px, 7.2vw, 34px)" : "clamp(32px, 9.2vw, 44px)") : long ? "min(clamp(40px, 3.8vw, 60px), 7vh)" : "min(clamp(48px, 5vw, 80px), 9vh)" }}
+                    style={{ fontSize: compact ? (long ? "clamp(26px, 7.2vw, 34px)" : "clamp(32px, 9.2vw, 44px)") : long ? "min(clamp(40px, 3.8vw, 60px), 7vh)" : "min(clamp(48px, 5vw, 80px), 9vh)" }}
                   />
                 </div>
                 <motion.div
@@ -270,7 +314,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
               </motion.div>
             </AnimatePresence>
             {/* 40px above the buttons (designer, Nov 26) */}
-            <motion.div layout="position" variants={item} className="hero-p-early mt-10 mb-6 flex flex-wrap gap-3 max-md:mt-1 max-md:mb-0 max-md:[&_.btn]:flex-1">
+            <motion.div layout="position" variants={item} className="hero-p-early mt-10 mb-6 flex flex-wrap gap-3 max-lg:mt-1 max-lg:mb-0 max-lg:[&_.btn]:flex-1">
                   {soon ? (
                     // Coming Soon in the trailer view: a non-clickable release badge instead of Buy Tickets (§8.6)
                     <span className="inline-flex items-center gap-2 rounded-pill border border-white/25 px-6 py-[14px] text-[15px] font-semibold text-white">
@@ -294,7 +338,8 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       <AnimatePresence>
         {single && ended && (
           <motion.div
-            className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 ${phone ? "top-[calc(100vw*2.1667*0.35)] left-1/2" : "top-[42%] left-[71%]"}`}
+            className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 ${compact ? "left-1/2" : "top-[42%] left-[71%]"}`}
+            style={compact ? { top: (screenTop + screenBottom) / 2 } : undefined}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -318,7 +363,8 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       </AnimatePresence>
 
       {/* carousel controls: sound, pause/play, progress dashes (click to jump); trailer view: sound only */}
-      <div className={`hero-p-early absolute ${phone ? "top-[calc(100vw*2.1667*0.455)] right-4" : "right-8 bottom-[104px]"}`}>
+      {/* below 1024px: no carousel controls (designer, Nov 27) */}
+      <div className="hero-p-early absolute right-8 bottom-[104px] max-lg:hidden">
         <motion.div
           className="flex items-center gap-4"
           initial={{ opacity: 0 }}
@@ -373,7 +419,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
       </div>
 
       {/* "Tonight at" pinned to the bottom of the hero; fades out first on scroll */}
-      <div className="hero-p-strip absolute inset-x-0 bottom-0">
+      <div ref={stripRef} className="hero-p-strip absolute inset-x-0 bottom-0">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: revealed ? 1 : 0, y: revealed ? 0 : 24 }}

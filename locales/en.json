@@ -150,7 +150,14 @@
     "seatsBtn": "Seats",
     "splitNote": "not enough seats together for {n}, so they're split",
     "mapLabel": "Seat map",
-    "mapHelp": "Your seats move together. Arrow keys move them, plus and minus change the number of tickets. You can also drag them or tap a free seat."
+    "mapHelp": "Your seats move together. Arrow keys move them, plus and minus change the number of tickets. You can also drag them or tap a free seat.",
+    "stepDone": "done",
+    "tapToZoom": "Tap the seats to zoom in",
+    "goTo": "Go to",
+    "goToRow": "Go to row",
+    "zoomFit": "Show the whole hall",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   },
   "checkout": {
     "yourDetails": "Your details",
@@ -187,7 +194,11 @@
     "releasedTitle": "Your seats were released",
     "releasedBody": "Seats are held for 10 minutes so everyone gets a fair chance. Pick them again — it only takes a moment.",
     "pickAgain": "Pick seats again",
-    "cvc": "CVC"
+    "cvc": "CVC",
+    "payWith": "Pay ৳{amount} with {name}",
+    "payCard": "Pay ৳{amount} by card",
+    "mobileRequired": "Enter your mobile number to get your ticket.",
+    "releaseNote": "Seats are released when the timer ends"
   },
   "ticket": {
     "showQr": "Show this QR at the hall entrance. A copy was sent to {phone}.",

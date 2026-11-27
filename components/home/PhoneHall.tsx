@@ -43,9 +43,11 @@ interface Props {
   onEnded?: () => void;
   videoRef?: MutableRefObject<HTMLVideoElement | null>;
   onReady?: () => void;
+  /** px to lift the still, so its screen sits just under the navbar (designer, Nov 27) */
+  shift?: number;
 }
 
-export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted = true, playing = true, brightness = 1, onEnded, videoRef, onReady }: Props) {
+export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted = true, playing = true, brightness = 1, onEnded, videoRef, onReady, shift = 0 }: Props) {
   const wrap = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const [width, setWidth] = useState(0);
@@ -98,7 +100,7 @@ export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted =
   const media = { position: "absolute" as const, width: vw, height: vh, left: (BOX.w - vw) / 2, top: (BOX.h - vh * c.height) / 2 - vh * c.top };
 
   return (
-    <div ref={wrap} className="absolute inset-x-0 top-0" style={{ aspectRatio: `${IMG.w} / ${IMG.h}` }} aria-hidden>
+    <div ref={wrap} className="absolute inset-x-0 top-0" style={{ aspectRatio: `${IMG.w} / ${IMG.h}`, top: -shift }} aria-hidden>
       {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size still, preloaded */}
       <img src={IMG.src} alt="" className="absolute inset-0 size-full" onLoad={onReady} fetchPriority="high" />
       {width > 0 && (

@@ -19,7 +19,7 @@ import {
   type PayMethod,
 } from "@/lib/booking";
 import { getBranch, getHall, getMovie, hallName } from "@/lib/data";
-import { formatTime, showDateLabel } from "@/lib/demo-date";
+import { dateLocale, formatTime, showDateLabel } from "@/lib/demo-date";
 import { seatPrice } from "@/lib/halls";
 import { useT } from "@/lib/i18n";
 import type { SeatClass, Showtime } from "@/lib/types";
@@ -63,6 +63,20 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [email, setEmail] = useState("");
   const [method, setMethod] = useState<PayMethod>("bkash");
+  // phones: the payment method is a dropdown (bKash by default) instead of three cards (designer, Nov 27)
+  const [payOpen, setPayOpen] = useState(false);
+  const paySel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!payOpen) return;
+    const off = (e: PointerEvent) => !paySel.current?.contains(e.target as Node) && setPayOpen(false);
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setPayOpen(false);
+    document.addEventListener("pointerdown", off);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", off);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [payOpen]);
   const [card, setCard] = useState({ number: "", exp: "", cvc: "" });
   const [stage, setStage] = useState<"idle" | "paying" | "done">("idle");
   const [failed, setFailed] = useState(false);
@@ -70,6 +84,8 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
   const [view, setView] = useState<string | null>(null);
   const [sheet, setSheet] = useState(false); // phones: the summary as a bottom sheet (§9.6 Mobile)
   const altRef = useRef(false);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const cardRef = useRef<HTMLInputElement>(null);
 
   // the seat hold: 10:00 from landing on checkout (kept across a refresh)
   useEffect(() => {
@@ -95,6 +111,12 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
   const pay = () => {
     if (!canPay) {
       setPhoneTouched(true);
+      // take the user to the first thing still missing
+      const target = !phoneOk ? phoneRef.current : !cardOk ? cardRef.current : null;
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.focus({ preventScroll: true });
+      }
       return;
     }
     const fail = altRef.current || phone.endsWith("0000");
@@ -129,26 +151,28 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
     }, method === "card" ? 1800 : 1600);
   };
 
+  const m = METHODS.find((x) => x.id === method)!;
   const mm = left === null ? "10:00" : `${String(Math.floor(left / 60)).padStart(2, "0")}:${String(left % 60).padStart(2, "0")}`;
   const title = (lang === "bn" && movie.titleBn) || movie.title;
-  const when = `${showDateLabel(show.date, t, lang)}, ${formatTime(show.time)}`;
-  const m = METHODS.find((x) => x.id === method)!;
+  // always show the real date, e.g. "Today · Fri 27 Nov, 9:30 PM" (tickets get checked later)
+  const dayLabel = showDateLabel(show.date, t, lang);
+  const fullDate = new Date(`${show.date}T00:00:00`).toLocaleDateString(dateLocale(lang), { weekday: "short", day: "numeric", month: "short" });
+  const when = `${dayLabel === fullDate ? fullDate : `${dayLabel} · ${fullDate}`}, ${formatTime(show.time)}`;
+  // seat hold: amber from 5:00, red under 2:00 (with the release note)
+  const holdTone = left === null || left > 300 ? "calm" : left > 120 ? "warn" : "urgent";
+  const payLabel = method === "card"
+    ? t("checkout.payCard", { amount: total.toLocaleString("en-US") })
+    : t("checkout.payWith", { amount: total.toLocaleString("en-US"), name: m.name });
   const back = `/book/seats/${show.id}?seats=${seatIds.join(",")}`;
 
   return (
     <div className="theme-light checkout-in min-h-[100svh]">
       <Navbar />
-      <main className="mx-auto grid max-w-[1120px] gap-12 px-5 pt-[96px] pb-32 md:px-8 md:pt-[136px] md:pb-24 lg:grid-cols-[1fr_420px]">
+      <main className="mx-auto grid max-w-[1120px] gap-12 px-5 pt-[124px] pb-32 md:px-8 lg:pt-[168px] md:pb-24 lg:grid-cols-[1fr_420px]">
         {/* left: details + payment */}
         <div>
-          <Link href={back} className="focus-ring inline-flex items-center gap-2 text-[14px] text-ink/65 hover:text-ink">
-            <Icon name="arrowLeft" size={18} />
-            {t("checkout.changeSeats")}
-          </Link>
-          <div className="mt-4">
-            <Stepper step={3} tone="light" />
-          </div>
-          <h1 className="display-m mt-8">{t("checkout.title")}</h1>
+          <Stepper step={3} tone="light" className="max-lg:justify-center" />
+          <h1 className="display-m mt-8 max-md:mt-5">{t("checkout.title")}</h1>
 
           {failed && (
             <div role="alert" className="mt-8 flex gap-3 rounded-card-sm border border-[#e5484d]/30 bg-[#e5484d]/8 p-4 text-[15px]">
@@ -160,17 +184,19 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
             </div>
           )}
 
-          <section className="mt-10" aria-labelledby="details-h">
+          <section className="mt-10 max-md:mt-5" aria-labelledby="details-h">
             <h2 id="details-h" className="text-[20px] font-semibold">
-              <span className="mr-2 font-mono text-[14px] text-purple">01</span>
               {t("checkout.yourDetails")}
             </h2>
             <label className="mt-5 block">
-              <span className="text-[14px] font-medium">{t("checkout.mobile")}</span>
+              <span className="text-[14px] font-medium">{t("checkout.mobile")}<span aria-hidden className="ml-0.5 text-[#b42f34]">*</span></span>
               <span className={`field mt-2 flex items-center ${phoneTouched && !phoneOk ? "is-invalid" : ""}`}>
                 <span className="border-r border-ink/10 pr-3 font-medium text-ink/65 tabular-nums">+880</span>
                 <input
-                  inputMode="numeric"
+                  ref={phoneRef}
+                  type="tel"
+                  required
+                  inputMode="tel"
                   autoComplete="tel-national"
                   placeholder="1712-345678"
                   value={formatPhone(phone)}
@@ -189,25 +215,73 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                 {phoneOk && <Icon name="checkCircleDuo" size={20} className="text-[#237a51]" />}
               </span>
               <span id="phone-help" className={`mt-2 block text-[13px] ${phoneTouched && !phoneOk ? "text-[#b42f34]" : "text-ink/65"}`}>
-                {phoneTouched && !phoneOk ? t("checkout.mobileInvalid") : t("checkout.mobileHelp")}
+                {phoneTouched && !phoneOk ? (phone ? t("checkout.mobileInvalid") : t("checkout.mobileRequired")) : t("checkout.mobileHelp")}
               </span>
             </label>
             <label className="mt-5 block">
-              <span className="text-[14px] font-medium">
-                {t("checkout.email")} <span className="font-normal text-ink/65">· {t("checkout.optional")}</span>
-              </span>
+              <span className="text-[14px] font-medium">{t("checkout.email")}</span>
               <span className="field mt-2 flex items-center">
                 <input type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" />
               </span>
             </label>
           </section>
 
-          <section className="mt-12" aria-labelledby="pay-h">
+          <section className="mt-12 max-md:mt-6" aria-labelledby="pay-h">
             <h2 id="pay-h" className="text-[20px] font-semibold">
-              <span className="mr-2 font-mono text-[14px] text-purple">02</span>
               {t("checkout.payment")}
             </h2>
-            <div role="radiogroup" aria-labelledby="pay-h" className="mt-5 grid grid-cols-3 gap-2 md:gap-3">
+            <div ref={paySel} className="pay-select mt-4 md:hidden">
+              <button type="button" className="pay-select__trigger focus-ring" aria-haspopup="listbox" aria-expanded={payOpen} aria-labelledby="pay-h" onClick={() => setPayOpen((o) => !o)}>
+                <PayMark id={method} />
+                <span className="font-semibold">{method === "card" ? t("checkout.card") : METHODS.find((x) => x.id === method)!.name}</span>
+                <Icon name="chevronDown" size={18} className={`ml-auto text-ink/60 transition-transform ${payOpen ? "rotate-180" : ""}`} />
+              </button>
+              {payOpen && (
+                <ul
+                  role="listbox"
+                  aria-labelledby="pay-h"
+                  className="pay-select__list"
+                  onKeyDown={(e) => {
+                    const opts = [...e.currentTarget.querySelectorAll<HTMLElement>('[role="option"]')];
+                    const i = opts.indexOf(document.activeElement as HTMLElement);
+                    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                      e.preventDefault();
+                      opts[(i + (e.key === "ArrowDown" ? 1 : opts.length - 1)) % opts.length]?.focus();
+                    }
+                  }}
+                >
+                  {METHODS.map((x) => (
+                    <li
+                      key={x.id}
+                      id={`pay-opt-${x.id}`}
+                      role="option"
+                      aria-selected={method === x.id}
+                      tabIndex={method === x.id ? 0 : -1}
+                      ref={(el) => {
+                        if (el && method === x.id && document.activeElement?.closest(".pay-select")) el.focus();
+                      }}
+                      className="pay-select__option focus-ring"
+                      onClick={() => {
+                        setMethod(x.id);
+                        setPayOpen(false);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setMethod(x.id);
+                          setPayOpen(false);
+                        }
+                      }}
+                    >
+                      <PayMark id={x.id} />
+                      <span className="font-medium">{x.id === "card" ? t("checkout.card") : x.name}</span>
+                      {method === x.id && <Icon name="check" size={18} className="ml-auto text-purple" />}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div role="radiogroup" aria-labelledby="pay-h" className="mt-5 grid grid-cols-3 gap-2 max-md:hidden md:gap-3">
               {METHODS.map((x) => (
                 <button
                   key={x.id}
@@ -216,12 +290,14 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                   aria-checked={method === x.id}
                   onClick={() => setMethod(x.id)}
                   className={`pay-card focus-ring ${method === x.id ? "is-on" : ""}`}
-                  style={{ ["--brand" as string]: x.color }}
                 >
                   {x.id === "card" ? (
                     <>
-                      <span className="pay-card__logo">
-                        <Icon name="cardDuo" size={30} className="text-purple" />
+                      <span className="pay-card__logo gap-2" aria-label="Visa, Mastercard">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/payments/visa.svg" alt="" className="h-[14px] w-auto" />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/payments/mastercard.svg" alt="" className="h-[26px] w-auto" />
                       </span>
                       <span className="text-[16px] font-semibold">{t("checkout.card")}</span>
                     </>
@@ -246,9 +322,10 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                   {t("checkout.demoCard")}
                 </p>
                 <label className="mt-4 block">
-                  <span className="text-[14px] font-medium">{t("checkout.cardNumber")}</span>
+                  <span className="text-[14px] font-medium">{t("checkout.cardNumber")}<span aria-hidden className="ml-0.5 text-[#b42f34]">*</span></span>
                   <span className="field mt-2 flex">
                     <input
+                      ref={cardRef}
                       inputMode="numeric"
                       autoComplete="off"
                       placeholder="4242 4242 4242 4242"
@@ -260,7 +337,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                 </label>
                 <div className="mt-4 grid grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-[14px] font-medium">{t("checkout.expiry")}</span>
+                    <span className="text-[14px] font-medium">{t("checkout.expiry")}<span aria-hidden className="ml-0.5 text-[#b42f34]">*</span></span>
                     <span className="field mt-2 flex">
                       <input
                         inputMode="numeric"
@@ -273,7 +350,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                     </span>
                   </label>
                   <label className="block">
-                    <span className="text-[14px] font-medium">{t("checkout.cvc")}</span>
+                    <span className="text-[14px] font-medium">{t("checkout.cvc")}<span aria-hidden className="ml-0.5 text-[#b42f34]">*</span></span>
                     <span className="field mt-2 flex">
                       <input inputMode="numeric" autoComplete="off" placeholder="123" value={card.cvc} onChange={(e) => setCard({ ...card, cvc: e.target.value.replace(/\D/g, "").slice(0, 4) })} className="min-w-0 flex-1 bg-transparent tabular-nums outline-none" />
                     </span>
@@ -289,11 +366,19 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
         {/* right: the ticket summary */}
         <aside className={`lg:sticky lg:top-[124px] lg:self-start ${sheet ? "max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-40 max-md:max-h-[88svh] max-md:overflow-y-auto max-md:px-3 max-md:pt-3 max-md:pb-[88px]" : "max-md:hidden"}`} id="checkout-summary">
           <div className="ticket-card">
-            <div className="p-6">
-              <p className={`flex items-center gap-2 text-[14px] font-medium ${left !== null && left <= 120 ? "text-[#8f5d12]" : "text-ink/70"}`} aria-live="off">
-                <Icon name="stopwatch" size={18} />
-                {t("checkout.held")} <span className="font-mono font-semibold tabular-nums">{mm}</span>
-              </p>
+            <div className="ticket-card__top p-6">
+              <div className={`hold hold--${holdTone}`}>
+                <p className="flex items-center gap-2 text-[15px] font-semibold" aria-live="off">
+                  <Icon name="stopwatch" size={20} />
+                  {t("checkout.held")} <span className="font-mono tabular-nums">{mm}</span>
+                </p>
+                {holdTone === "urgent" && (
+                  <p className="mt-1 flex items-center gap-1.5 text-[13px]" role="status">
+                    <Icon name="info" size={14} />
+                    {t("checkout.releaseNote")}
+                  </p>
+                )}
+              </div>
               <div className="mt-5 flex gap-4">
                 <Image src={movie.poster} alt="" width={72} height={108} className="h-[108px] w-[72px] shrink-0 rounded-[10px] object-cover shadow-md" />
                 <div className="min-w-0">
@@ -311,20 +396,25 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                 </figure>
               )}
             </div>
-            <div className="ticket-card__tear" aria-hidden />
-            <div className="p-6">
-              <div className="flex flex-wrap gap-2">
-                {seatIds.map((s) => (
-                  <span key={s} className="rounded-pill bg-purple/10 px-3 py-1 font-mono text-[13px] font-semibold text-purple">
-                    {s}
-                  </span>
-                ))}
+            <div className="ticket-card__bottom p-6">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {seatIds.map((s) => (
+                    <span key={s} className="rounded-pill bg-purple/10 px-3 py-1 font-mono text-[13px] font-semibold text-purple">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+                <Link href={back} className="focus-ring shrink-0 rounded-[6px] text-[14px] font-medium text-purple underline-offset-4 hover:underline">
+                  {t("checkout.changeSeats")}
+                </Link>
               </div>
               <dl className="mt-4 space-y-2 text-[14px]">
                 {lines.map(([cls, l]) => (
                   <div key={cls} className="flex justify-between">
                     <dt className="text-ink/70">
-                      {l.n} × {t(CLASS_KEY[cls])} <span className="tabular-nums">৳{l.price}</span>
+                      {t(CLASS_KEY[cls])} ·{" "}
+                      {l.n === 1 ? t("booking.ticketOne", { n: 1 }) : <span className="tabular-nums">{l.n} × ৳{l.price.toLocaleString("en-US")}</span>}
                     </dt>
                     <dd className="tabular-nums">৳{(l.n * l.price).toLocaleString("en-US")}</dd>
                   </div>
@@ -334,17 +424,20 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                   <dd className="text-[24px] font-semibold tabular-nums">৳{total.toLocaleString("en-US")}</dd>
                 </div>
               </dl>
+              {/* phones: the summary sheet has no Pay button — the bottom bar has it (designer, Nov 27) */}
+              <div className="max-md:hidden">
               <Button
-                size="lg"
-                className="mt-5 w-full"
-                disabled={expired || stage !== "idle"}
-                onClick={(e) => {
-                  altRef.current = e.altKey;
-                  pay();
-                }}
-              >
-                {t("checkout.pay", { amount: total.toLocaleString("en-US") })}
-              </Button>
+                  size="lg"
+                  className="mt-5 w-full"
+                  disabled={expired || stage !== "idle"}
+                  onClick={(e) => {
+                    altRef.current = e.altKey;
+                    pay();
+                  }}
+                >
+                  {payLabel}
+                </Button>
+              </div>
               <p className="mt-3 text-center text-[12px] text-ink/65">{t("checkout.noFee")}</p>
             </div>
           </div>
@@ -355,7 +448,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
       {sheet && <div aria-hidden className="fixed inset-0 z-30 bg-black/40 md:hidden" onClick={() => setSheet(false)} />}
       <div className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3 border-t border-ink/10 bg-white/95 px-4 py-3 backdrop-blur-md md:hidden">
         <button type="button" onClick={() => setSheet((v) => !v)} aria-expanded={sheet} aria-controls="checkout-summary" className="focus-ring flex min-w-0 flex-1 flex-col items-start rounded-[8px] text-left">
-          <span className={`flex items-center gap-1 text-[12px] ${left !== null && left <= 120 ? "text-[#8f5d12]" : "text-ink/65"}`}>
+          <span className={`flex items-center gap-1 text-[12px] ${holdTone === "urgent" ? "font-semibold text-[#b42f34]" : holdTone === "warn" ? "font-semibold text-[#8f5d12]" : "text-ink/65"}`}>
             {seatIds.length} {t("ticket.seats").toLowerCase()} · <span className="font-mono tabular-nums">{mm}</span>
             <Icon name="altArrowUp" size={14} className={`transition-transform ${sheet ? "rotate-180" : ""}`} />
           </span>
@@ -370,7 +463,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
             pay();
           }}
         >
-          {t("checkout.pay", { amount: total.toLocaleString("en-US") })}
+          {payLabel}
         </Button>
       </div>
 
@@ -407,5 +500,24 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
         </div>
       )}
     </div>
+  );
+}
+
+/** a payment method's logo, small (phone dropdown) */
+function PayMark({ id }: { id: PayMethod }) {
+  return (
+    <span className="flex h-6 w-[64px] shrink-0 items-center gap-1.5">
+      {id === "card" ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/payments/visa.svg" alt="" className="h-[11px] w-auto" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/payments/mastercard.svg" alt="" className="h-[20px] w-auto" />
+        </>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={`/payments/${id}.svg`} alt="" className="h-6 w-auto" />
+      )}
+    </span>
   );
 }

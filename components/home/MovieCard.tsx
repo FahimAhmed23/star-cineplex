@@ -34,7 +34,7 @@ export function MovieCard({ movie, variant, onPlayTrailer, priority, inert }: Pr
   const posterRef = useRef<HTMLDivElement>(null);
   const title = (lang === "bn" && movie.titleBn) || movie.title;
   const runtime = movie.runtimeMin ? t("hero.minutes", { h: Math.floor(movie.runtimeMin / 60), m: movie.runtimeMin % 60 }) : null;
-  const isTouch = () => typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+  const isTouch = () => typeof window !== "undefined" && window.matchMedia("(hover: none) and (min-width: 1024px)").matches;
 
   const playTrailer = () => posterRef.current && onPlayTrailer(movie, posterRef.current);
 

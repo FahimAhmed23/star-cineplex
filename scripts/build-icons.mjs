@@ -60,6 +60,10 @@ export const ICONS = {
   plus: "add-circle-linear",
   widget: "widget-linear",
   check: "check-linear",
+  // phone seat map zoom (Nov 27)
+  zoomIn: "magnifier-zoom-in-linear",
+  zoomOut: "magnifier-zoom-out-linear",
+  fit: "maximize-linear",
 };
 
 const names = Object.values(ICONS);

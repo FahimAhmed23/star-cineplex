@@ -10,7 +10,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 (Phase 0: redirects to `/styleguide`).
+Open http://localhost:3000. The full flow is built (Phases 0–9): home → `/book` → seats → checkout → ticket, desktop and mobile.
 
 ## Scripts
 
@@ -26,6 +26,8 @@ Open http://localhost:3000 (Phase 0: redirects to `/styleguide`).
 | `npm run models:blender` | Builds the seat / silhouette / door models headless in Blender 5.3 (`tools/blender/*.py`) |
 | `npm run models` | Packs + meshopt-compresses them into `/public/models` (one merged mesh per seat type) |
 
-Test pages: `/styleguide` (Phase 0 tokens) · `/dev/hall` (Phase 1 hall engine: halls, camera presets, FPS).
+Test pages: `/styleguide` (design tokens) · `/dev/hall` (3D hall engine: halls, camera presets, FPS) · `/dev/capture` (re-render the phone/branch stills).
+
+Demo controls: a mobile number ending in `0000` (or Alt-click on Pay) makes the payment fail; `&hold=20` on the checkout URL shortens the seat hold to 20 seconds.
 
 Icons: Solar by 480 Design (CC BY 4.0). Fonts: Fraunces, Outfit, Anek Bangla, IBM Plex Mono (SIL OFL).

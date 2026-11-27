@@ -140,15 +140,15 @@ export function Navbar({ revealWithIntro = false }: Props) {
       {/* the glow (designer, Nov 26): a band of light under the whole navbar, left to right, brightest in the middle */}
       <span aria-hidden className="nav-glow-band" />
       {tab && <GlowOutline {...tab} />}
-      {/* top strip — hidden on phones */}
-      <div className="nav-bg relative z-[1] hidden h-10 items-center justify-between px-6 text-[16px] text-muted md:flex">
+      {/* top strip — on every screen; below 1100px just the number and the language (designer, Nov 27) */}
+      <div className="nav-strip nav-bg relative z-[1] flex h-8 items-center justify-between px-6 text-[12px] lg:h-10 text-muted max-md:px-5 min-[1100px]:text-[14px]">
         <a href={`tel:${PHONE}`} className="focus-ring flex items-center gap-2 hover:text-white" aria-label={`${t("nav.call")} ${PHONE}`}>
-          <span>{t("nav.customerService")}</span>
+          <span className="hidden min-[1100px]:inline">{t("nav.customerService")}</span>
           <Icon name="phone" size={18} />
           <span className="tabular-nums">{PHONE}</span>
         </a>
-        <div className="hidden items-center gap-6 min-[1100px]:flex">
-          <button type="button" onClick={openTickets} className="focus-ring flex items-center gap-2 hover:text-white">
+        <div className="flex items-center gap-5 min-[1100px]:gap-6">
+          <button type="button" onClick={openTickets} className="focus-ring hidden items-center gap-2 hover:text-white min-[1100px]:flex">
             <Icon name="ticket" size={18} />
             {t("nav.myTickets")}
           </button>
@@ -160,15 +160,18 @@ export function Navbar({ revealWithIntro = false }: Props) {
       <nav
         ref={tabRef}
         aria-label={t("nav.mainNav")}
-        className={`nav-tab nav-bg relative z-[1] mx-auto flex h-[60px] w-fit items-center gap-7 rounded-b-[14px] px-5 transition-shadow duration-300 md:h-[68px] ${scrolled ? "shadow-[0_12px_30px_-12px_rgba(0,0,0,.7)]" : ""}`}
+        className={`nav-tab nav-bg relative z-[1] mx-auto flex h-[52px] w-fit items-center gap-7 rounded-b-[14px] px-5 transition-shadow duration-300 lg:h-[68px] ${scrolled ? "shadow-[0_12px_30px_-12px_rgba(0,0,0,.7)]" : ""}`}
       >
         <Link href="/" className="focus-ring shrink-0 min-[1100px]:mr-8" /* 60px to the links (designer) */ aria-label={t("nav.home")} onClick={(e) => { if (pathname === "/") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); } }}>
-          <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-8 w-auto md:h-10" priority />
+          <Image src="/brand/logo-white.png" alt="Star Cineplex" width={1200} height={499} className="h-8 w-auto lg:h-10" priority />
         </Link>
         <div className="hidden items-center gap-7 min-[1100px]:flex">{links}</div>
-        <ButtonLink href="/book" variant="white" size="xs" icon="ticket" className="shrink-0 min-[1100px]:ml-8" /* 60px from the links */>
-          {t("common.buyTickets")}
-        </ButtonLink>
+        {/* below 1024px Buy Tickets lives in the menu (designer, Nov 27) */}
+        <span className="shrink-0 max-lg:hidden min-[1100px]:ml-8" /* 60px from the links */>
+          <ButtonLink href="/book" variant="white" size="xs" icon="ticket">
+            {t("common.buyTickets")}
+          </ButtonLink>
+        </span>
         <button
           type="button"
           className="focus-ring -mr-1 grid size-9 place-items-center rounded-pill text-muted hover:text-white min-[1100px]:hidden"
@@ -185,21 +188,19 @@ export function Navbar({ revealWithIntro = false }: Props) {
 
       {/* collapsed menu (< 1100px): all links, My tickets, language, phone */}
       {menuOpen && (
-        <div id="nav-menu" className="glass mx-auto mt-3 w-[min(92vw,420px)] rounded-card-md border border-white/10 p-6 min-[1100px]:hidden">
-          <div className="flex flex-col items-start gap-4 [&_.nav-link]:text-[16px]">{links}</div>
-          <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5 text-[13px] text-muted">
+        <div id="nav-menu" className="mx-5 mt-3 rounded-card-md border border-white/10 bg-night p-6 text-center min-[1100px]:hidden">
+          <div className="flex flex-col items-center gap-4">{links}</div>
+          <ButtonLink href="/book" variant="white" icon="ticket" className="mt-6 w-full justify-center" onClick={() => setMenuOpen(false)}>
+            {t("common.buyTickets")}
+          </ButtonLink>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-white/10 pt-5 text-[13px] text-muted">
             <button type="button" onClick={() => { setMenuOpen(false); openTickets(); }} className="focus-ring flex items-center gap-1.5 hover:text-white">
               <Icon name="ticket" size={16} />
               {t("nav.myTickets")}
             </button>
             <SoundToggle />
-            <LangToggle />
           </div>
-          <a href={`tel:${PHONE}`} className="focus-ring mt-4 flex items-center gap-1.5 text-[13px] text-muted hover:text-white">
-            {t("nav.customerService")}
-            <Icon name="phone" size={16} />
-            {PHONE}
-          </a>
+          {/* the number and EN / বাংলা are in the strip above the tab below 1100px, so the menu doesn't repeat them */}
         </div>
       )}
     </header>
@@ -212,8 +213,8 @@ export function Navbar({ revealWithIntro = false }: Props) {
  * left and right edges, with a soft blurred copy for the glow. Desktop only (phones have no strip).
  */
 function GlowOutline({ w, l, r, h }: { w: number; l: number; r: number; h: number }) {
-  const S = 40; // top strip height
   const R = 14; // flare and corner radius
+  const S = w < 1024 ? 32 : 40; // top strip height (compact below 1024px, designer Nov 27)
   const B = S + h; // tab bottom
   const d = [
     `M0 ${S}`,
