@@ -877,6 +877,8 @@ Seat models: converted from the designer's Tripo models (`scripts/convert-tripo-
 1. **Your details:** mobile number only (`+880` prefix, Bangladeshi format validated as they type), used to send
    the e-ticket by SMS. Optional email field below it.
 2. **Payment method:** three large selectable cards: **bKash · Nagad · Card** (logos + name). **bKash pre-selected.**
+   The wallet cards show the real bKash and Nagad logos (`/public/payments/*.svg`, from logotyp.us, trimmed to logo +
+   wordmark); the same logo sits above the spinner on the mock "Connecting to …" screen (§9.7).
 
 **Mobile:** the ticket summary collapses into a sticky bottom bar (total + Pay button); tapping it expands the full summary.
 

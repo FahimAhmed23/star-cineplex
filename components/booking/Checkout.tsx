@@ -219,13 +219,22 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                   style={{ ["--brand" as string]: x.color }}
                 >
                   {x.id === "card" ? (
-                    <Icon name="cardDuo" size={30} className="text-purple" />
+                    <>
+                      <span className="pay-card__logo">
+                        <Icon name="cardDuo" size={30} className="text-purple" />
+                      </span>
+                      <span className="text-[16px] font-semibold">{t("checkout.card")}</span>
+                    </>
                   ) : (
-                    <span className="pay-card__mark" aria-hidden>
-                      {x.name[0].toLowerCase()}
-                    </span>
+                    <>
+                      {/* the wallets' own logos (logo + wordmark), so the name is for screen readers only */}
+                      <span className="pay-card__logo">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={`/payments/${x.id}.svg`} alt="" className="h-full w-auto" />
+                      </span>
+                      <span className="sr-only">{x.name}</span>
+                    </>
                   )}
-                  <span className="text-[16px] font-semibold">{x.id === "card" ? t("checkout.card") : x.name}</span>
                   <span className="pay-card__radio" aria-hidden />
                 </button>
               ))}
@@ -370,6 +379,10 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
       {stage !== "idle" && (
         <div className="pay-overlay" role="status" aria-live="polite" style={{ ["--brand" as string]: m.color }}>
           <div className="text-center">
+            {stage === "paying" && method !== "card" && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={`/payments/${method}.svg`} alt={m.name} className="mx-auto mb-6 h-12 w-auto" />
+            )}
             {stage === "paying" ? <span className="pay-spinner" aria-hidden /> : <Icon name="checkCircleDuo" size={56} className="mx-auto text-[#237a51]" />}
             <p className="mt-6 text-[20px] font-semibold">
               {stage === "done" ? t("checkout.paid") : method === "card" ? t("checkout.processing") : t("checkout.connecting", { name: m.name })}
