@@ -233,8 +233,16 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     } catch {}
   };
+  // hover (mouse only): light up where your block would land if you clicked here (Nov 27)
+  const [hover, setHover] = useState<string[] | null>(null);
+  const hoverSet = useMemo(() => new Set(hover ?? []), [hover]);
   const onMove = (e: React.PointerEvent) => {
     const d = downAt.current;
+    if (!d && e.pointerType === "mouse" && stage === "map") {
+      const s = nearest({ x: e.clientX, y: e.clientY });
+      const next = s && !booked.has(s.id) && !sorted.includes(s.id) ? groupAround(layout.seats, booked, s, count) : null;
+      setHover((h) => (h?.join() === next?.join() ? h : next));
+    }
     if (!d || !d.onGroup) return;
     const p = { x: e.clientX, y: e.clientY };
     if (drag || Math.hypot(p.x - d.x, p.y - d.y) > 4) {
@@ -362,8 +370,12 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           tabIndex={0}
           aria-label={t("booking.mapLabel")}
           aria-describedby="seatmap-help"
-          onPointerDown={onDown}
+          onPointerDown={(e) => {
+            setHover(null);
+            onDown(e);
+          }}
           onPointerMove={onMove}
+          onPointerLeave={() => setHover(null)}
           onPointerUp={onUp}
           onPointerCancel={() => {
             downAt.current = null;
@@ -371,7 +383,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             setGhost(null);
           }}
           onKeyDown={onKey}
-          className={`seatmap focus-ring absolute inset-0 touch-none ${drag ? "is-dragging" : ""}`}
+          className={`seatmap focus-ring absolute inset-0 touch-none ${drag ? "is-dragging" : hover ? "is-pointing" : ""}`}
           style={{
             opacity: mapVisible ? 1 : 0,
             transition: `opacity ${mapVisible ? 300 : 350}ms ease ${stage === "toHall" ? 300 : 0}ms`,
@@ -422,7 +434,14 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           {/* seats */}
           {layout.seats.map((s) => {
             const q = td.seats.get(s.id)!;
-            return <span key={s.id} aria-hidden className={`seat-g ${booked.has(s.id) ? "seat-g--taken" : `seat-g--free seat-g--${s.class}`}`} style={{ left: q.x, top: q.y }} />;
+            return (
+              <span
+                key={s.id}
+                aria-hidden
+                className={`seat-g ${booked.has(s.id) ? "seat-g--taken" : `seat-g--free seat-g--${s.class}`} ${hoverSet.has(s.id) && !drag ? "is-hover" : ""}`}
+                style={{ left: q.x, top: q.y }}
+              />
+            );
           })}
           {/* ghost: where the block will land */}
           {ghost?.map((id) => {

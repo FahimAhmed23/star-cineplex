@@ -120,7 +120,8 @@ themes). The **UI stays in the Star purple brand** everywhere (popups, chips, bu
   (regular / semi-recliner / recliner / lounger) and named in the popup.
 - **2D map** (UI, same for every branch; restyled Nov 27): rounded-square seats with a small armrest bar under
   each. **Free = outlined** (white 34%; Semi-Recliner and VIP outlined in `--purple-light`), **Booked = filled grey**
-  `#2C2931`, **Yours = gold `#F5B72E` with the seat number**. The screen is a glowing arc ("Screen" above it) with a
+  `#2C2931`, **Yours = gold `#F5B72E` with the seat number**. **Hover** (mouse): the free seat(s) your block would
+  land on if you clicked light up in `--purple-light`, lift 2px and scale 1.08; the cursor becomes a pointer. The screen is a glowing arc ("Screen" above it) with a
   soft light falling over the front rows. Spacing: the header starts 60px under the navbar (as on step 1), and the
   "Screen" label sits 40px under the title / ticket row (Nov 27). Ticket count: a pill with two round filled −/+ buttons (40px).
 
