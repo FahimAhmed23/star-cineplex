@@ -372,7 +372,7 @@ like a tab connected to the top of the screen, with small utility items sitting 
 | My tickets | Top strip, right | Returning users only |
 | Sound toggle | **Removed from the top strip** (designer, Nov 26); still in the collapsed menu | Rarely needed |
 | EN / বাংলা | Top strip, far right | Set once |
-| Phone 09617660660 | Top strip, left | Rarely needed |
+| "Customer Service" · phone icon · 09617660660 | Top strip, left | Rarely needed (label added Nov 27) |
 | About | **Footer** (not in the navbar) | Not part of the booking journey |
 
 Note: the current site shows "Branches" twice (utility bar and main nav). Show it **once**, in the tab.
@@ -481,7 +481,9 @@ structure, move it into the 3D hall).
 - Right: a horizontally scrollable row of **ticket-shaped showtime chips**: `time | movie title | format badge`,
   with a dashed divider between time and title, and **semicircle notches cut out of the left and right edges**
   (like a ticket stub, as in the reference).
-- The next upcoming show is highlighted (purple fill); later shows are white chips with ink text.
+- Chips run in the **trailer carousel's order** (then by time). The chip of the film whose trailer is playing (its next
+  show) is highlighted (purple fill) and the row **glides sideways** to it whenever the trailer changes (designer, Nov 27);
+  other chips are white with ink text.
 - Hover: chip lifts 2px. Click: goes straight to seat selection for that show.
 
 ---

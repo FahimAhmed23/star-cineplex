@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { branches, getHall } from "@/lib/data";
 import { demoDateFor, formatTime, localIso, nowHhmm } from "@/lib/demo-date";
@@ -25,9 +25,22 @@ const DEFAULT_BRANCH = "bashundhara-city";
 
 /**
  * "Tonight at" (CLAUDE.md §8.2): branch dropdown + a row of ticket-stub showtime chips.
- * The next upcoming show is purple; a click goes straight to seat selection for that show.
+ * Chips run in the trailer carousel's order (then by time). The chip of the film whose trailer is playing is purple,
+ * and the row glides sideways to it whenever the trailer changes. A click goes straight to seat selection.
  */
-export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Record<string, { en: string; bn: string | null }> }) {
+export function TonightStrip({
+  shows,
+  titles,
+  order = [],
+  current,
+}: {
+  shows: ShowLite[];
+  titles: Record<string, { en: string; bn: string | null }>;
+  /** the trailer carousel's film order (slugs) */
+  order?: string[];
+  /** the film whose trailer is playing now */
+  current?: string;
+}) {
   const { t, lang } = useT();
   const [branch, setBranch] = useState(DEFAULT_BRANCH);
   const [today, setToday] = useState<{ date: string; now: string } | null>(null);
@@ -55,8 +68,25 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
     if (!today) return [];
     return shows
       .filter((s) => s.branch === branch && s.date === today.date && s.time >= today.now)
-      .sort((a, b) => a.time.localeCompare(b.time));
-  }, [shows, branch, today]);
+      .sort((a, b) => {
+        const ra = order.indexOf(a.movie), rb = order.indexOf(b.movie);
+        const oa = ra < 0 ? order.length : ra, ob = rb < 0 ? order.length : rb;
+        return oa - ob || a.time.localeCompare(b.time);
+      });
+  }, [shows, branch, today, order]);
+
+  // the active chip: the playing film's next show (no trailer info → the first chip)
+  const activeId = (current ? list.find((s) => s.movie === current) : list[0])?.id;
+
+  // glide the row (sideways only — the page never jumps) so the active chip sits at the start
+  const row = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const ul = row.current;
+    const li = activeId ? (ul?.querySelector(`[data-show="${activeId}"]`) as HTMLElement | null) : null;
+    if (!ul || !li) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    ul.scrollTo({ left: li.offsetLeft - ul.offsetLeft - (ul.firstElementChild as HTMLElement).offsetLeft, behavior: reduced ? "auto" : "smooth" });
+  }, [activeId]);
 
   // a chip goes straight to seat selection, through the cinema doors (§9.1, §9.4)
   const router = useRouter();
@@ -98,13 +128,19 @@ export function TonightStrip({ shows, titles }: { shows: ShowLite[]; titles: Rec
 
         <div className="relative min-w-0 flex-1">
           <ul
+            ref={row}
             aria-label={t("hero.tonightShows")}
             className="no-scrollbar flex snap-x items-center gap-3 overflow-x-auto py-2 pr-16 max-md:-mx-5 max-md:px-5 [mask-image:linear-gradient(to_right,#000_calc(100%-64px),transparent)] [&>li]:snap-start"
           >
             {today && list.length === 0 && <li className="text-[14px] text-muted">{t("hero.noShowsTonight")}</li>}
-            {list.map((s, i) => (
-              <li key={s.id} className="shrink-0">
-                <a href={`/book/seats/${s.id}`} onClick={enter(s)} className={`ticket-chip focus-ring ${i === 0 ? "ticket-chip--next" : ""}`}>
+            {list.map((s) => (
+              <li key={s.id} data-show={s.id} className="shrink-0">
+                <a
+                  href={`/book/seats/${s.id}`}
+                  onClick={enter(s)}
+                  aria-current={s.id === activeId ? "true" : undefined}
+                  className={`ticket-chip focus-ring ${s.id === activeId ? "ticket-chip--next" : ""}`}
+                >
                   <span className="ticket-chip__time">{formatTime(s.time)}</span>
                   <span className="ticket-chip__title">{title(s.movie)}</span>
                   <span className="ticket-chip__format">{s.format}</span>

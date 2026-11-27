@@ -143,6 +143,7 @@ export function Navbar({ revealWithIntro = false }: Props) {
       {/* top strip — hidden on phones */}
       <div className="nav-bg relative z-[1] hidden h-10 items-center justify-between px-6 text-[16px] text-muted md:flex">
         <a href={`tel:${PHONE}`} className="focus-ring flex items-center gap-2 hover:text-white" aria-label={`${t("nav.call")} ${PHONE}`}>
+          <span>{t("nav.customerService")}</span>
           <Icon name="phone" size={18} />
           <span className="tabular-nums">{PHONE}</span>
         </a>
@@ -195,6 +196,7 @@ export function Navbar({ revealWithIntro = false }: Props) {
             <LangToggle />
           </div>
           <a href={`tel:${PHONE}`} className="focus-ring mt-4 flex items-center gap-1.5 text-[13px] text-muted hover:text-white">
+            {t("nav.customerService")}
             <Icon name="phone" size={16} />
             {PHONE}
           </a>

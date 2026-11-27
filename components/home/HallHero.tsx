@@ -375,7 +375,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           animate={{ opacity: revealed ? 1 : 0, y: revealed ? 0 : 24 }}
           transition={{ duration: 0.6, delay: revealed ? 0.5 : 0, ease: [0.22, 1, 0.36, 1] }}
         >
-          <TonightStrip shows={tonight} titles={titles} />
+          <TonightStrip shows={tonight} titles={titles} order={movies.map((m) => m.slug)} current={movie.slug} />
         </motion.div>
       </div>
     </section>
