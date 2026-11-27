@@ -111,8 +111,13 @@ export function groupAround(seats: Seat[], taken: Set<string>, target: Seat, n: 
   const order = [...rows.values()].sort((a, b) => Math.abs(a[0].rowIndex - target.rowIndex) - Math.abs(b[0].rowIndex - target.rowIndex));
   for (const row of order) {
     if (Math.abs(row[0].rowIndex - target.rowIndex) > 1) break;
-    const runs = freeRuns(row, taken, n);
-    if (!runs.length) continue;
+    const all = freeRuns(row, taken, n);
+    if (!all.length) continue;
+    // the seat you pointed at is yours: when a run can include it, only those runs count (Nov 27 — before, the
+    // single-seat rule could slide the block off the seat you tapped, e.g. the middle of three; §9.5 says that rule
+    // is a suggestion, never a block — the hint in the bottom bar still offers the shift)
+    const withTarget = all.filter((run) => run.some((x) => x.id === target.id));
+    const runs = withTarget.length ? withTarget : all;
     const score = (run: Seat[]) => {
       const mid = (run[0].col + run[run.length - 1].col) / 2;
       return Math.abs(mid - target.col) + strandedCount(row, taken, new Set(run.map((s) => s.id))) * 1.5;
