@@ -122,8 +122,11 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
         </h1>
 
         {/* 1. Branch */}
-        {/* branch and date side by side (designer, Nov 27) */}
-        <div className="pick-card mx-auto flex w-fit max-w-full flex-wrap items-stretch justify-center max-md:flex-col">
+        {/* the branch/date card takes the width of the film row below it (designer, Nov 27): both sit in one grid
+            that is as wide as the wider of the two */}
+        <div className="mx-auto grid w-fit max-w-full">
+        {/* branch and date side by side */}
+        <div className="pick-card mx-2 grid grid-cols-[1fr_auto_1fr] max-md:grid-cols-1">
         <section aria-labelledby="pick-branch" className="px-10 py-7 max-md:px-6">
           <h2 id="pick-branch" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.branch")}
@@ -175,7 +178,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
             {t("booking.movie")}
           </h2>
           {days && dayMovies.length === 0 && <p className="text-[15px] text-muted">{t("booking.noShows")}</p>}
-          <div ref={moviesRow} className="no-scrollbar mx-auto flex w-fit max-w-full items-start gap-4 overflow-x-auto px-2 pt-2 pb-4">
+          <div ref={moviesRow} className="no-scrollbar flex items-start justify-[safe_center] gap-4 overflow-x-auto px-2 pt-2 pb-4">
             {dayMovies.map((m) => {
               const on = m.slug === chosen;
               return (
@@ -197,6 +200,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
           </div>
           {missing && <p className="text-[14px] text-muted">{t("booking.notPlaying", { movie: (lang === "bn" && missing.titleBn) || missing.title })}</p>}
         </section>
+        </div>
 
         {/* §9.3 slides in once everything is chosen */}
         <div ref={experience} className="scroll-mt-28">

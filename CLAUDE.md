@@ -732,9 +732,10 @@ Routes: `/book` (step 1) · `/book/seats/[showId]` (step 2) · `/book/checkout` 
 ### 9.2 Step 1a — Branch · Date · Movie (`/book`)
 Dark theme, one page, top to bottom, **everything centred** (designer, Nov 27); the stepper starts **60px below the
 navbar** (168px from the top on desktop):
-Section labels "Branch", "Date", "Movie": 24px, medium, white. **Branch and Date sit side by side in one card**
+Section labels "Branch", "Date", "Select Your Movie": 24px, medium, white. **Branch and Date sit side by side in one card**
 (a step lighter than the page, 1.5px purple border, a purple divider between them; labels and controls on the same
-lines); the demo note sits under the card.
+lines), **as wide as the film row below it** (edges line up with the first and last poster); the demo note sits
+under the card.
 1. **Branch:** the themed **dropdown** (same component as the hero's "Tonight at"), 360px. **Demo scope:** only
    Bashundhara City is bookable; the other 8 are listed but disabled with a "Soon" hint, plus the note
    "Demo: only Bashundhara City can be booked for now."
