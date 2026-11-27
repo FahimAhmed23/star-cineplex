@@ -122,8 +122,10 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
         </h1>
 
         {/* 1. Branch */}
-        <section aria-labelledby="pick-branch" className="mb-10">
-          <h2 id="pick-branch" className="mb-4 text-[14px] font-semibold text-muted">
+        {/* branch and date side by side (designer, Nov 27) */}
+        <div className="mb-12 flex flex-wrap items-start justify-center gap-x-16 gap-y-10">
+        <section aria-labelledby="pick-branch">
+          <h2 id="pick-branch" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.branch")}
           </h2>
           <Dropdown
@@ -144,8 +146,8 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
         </section>
 
         {/* 2. Date */}
-        <section aria-labelledby="pick-date" className="mb-10">
-          <h2 id="pick-date" className="mb-4 text-[14px] font-semibold text-muted">
+        <section aria-labelledby="pick-date">
+          <h2 id="pick-date" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.date")}
           </h2>
           <div className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto px-2 py-1">
@@ -163,10 +165,11 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
             ))}
           </div>
         </section>
+        </div>
 
         {/* 3. Movie */}
         <section aria-labelledby="pick-movie" className="mb-6">
-          <h2 id="pick-movie" className="mb-4 text-[14px] font-semibold text-muted">
+          <h2 id="pick-movie" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.movie")}
           </h2>
           {days && dayMovies.length === 0 && <p className="text-[15px] text-muted">{t("booking.noShows")}</p>}

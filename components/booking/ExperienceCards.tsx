@@ -94,7 +94,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                   <img src={`/seats/${g.type}.webp`} alt="" className="absolute inset-0 size-full object-cover" />
                 )}
                 {mounted && !phone && (
-                  <View className="absolute inset-0">
+                  <View className="absolute inset-x-2 top-2 bottom-0">
                     <Suspense fallback={null}>
                       <SeatTurntable model={MODEL[g.type]} color={color} leather={vip} hover={hover === g.type} rings={g.type === "atmos"} />
                     </Suspense>
@@ -108,7 +108,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                 <p className="mt-2 text-[14px] text-muted">{hallsLine(g)}</p>
                 <p className="mt-3 text-[16px] font-semibold text-white tabular-nums">{t("booking.priceRange", { min, max })}</p>
                 {g.type === "premium" && <p className="mt-1 text-[13px] text-purple-light">{t("booking.semiNote")}</p>}
-                <ul className="mt-5 flex flex-wrap gap-2" aria-label={t("booking.pickShowtime")}>
+                <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-3 px-1.5" aria-label={t("booking.pickShowtime")}>
                   {g.shows.map((s) => {
                     const cap = halls[s.hall].capacity;
                     const ratio = s.booked / cap;
@@ -117,10 +117,19 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                     const label = t(sold ? "booking.soldOut" : ratio > FILLING ? "booking.fillingFast" : "booking.available");
                     return (
                       <li key={s.id}>
-                        <button type="button" disabled={sold} onClick={() => pick(s)} className="show-chip focus-ring" aria-label={`${formatTime(s.time)} · ${hallName(halls[s.hall], lang)} · ${label}`}>
-                          <span className={`show-chip__dot show-chip__dot--${state}`} aria-hidden />
-                          <span className="tabular-nums">{formatTime(s.time)}</span>
-                          <span className="text-muted">· {hallName(halls[s.hall], lang)}</span>
+                        <button
+                          type="button"
+                          disabled={sold}
+                          onClick={() => pick(s)}
+                          className="ticket-chip ticket-chip--show focus-ring"
+                          aria-label={`${formatTime(s.time)} · ${hallName(halls[s.hall], lang)} · ${label}`}
+                          title={label}
+                        >
+                          <span className="ticket-chip__time flex items-center gap-2">
+                            <span className={`show-chip__dot show-chip__dot--${state}`} aria-hidden />
+                            {formatTime(s.time)}
+                          </span>
+                          <span className="ticket-chip__title">{hallName(halls[s.hall], lang)}</span>
                         </button>
                       </li>
                     );

@@ -732,6 +732,7 @@ Routes: `/book` (step 1) · `/book/seats/[showId]` (step 2) · `/book/checkout` 
 ### 9.2 Step 1a — Branch · Date · Movie (`/book`)
 Dark theme, one page, top to bottom, **everything centred** (designer, Nov 27); the stepper starts **60px below the
 navbar** (168px from the top on desktop):
+Section labels "Branch", "Date", "Movie": 24px, medium, white. **Branch and Date sit side by side in one row.**
 1. **Branch:** the themed **dropdown** (same component as the hero's "Tonight at"), 360px. **Demo scope:** only
    Bashundhara City is bookable; the other 8 are listed but disabled with a "Soon" hint, plus the note
    "Demo: only Bashundhara City can be booked for now."
@@ -759,8 +760,11 @@ Each card, top to bottom:
   On card hover the rotation speeds up slightly and the seat gets a purple rim light.
 - Hall type name (`display-s`, GC Movark 32px) + one line of details (halls, seat count, formats: 2D/3D/Atmos).
 - Price range (from the table above).
-- **Showtime chips** for this movie/date in that hall type: `7:30 PM · Hall 1`, with an availability dot:
-  green "Available", amber "Filling fast" (>70% booked), red "Sold out" (chip disabled).
+- **Showtime chips** for this movie/date in that hall type, as **ticket stubs** (designer, Nov 27 — same shape as the
+  hero's "Tonight at" chips, notches cut in the card's colour): `● 7:30 PM ┆ Hall 1`, white, purple on hover. The
+  availability dot: green "Available", amber "Filling fast" (>70% booked), red "Sold out" (chip disabled, struck through).
+- The turntable view is inset 8px from the card's top and sides so its square render area never covers the card's
+  rounded border.
 - Clicking a showtime chip → **§9.4 cinema doors**.
 
 Performance: render all 3 turntable seats with **one shared WebGL canvas** (drei `<View>`), not 3 canvases. Low-poly models.
