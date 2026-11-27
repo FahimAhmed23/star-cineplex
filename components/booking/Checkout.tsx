@@ -227,12 +227,11 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
                     </>
                   ) : (
                     <>
-                      {/* the wallets' own logos (logo + wordmark), so the name is for screen readers only */}
                       <span className="pay-card__logo">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={`/payments/${x.id}.svg`} alt="" className="h-full w-auto" />
                       </span>
-                      <span className="sr-only">{x.name}</span>
+                      <span className="text-[16px] font-semibold">{x.name}</span>
                     </>
                   )}
                   <span className="pay-card__radio" aria-hidden />

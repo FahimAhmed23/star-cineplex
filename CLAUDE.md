@@ -36,7 +36,7 @@ moment with the trailer playing on the screen — while keeping booking fast and
 | # | Screen | Status |
 |---|--------|--------|
 | 1 | **Home**: opening → 3D hall hero + "Tonight at" strip → Now Showing → Coming Soon → Moments → Branches film reel → Footer; plus the Trailer view | Spec'd (§7–8) |
-| 2 | **Showtimes**: branch, date, movie → "Choose your experience" (VIP / Premium / Atmos) | Spec'd (§9.2–9.3) |
+| 2 | **Showtimes**: branch, date, movie → "Choose your experience" (VIP / Premium) | Spec'd (§9.2–9.3) |
 | 3 | **3D seat selection**: cinema doors → overview → hover popup → view from seat; 2D toggle; best available | Spec'd (§9.4–9.5) |
 | 4 | **Checkout & ticket**: 10-min seat hold, phone number, bKash/Nagad/card (mock), QR ticket | Spec'd (§9.6–9.8) |
 
@@ -273,7 +273,6 @@ Shimanto Tower (Narayanganj) · SKS Tower (Mohakhali) · Sony Square (Mirpur).
 | Premium (Halls 1–3) | 400 | 550 | 550 |
 | Semi-Recliner (Halls 1–3) | 500 | 650 | 650 |
 | VIP (Hall 5) | 650 | 850 | 850 |
-| Premium (Hall 6 Atmos) | 600 | 750 | 750 |
 
 **Price time bands** (which column of the price table applies to a show):
 - **Weekend & holidays:** Friday and Saturday (Bangladesh weekend) + public holidays → weekend price.
@@ -321,7 +320,7 @@ The look is defined **per branch**: every hall of a branch inherits it. Store it
 | **Shimanto Tower** | Red fabric `#D7262B` | Red | **Red LED** wall columns | Red/grey chevrons | `shimanto-tower-narayanganj.jpg` |
 
 Hex values are approximations sampled from the photos; tune them visually against the references.
-**For the build, only Bashundhara City is modelled in detail** (Halls 1–3, 5, 6); other branches use their theme
+**For the build, only Bashundhara City is modelled in detail** (Halls 1–3 and 5); other branches use their theme
 on the same hall engine.
 
 **Bashundhara Hall 1** (Premium, 248 seats — Halls 2 and 3 use the same layout). `numbering: ltr`, `pad: 2`, grid 24 columns:
@@ -341,10 +340,9 @@ on the same hall engine.
 | H | VIP | `.SSSS....SSSS..SS` | 1 | 10 |
 | J (back row) | VIP | `SSSS......SSSSSSS` | 1 | 11 |
 
-**Bashundhara Hall 6 Atmos** (231 seats) — **approximate until the real seat map is supplied.** Known row counts
-(front → back): A–F 17 each · G–L 20 each · M 13 · N 16. Until then use Hall 1's style: rows of 17 use the
-`.....SSSSSSSSSSSSS..SSSS` pattern (start 4), rows of 20 use the full pattern; M and N: centre the seats in the
-24-column grid with one centre gap. Mark this hall as `"approx": true` in the data.
+**No Atmos hall at Bashundhara** (designer, Nov 27): Star Cineplex's Dolby Atmos auditorium is at Shimanto Shambhar
+(one of its three halls), so Bashundhara has Premium Halls 1–3 and VIP Hall 5 only. The hall engine still supports an
+`"atmos"` hall type for later.
 
 **Movies** go in `data/movies.json`, one object per film:
 `slug, title, titleBn, status ("now-showing" | "coming-soon"), imdbRating, certificate ("U" | "A"), runtimeMin,
@@ -717,7 +715,7 @@ columns, no accordions (Explore + Help side by side, Follow as an icon row), sma
 
 ## 9. Booking flow (inner pages)
 
-Spec'd using **Bashundhara City** as the example branch (its halls: Premium Halls 1–3, VIP Hall 5, Atmos Hall 6).
+Spec'd using **Bashundhara City** as the example branch (its halls: Premium Halls 1–3 and VIP Hall 5).
 Every other branch works the same way from `data/`.
 
 **Key fact:** a movie at a given time plays in **one specific hall**, so the user never picks a hall on its own:
@@ -755,14 +753,13 @@ under the card.
   centred as a group (a fixed third of the row each), so two cards sit in the middle, not to the left.
 
 ### 9.3 Step 1b — "Choose your experience"
-Section title: "Choose your experience". Up to **3 large cards side by side, one per hall type showing this movie
+Section title: "Choose your experience". Up to **2 large cards side by side (VIP, Premium), one per hall type showing this movie
 on this date** (hide hall types with no shows):
 
 | Card | Halls | Seat classes & prices (BDT, by time band) | 3D seat model |
 |------|-------|------------------------------------------|---------------|
 | **VIP** | Hall 5 · 113 seats | VIP 650–850 | Wide plush recliner in the hall's own leather colour (Bashundhara: oxblood `#6B1E24`), side table |
 | **Premium** | Halls 1–3 · 248 seats each | Premium 400–550 · Semi-Recliner (row E) 500–650 | Classic cinema seat with cup holders; small note "includes a Semi-Recliner row" |
-| **Atmos** | Hall 6 · 231 seats | Premium 600–750 | Premium seat with faint glowing sound-wave rings around it (Dolby Atmos) |
 
 Each card, top to bottom:
 - **A slowly rotating 3D seat** of that class (turntable, ~8s per rotation, soft studio light, `--night` background).
@@ -878,7 +875,7 @@ Seat models: converted from the designer's Tripo models (`scripts/convert-tripo-
    the e-ticket by SMS. Optional email field below it.
 2. **Payment method:** three large selectable cards: **bKash · Nagad · Card** (logos + name). **bKash pre-selected.**
    The wallet cards show the real bKash and Nagad logos (`/public/payments/*.svg`, from logotyp.us, trimmed to logo +
-   wordmark); the same logo sits above the spinner on the mock "Connecting to …" screen (§9.7).
+   wordmark) with the name written under the logo; the same logo sits above the spinner on the mock "Connecting to …" screen (§9.7).
 
 **Mobile:** the ticket summary collapses into a sticky bottom bar (total + Pay button); tapping it expands the full summary.
 
@@ -1014,7 +1011,7 @@ hero info below, "Tonight at" chips as a swipeable row, the navbar reduced to lo
 |---------|-----|
 | `hall-premium-side.png`, `hall-premium-back.png`, `hall-premium-front.png` | Premium hall (Bashundhara look): materials, lights, blue X wall lines, camera angles for the hero and overview |
 | `hall-vip-back.png` | VIP Hall 5 mood: oxblood leather, walnut, amber step lights |
-| `hall-atmos-back.png` | Atmos Hall 6: wide curved screen, ceiling speakers, blue light strips |
+| `hall-atmos-back.png` | Atmos hall look (unused since Nov 27 — Bashundhara has no Atmos hall) |
 | `seat-premium.png`, `seat-premium-turnaround.png` | Premium seat model (4 angles for modelling) |
 | `seat-semi-recliner.png`, `seat-vip.png`, `seat-atmos.png` | Other seat models (§9.3 "Choose your experience" turntables) |
 | `cinema-doors.png` | §9.4 doors (sign panel left blank for "HALL 1") |
@@ -1037,7 +1034,7 @@ Rule: **follow the written spec; use reference images for look and feel only.**
 - [ ] Coming Soon: confirm the release-date pill in place of the rating.
 - [x] Branch photos for the film reel: **not available — use the typographic light-leak placeholders (§8.9)** for all 9 frames.
 - [ ] One-line copy for branches 02–09 (placeholders drafted Nov 26, in `locales` `home.reelLines`).
-- [ ] Real seat map of Bashundhara **Hall 6 Atmos** (currently approximate).
+- [x] Bashundhara has no Atmos hall (removed Nov 27; Atmos is at Shimanto Shambhar).
 - [ ] Matinee cutoff time (assumed: shows before 5:00 PM).
 
 ---
