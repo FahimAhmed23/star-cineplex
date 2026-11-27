@@ -96,7 +96,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                 {mounted && !phone && (
                   <View className="absolute inset-x-2 top-2 bottom-0">
                     <Suspense fallback={null}>
-                      <SeatTurntable model={MODEL[g.type]} color={color} leather={vip} hover={hover === g.type} rings={g.type === "atmos"} />
+                      <SeatTurntable model={MODEL[g.type]} color={color} leather={vip} hover={hover === g.type} rings={g.type === "atmos"} appearDelay={reduced ? 0 : 0.35 + gi * 0.09 + 0.15} />
                     </Suspense>
                   </View>
                 )}

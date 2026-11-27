@@ -38,6 +38,10 @@ type Stage = "map" | "toHall" | "hall" | "toMap";
 export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: { show: Showtime; hallId: string; initialSeats?: string[]; taken?: string[] }) {
   const { t, lang } = useT();
   const router = useRouter();
+  // warm the checkout page up front, so "Continue" never lands on a blank page while it loads (Nov 27)
+  useEffect(() => {
+    router.prefetch("/book/checkout");
+  }, [router]);
   const hall = getHall(hallId)!;
   const movie = getMovie(show.movie)!;
   const layout = useMemo(() => buildLayout(hall), [hall]);

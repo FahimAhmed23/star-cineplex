@@ -177,14 +177,19 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
       from.p.copy(camera.position);
       from.l.copy(controls.current.target);
     }
-    // leaving a seat after looking around: start from where the eye actually points, so nothing jumps
-    if (prevMode.current === "seat" && mode !== "seat") {
-      const d = from.l.distanceTo(from.p) || 10;
-      from.l.copy(camera.position).addScaledVector(camera.getWorldDirection(new THREE.Vector3()), d);
+    // leaving a seat after looking around: start from the seat's straight-ahead view and let the head turn back to
+    // the screen in the first moments of the move (useFrame keeps applying the decaying look offset). Starting the
+    // rise from a sideways gaze rolled the whole hall diagonally on the way up (Nov 27).
+    const leavingSeat = prevMode.current === "seat" && mode !== "seat";
+    if (leavingSeat) {
       from.p.copy(camera.position);
+      from.l.copy(pose.current.look);
+      look.current.ty = 0;
+      look.current.tp = 0;
+    } else {
+      look.current.yaw = look.current.ty = 0;
+      look.current.pitch = look.current.tp = 0;
     }
-    look.current.yaw = look.current.ty = 0;
-    look.current.pitch = look.current.tp = 0;
     // reference video A: map → seat is one continuous dive (descend first, tilt up to the screen late);
     // seat → map is the same move backwards (tilt down first, then rise)
     const from_ = prevMode.current;
@@ -330,16 +335,19 @@ export function CameraRig({ layout, mode, seatId, resetKey = 0, drift = false, f
       tmp.y += Math.sin(t * 0.05 + 1) * a * 0.5 * d;
     }
 
-    if (mode === "seat") {
+    const L0 = look.current;
+    if (mode !== "seat" && Math.abs(L0.yaw) + Math.abs(L0.pitch) < 2e-3) L0.yaw = L0.pitch = 0; // settled
+    if (mode === "seat" || L0.yaw !== 0 || L0.pitch !== 0) {
       const L = look.current;
       // the view follows the drag with a little weight, and stays where it was left
-      const k = 1 - Math.exp(-dt * 9);
+      const k = 1 - Math.exp(-dt * (mode === "seat" ? 9 : 7));
       L.yaw += (L.ty - L.yaw) * k;
       L.pitch += (L.tp - L.pitch) * k;
       const dir = tmp.clone().sub(camera.position);
       dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), -L.yaw);
-      const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
-      dir.applyAxisAngle(right, -L.pitch);
+      // (a gaze straight down has no "right": skip the pitch there instead of producing NaN — a black frame)
+      const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0));
+      if (right.lengthSq() > 1e-8) dir.applyAxisAngle(right.normalize(), -L.pitch);
       tmp.copy(camera.position).add(dir);
     }
     camera.lookAt(tmp);

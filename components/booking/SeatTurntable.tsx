@@ -11,15 +11,43 @@ import type { SeatModel } from "@/lib/hall-layout";
  * §9.3 a slowly turning seat for an experience card (~8s per turn, soft studio light on night). Hover: a bit
  * faster, with a purple rim light. Atmos gets faint sound-wave rings. Rendered inside a drei <View>.
  */
-export function SeatTurntable({ model, color, leather, hover, rings, angle }: { model: SeatModel; color: string; leather: boolean; hover: boolean; rings?: boolean; /** freeze at this angle (stills, /dev/capture) */ angle?: number }) {
+export function SeatTurntable({
+  model,
+  color,
+  leather,
+  hover,
+  rings,
+  angle,
+  appearDelay,
+}: {
+  model: SeatModel;
+  color: string;
+  leather: boolean;
+  hover: boolean;
+  rings?: boolean;
+  /** freeze at this angle (stills, /dev/capture) */
+  angle?: number;
+  /** fade the seat in after this many seconds, in step with its card's rise (Nov 27: the seats used to show
+   *  before their cards, floating on the page) */
+  appearDelay?: number;
+}) {
   const geometry = useModelGeometry(SEAT_MODEL_URL[model]);
   const spin = useRef<THREE.Group>(null);
   const rim = useRef<THREE.DirectionalLight>(null);
   const ringGroup = useRef<THREE.Group>(null);
   const material = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: new THREE.Color(color), roughness: leather ? 0.45 : 0.85, metalness: 0 }),
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: new THREE.Color(color),
+        roughness: leather ? 0.45 : 0.85,
+        metalness: 0,
+        transparent: appearDelay !== undefined,
+        opacity: appearDelay !== undefined ? 0 : 1,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [color, leather],
   );
+  const born = useRef<number | null>(null);
   const ringMats = useMemo(
     () => [0, 1, 2].map(() => new THREE.MeshBasicMaterial({ color: new THREE.Color("#b784d6"), transparent: true, opacity: 0, depthWrite: false })),
     [],
@@ -36,6 +64,13 @@ export function SeatTurntable({ model, color, leather, hover, rings, angle }: { 
   const speed = useRef(1);
 
   useFrame((state, dt) => {
+    if (appearDelay !== undefined && material.opacity < 1) {
+      if (born.current === null) born.current = state.clock.elapsedTime;
+      const k = Math.min(1, Math.max(0, (state.clock.elapsedTime - born.current - appearDelay) / 0.8));
+      material.opacity = k * k * (3 - 2 * k);
+      if (k >= 1) material.transparent = false;
+      material.needsUpdate = k >= 1;
+    }
     speed.current += ((hover ? 1.7 : 1) - speed.current) * (1 - Math.exp(-dt * 4));
     if (spin.current) spin.current.rotation.y = angle ?? spin.current.rotation.y + dt * ((Math.PI * 2) / 8) * speed.current;
     if (rim.current) rim.current.intensity += ((hover ? 3.2 : 0.7) - rim.current.intensity) * (1 - Math.exp(-dt * 5));
@@ -52,7 +87,7 @@ export function SeatTurntable({ model, color, leather, hover, rings, angle }: { 
   const dist = Math.max(height, width) * 2.6;
   return (
     <>
-      <color attach="background" args={["#07050a"]} />
+      <color attach="background" args={["#121015"]} />
       <PerspectiveCamera makeDefault fov={28} position={[dist * 0.55, height * 0.95, dist * 0.85]} onUpdate={(c) => c.lookAt(0, height * 0.42, 0)} />
       <ambientLight intensity={0.35} />
       <directionalLight position={[2.5, 4, 3]} intensity={1.8} color="#fff4e8" />
