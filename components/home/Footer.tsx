@@ -161,7 +161,7 @@ export function Footer() {
               {SOCIAL.map((s) => (
                 <li key={s.key}>
                   <a href={s.href} aria-label={s.label} className="footer-link focus-ring grid size-10 place-items-center rounded-pill border border-white/10">
-                    <svg viewBox="0 0 24 24" width={18} height={18} fill="currentColor" aria-hidden>
+                    <svg viewBox="0 0 24 24" width={14} height={14} fill="currentColor" aria-hidden>
                       <path d={SOCIAL_PATHS[s.key]} />
                     </svg>
                   </a>

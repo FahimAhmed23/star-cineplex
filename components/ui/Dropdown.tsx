@@ -12,8 +12,9 @@ export type DropdownOption = { value: string; label: string; lang?: string; disa
  * a pill trigger that stays fully round when open, and a dark glass list 4px from it with purple-tinted rows and a
  * check on the current choice. Opens up or down (`placement`). Keyboard: Enter / Space / arrows open; arrows,
  * Home, End move; Enter / Space pick; Escape or Tab close. ARIA listbox pattern.
- * Phones (< 768px, designer Nov 27): the list opens as a full-screen sheet on the page's night colour (portalled to
- * <body>, page scroll locked), so it never runs off the screen or pushes the page sideways.
+ * Phones (< 768px, designer Nov 27): the list opens as a floating panel like the navbar menu — 20px from each side
+ * of the screen, night colour, 24px corners — right above or below the trigger (whichever side has room), portalled
+ * to <body> with page scroll locked, so it never runs off the screen or pushes the page sideways.
  * Opening never scrolls the page: focus uses preventScroll and the active row is kept in view by moving only the
  * list's own scroll position.
  */
@@ -43,6 +44,7 @@ export function Dropdown({
   const list = useRef<HTMLUListElement>(null);
   const sheet = useRef<HTMLDivElement>(null);
   const [phone, setPhone] = useState(false);
+  const [pos, setPos] = useState<{ top?: number; bottom?: number; maxH: number }>({ maxH: 400 });
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const on = () => setPhone(mq.matches);
@@ -84,7 +86,25 @@ export function Dropdown({
     };
   }, [open, phone]);
 
+  // phones: place the panel next to the trigger, on the side with more room
+  const place = () => {
+    const r = trigger.current?.getBoundingClientRect();
+    if (!r) return;
+    const vh = window.innerHeight;
+    const gap = 8, edge = 20;
+    const below = vh - r.bottom - gap - edge;
+    const above = r.top - gap - edge;
+    const down = placement === "down" ? below >= 240 || below >= above : below > above && above < 240;
+    setPos(down ? { top: r.bottom + gap, maxH: below } : { bottom: vh - r.top + gap, maxH: above });
+  };
+  useEffect(() => {
+    if (!open || !phone) return;
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  });
+
   const show = () => {
+    if (phone) place();
     setActive(Math.max(0, options.findIndex((o) => o.value === value)));
     setOpen(true);
   };
@@ -167,7 +187,7 @@ export function Dropdown({
             current?.label
           )}
         </span>
-        <Icon name="chevronDown" size={16} className="dropdown-chevron shrink-0" />
+        <Icon name="chevronDown" size={size === "lg" ? 16 : 14} className="dropdown-chevron shrink-0" />
       </button>
 
       <AnimatePresence>
@@ -198,28 +218,12 @@ export function Dropdown({
               <motion.div
                 ref={sheet}
                 className="dropdown-sheet"
-                role="dialog"
-                aria-modal="true"
-                aria-label={label}
-                initial={{ opacity: 0, y: reduced ? 0 : 24 }}
+                style={{ top: pos.top, bottom: pos.bottom, maxHeight: Math.min(pos.maxH, 440) }}
+                initial={{ opacity: 0, y: reduced ? 0 : pos.top !== undefined ? -6 : 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: reduced ? 0 : 24, transition: { duration: 0.18 } }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                exit={{ opacity: 0, y: reduced ? 0 : pos.top !== undefined ? -6 : 6, transition: { duration: 0.15 } }}
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="dropdown-sheet__head">
-                  <p className="text-[18px] font-semibold text-white">{label}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false);
-                      trigger.current?.focus({ preventScroll: true });
-                    }}
-                    className="focus-ring grid size-10 place-items-center rounded-pill bg-white/10 text-white"
-                    aria-label="Close"
-                  >
-                    <Icon name="closeSimple" size={18} />
-                  </button>
-                </div>
                 <ul
                   ref={list}
                   id={`${id}-list`}

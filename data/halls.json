@@ -23,7 +23,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -47,7 +47,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -123,7 +123,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -147,7 +147,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -223,7 +223,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -247,7 +247,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -401,7 +401,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -425,7 +425,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -502,7 +502,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -526,7 +526,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -603,7 +603,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -627,7 +627,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -704,7 +704,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -728,7 +728,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -805,7 +805,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -829,7 +829,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -906,7 +906,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -930,7 +930,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -1007,7 +1007,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -1031,7 +1031,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },
@@ -1108,7 +1108,7 @@
       "rows": [
         {
           "row": "A",
-          "class": "premium",
+          "class": "semi-recliner",
           "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
           "start": 1
         },
@@ -1132,7 +1132,7 @@
         },
         {
           "row": "E",
-          "class": "semi-recliner",
+          "class": "premium",
           "pattern": ".....SSSSSSSSSSSS...SSS.",
           "start": 4
         },

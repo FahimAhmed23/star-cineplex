@@ -683,11 +683,11 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           </div>
           <div className={`tickets transition-opacity duration-300 ${inHall ? "opacity-0" : "pointer-events-auto"}`} role="group" aria-label={t("booking.ticketCount")}>
             <button type="button" className="focus-ring" onClick={() => setCountTo(count - 1)} disabled={count <= 1 || inHall} aria-label={t("booking.lessTickets")}>
-              <Icon name="minus" size={18} />
+              <Icon name="minus" size={14} />
             </button>
             <span className="tabular-nums">{t(count === 1 ? "booking.ticketOne" : "booking.ticketMany", { n: count })}</span>
             <button type="button" className="focus-ring" onClick={() => setCountTo(count + 1)} disabled={count >= MAX_SEATS || inHall} aria-label={t("booking.moreTickets")}>
-              <Icon name="plus" size={18} />
+              <Icon name="plus" size={14} />
             </button>
           </div>
         </div>

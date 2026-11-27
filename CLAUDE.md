@@ -218,6 +218,8 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 - **Disabled:** no animation, 40% opacity, `cursor: not-allowed`.
 - **Loading** (e.g. Pay): label replaced by a small spinner; button keeps its width.
 - **Reduced motion:** the fill fades in (opacity) instead of growing; no press scale.
+- **40px buttons** (`btn-sm` on every device, every `.btn` on phones, the 40px icon buttons such as the seat-map zoom
+  tools, ticket +/−, footer social icons, and the 40px dropdown trigger): **14px label, 14px icon** (designer, Nov 27).
 - **Not used** on chips, icon-only buttons, toggles (3D/2D), showtime chips or seats. Only on real buttons.
 
 ### Language — EN / বাংলা
@@ -239,8 +241,9 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 - Tailwind utilities: `rounded-pill`, `rounded-card-sm`, `rounded-card-md`, `rounded-card-lg`.
 
 ### Dropdown on phones (Nov 27)
-- Below 768px every themed dropdown opens as a **full-screen sheet** on `--night` (label + close button at the top,
-  52px rows), portalled to `<body>` with page scroll locked. Opening a dropdown never scrolls or shifts the page on
+- Below 768px every themed dropdown opens as a **floating panel like the navbar menu**: 20px from the left and right
+  screen edges, `--night`, 24px corners, 1px white/10 border, right above or below the trigger (whichever side has
+  room), 48px rows; portalled to `<body>` with page scroll locked. Opening a dropdown never scrolls or shifts the page on
   any screen size (focus without scroll; only the list itself scrolls to the active row).
 
 ### Section spacing
@@ -332,8 +335,9 @@ on the same hall engine.
 **Bashundhara Hall 1** (Premium, 248 seats — Halls 2 and 3 use the same layout). `numbering: ltr`, `pad: 2`, grid 24 columns:
 | Rows | Class | Pattern | Start | Seats/row |
 |------|-------|---------|-------|-----------|
-| A, B, C, D | Premium | `SSS..SSSSSSSSSSSSS..SSSS` | 1 | 20 (A01–A20) |
-| E | **Semi-Recliner** | `.....SSSSSSSSSSSS...SSS.` | 4 | 15 (E04–E18) |
+| A | **Semi-Recliner** (front row, designer Nov 27) | `SSS..SSSSSSSSSSSSS..SSSS` | 1 | 20 (A01–A20) |
+| B, C, D | Premium | `SSS..SSSSSSSSSSSSS..SSSS` | 1 | 20 (B01–B20) |
+| E | Premium | `.....SSSSSSSSSSSS...SSS.` | 4 | 15 (E04–E18) |
 | F, G, H | Premium | `.....SSSSSSSSSSSSS..SSSS` | 4 | 17 (F04–F20) |
 | J, K, L, M | Premium | `SSS..SSSSSSSSSSSSS..SSSS` | 1 | 20 (J01–J20) |
 | N (back row) | Premium | `SSSSSSSSSSS..SSSSSSSSSSS` | 1 | 22 (N01–N22) |
@@ -726,7 +730,7 @@ Every other branch works the same way from `data/`.
 
 **Key fact:** a movie at a given time plays in **one specific hall**, so the user never picks a hall on its own:
 they pick a **showtime**, and the showtime decides the hall. **Semi-Recliner is a seat class inside the Premium
-halls** (row E in Halls 1–3), not a hall type.
+halls** (row A, the front row, in Halls 1–3 and every Premium hall; designer Nov 27), not a hall type.
 
 **Steps** (a small stepper at the top of every booking screen): `1 Showtime · 2 Seats · 3 Checkout`
 
@@ -765,7 +769,7 @@ on this date** (hide hall types with no shows):
 | Card | Halls | Seat classes & prices (BDT, by time band) | 3D seat model |
 |------|-------|------------------------------------------|---------------|
 | **VIP** | Hall 5 · 113 seats | VIP 650–850 | Wide plush recliner in the hall's own leather colour (Bashundhara: oxblood `#6B1E24`), side table |
-| **Premium** | Halls 1–3 · 248 seats each | Premium 400–550 · Semi-Recliner (row E) 500–650 | Classic cinema seat with cup holders; small note "includes a Semi-Recliner row" |
+| **Premium** | Halls 1–3 · 248 seats each | Premium 400–550 · Semi-Recliner (row A) 500–650 | Classic cinema seat with cup holders; small note "includes a Semi-Recliner row" |
 
 Each card, top to bottom:
 - **A slowly rotating 3D seat** of that class (turntable, ~8s per rotation, soft studio light, `--night` background).
