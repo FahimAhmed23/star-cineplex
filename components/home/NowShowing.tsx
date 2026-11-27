@@ -9,6 +9,8 @@ import { MovieCard } from "./MovieCard";
 import { RevealText } from "@/components/ui/RevealText";
 
 const FIRST_ROW = 4;
+/** room around the cards for the hover lift + shadow (0 20px 50px), so the clip never cuts them (Nov 27; was 16) */
+const ROOM = 64;
 
 /**
  * Now Showing in Theaters (CLAUDE.md §8.5): centred title, a 4-per-row grid showing the first row,
@@ -71,7 +73,7 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
   };
 
   return (
-    <section id="now-showing" aria-labelledby="now-showing-title" className="theme-light relative z-10 scroll-mt-24 pt-[100px] [overflow-anchor:none]">
+    <section id="now-showing" aria-labelledby="now-showing-title" className="theme-light relative z-10 scroll-mt-24 overflow-x-clip pt-[100px] [overflow-anchor:none]">
       <div className="mx-auto max-w-[1280px] px-8">
         <h2 id="now-showing-title" ref={titleRef} className="display-m mb-14 scroll-mt-32 text-center text-ink">
           <RevealText text={t("home.nowShowingTitle")} />
@@ -79,8 +81,12 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
 
         {/* clip to the first row until expanded; the lift on hover needs a little room around the cards */}
         <div
-          className="-mx-4 -mt-4 overflow-hidden px-4 pt-4"
-          style={{ height: heights ? (open || !hasMore ? heights.all : heights.row) + 32 : "auto" }}
+          className="overflow-hidden"
+          style={{
+            margin: `-${ROOM}px -${ROOM}px -${ROOM - 16}px`,
+            padding: `${ROOM}px ${ROOM}px 0`,
+            height: heights ? (open || !hasMore ? heights.all : heights.row) + 2 * ROOM : "auto",
+          }}
         >
           {/* the grid keeps its full height; the clip hides everything below the first row until expanded
               (negative side insets leave room for the hover lift) */}
@@ -89,7 +95,7 @@ export function NowShowing({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
             id="now-showing-grid"
             className="grid grid-cols-2 gap-6 pb-4 md:grid-cols-4"
             style={{
-              clipPath: `inset(-16px -16px ${hasMore && !expanded ? diff : -16}px -16px)`,
+              clipPath: `inset(-${ROOM}px -${ROOM}px ${hasMore && !expanded ? diff - ROOM : -ROOM}px -${ROOM}px)`,
               transition: clipLive && !reduced ? "clip-path 500ms var(--ease-in-out)" : "none",
             }}
             onTransitionEnd={onClipEnd}
