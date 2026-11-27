@@ -123,7 +123,8 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
           onBlurCapture={() => setHold(false)}
         >
           {/* viewport shows 4 cards; a little room for the hover lift */}
-          <div ref={viewport} className="-my-4 overflow-hidden py-4" aria-roledescription="carousel">
+          {/* 64px of room above and below so a hovered card (scaled + lifted) and its shadow aren't cut off */}
+          <div ref={viewport} className="-my-16 overflow-hidden py-16" aria-roledescription="carousel">
             <motion.ul
               className="flex"
               style={{ gap: GAP }}
