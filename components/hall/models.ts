@@ -41,9 +41,45 @@ function extractGeometry(scene: THREE.Object3D): THREE.BufferGeometry {
   }
   if (src.index) geo.setIndex(Array.from(src.index.array as ArrayLike<number>));
   geo.applyMatrix4(mesh.matrixWorld);
+  fixZeroNormals(geo);
   geo.computeBoundingBox();
   geo.computeBoundingSphere();
   return geo;
+}
+
+/**
+ * Some exported models carry a few zero-length normals (degenerate faces). Lighting normalises them into NaN, and
+ * Bloom's blur spreads one NaN pixel over the whole frame — the hall flashed black during the seat dive (Nov 27).
+ * Give those vertices the average normal of their neighbours in the same triangles (or straight up).
+ */
+function fixZeroNormals(geo: THREE.BufferGeometry) {
+  const n = geo.getAttribute("normal") as THREE.BufferAttribute | undefined;
+  if (!n) return;
+  const bad: number[] = [];
+  for (let i = 0; i < n.count; i++) {
+    const l = Math.hypot(n.getX(i), n.getY(i), n.getZ(i));
+    if (!(l > 1e-6) || !Number.isFinite(l)) bad.push(i);
+  }
+  if (!bad.length) return;
+  const badSet = new Set(bad);
+  const sum = new Map<number, THREE.Vector3>(bad.map((i) => [i, new THREE.Vector3()]));
+  const idx = geo.index ? (geo.index.array as ArrayLike<number>) : null;
+  const tris = idx ? idx.length / 3 : n.count / 3;
+  const at = (t: number, k: number) => (idx ? idx[t * 3 + k] : t * 3 + k);
+  for (let t = 0; t < tris; t++) {
+    const v = [at(t, 0), at(t, 1), at(t, 2)];
+    for (const a of v) {
+      if (!badSet.has(a)) continue;
+      for (const b of v) if (!badSet.has(b)) sum.get(a)!.add(new THREE.Vector3(n.getX(b), n.getY(b), n.getZ(b)));
+    }
+  }
+  for (const i of bad) {
+    const s = sum.get(i)!;
+    if (s.lengthSq() < 1e-12) s.set(0, 1, 0);
+    s.normalize();
+    n.setXYZ(i, s.x, s.y, s.z);
+  }
+  n.needsUpdate = true;
 }
 
 export function useModelGeometry(url: string) {
