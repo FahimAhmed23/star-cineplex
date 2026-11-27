@@ -1376,39 +1376,59 @@ body {
 /* ── Seat picker (§9.5, Nov 26 rebuild) — map glyphs use the §5 2D colours; gold is only "yours" ── */
 .seatmap { outline: none; }
 .seatmap.is-dragging { cursor: grabbing; }
+/* 2D seats (designer, Nov 27): rounded squares with a little armrest bar under each — free = outlined,
+   taken = filled grey, yours = gold with the seat number (§5: gold is "your seat") */
 .seat-g {
   position: absolute;
   width: var(--g, 20px);
-  height: calc(var(--g, 20px) * 0.86);
+  height: calc(var(--g, 20px) * 0.92);
   transform: translate(-50%, -50%);
-  border-radius: calc(var(--g, 20px) * 0.24) calc(var(--g, 20px) * 0.24) calc(var(--g, 20px) * 0.36) calc(var(--g, 20px) * 0.36);
-  /* the seat back: a slightly darker band across the top, like a cushion seen from above */
-  background-image: linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 26%, transparent 26%);
+  border-radius: calc(var(--g, 20px) * 0.26);
   pointer-events: none;
 }
-.seat-g--free.seat-g--premium { background-color: #3d2350; box-shadow: inset 0 0 0 1px rgb(183 132 214 / 0.35); }
-.seat-g--free.seat-g--semi-recliner { background-color: #6a3482; box-shadow: inset 0 0 0 1px rgb(183 132 214 / 0.45); }
-.seat-g--free.seat-g--vip { background-color: #9a5cc0; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25); }
-.seat-g--taken { background-color: #26222b; opacity: 0.85; }
+.seat-g::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: calc(var(--g, 20px) * -0.2);
+  height: max(2px, calc(var(--g, 20px) * 0.1));
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.2);
+}
+.seat-g--free { box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.34); }
+.seat-g--free.seat-g--semi-recliner { box-shadow: inset 0 0 0 1.5px rgb(183 132 214 / 0.75); }
+.seat-g--free.seat-g--semi-recliner::after { background: rgb(183 132 214 / 0.45); }
+.seat-g--free.seat-g--vip { box-shadow: inset 0 0 0 1.5px rgb(183 132 214 / 0.6); }
+.seat-g--taken { background-color: #2c2931; }
+.seat-g--taken::after { background: rgb(255 255 255 / 0.1); }
 .seat-g--ghost { border: 1.5px dashed #f5b72e; background: rgb(245 183 46 / 0.08); z-index: 4; }
+.seat-g--ghost::after { display: none; }
 .seat-g--yours {
   background-color: #f5b72e;
-  color: var(--ink);
-  font: 600 calc(var(--g, 20px) * 0.42) / 1 var(--font-mono), ui-monospace, monospace;
+  color: #1a1206;
+  font: 600 calc(var(--g, 20px) * 0.46) / 1 var(--font-sans), system-ui, sans-serif;
   display: grid;
   place-items: center;
-  padding-top: calc(var(--g, 20px) * 0.14);
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.35), 0 4px 12px -2px rgb(245 183 46 / 0.45);
+  box-shadow: 0 4px 14px -2px rgb(245 183 46 / 0.5);
 }
+.seat-g--yours::after { background: #f5b72e; }
 .seat-g--chip {
   left: 0;
   top: 0;
   transition: transform 420ms var(--ease-out), box-shadow 200ms ease;
 }
 .seat-g--chip.is-lifted { transition: transform 90ms linear; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.5), 0 12px 24px -4px rgb(0 0 0 / 0.6); }
-.legend-g { position: relative; display: inline-block; width: 14px; height: 12px; border-radius: 3px 3px 5px 5px; background-image: linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 26%, transparent 26%); }
+.legend-g { position: relative; display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
+.legend-g::after { display: none; }
 .seatmap__row { position: absolute; transform: translate(-50%, -50%); font: 500 11px/1 var(--font-mono), monospace; color: var(--muted); }
-.seatmap__screen { position: absolute; transform: translateX(-50%); font-size: 12px; color: rgb(255 255 255 / 0.5); }
+.seatmap__screen { position: absolute; transform: translateX(-50%); font-size: 12px; letter-spacing: 0.08em; color: rgb(255 255 255 / 0.55); }
+.seatmap__glow {
+  position: absolute;
+  height: 42%;
+  pointer-events: none;
+  background: radial-gradient(60% 100% at 50% 0%, rgb(220 205 240 / 0.14), rgb(183 132 214 / 0.05) 45%, transparent 75%);
+}
 .seat-tip {
   position: absolute;
   z-index: 40;
@@ -1423,22 +1443,32 @@ body {
   font: 500 12px/1 var(--font-mono), monospace;
   pointer-events: none;
 }
+/* ticket count (designer, Nov 27): a pill with two round filled buttons */
 .tickets {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
-  padding: 4px;
+  padding: 6px;
   border-radius: 9999px;
-  border: 1px solid rgb(255 255 255 / 0.14);
-  background: rgb(255 255 255 / 0.04);
-  font-size: 14px;
-  font-weight: 500;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.06);
+  font-size: 16px;
+  font-weight: 600;
   color: white;
 }
-.tickets > span { min-width: 76px; text-align: center; }
-.tickets button { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9999px; color: white; transition: background-color 150ms ease; }
-.tickets button:hover:not(:disabled) { background: rgb(255 255 255 / 0.1); }
+.tickets > span { min-width: 96px; text-align: center; }
+.tickets button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.1);
+  color: white;
+  transition: background-color 150ms ease;
+}
+.tickets button:hover:not(:disabled) { background: rgb(255 255 255 / 0.18); }
 .tickets button:disabled { opacity: 0.35; cursor: not-allowed; }
 .seat-strip { position: absolute; inset: 0; pointer-events: none; overflow: hidden; --g: 22px; mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent); }
 .seat-strip__row { position: absolute; left: 0; right: 0; height: 22px; opacity: 0.45; }

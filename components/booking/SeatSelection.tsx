@@ -382,15 +382,31 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
             {t("booking.mapHelp")}
           </p>
           {/* the screen */}
+          {/* the light falling from the screen over the front rows */}
+          <span
+            aria-hidden
+            className="seatmap__glow"
+            style={{ left: td.screen.x0 - 40, width: td.screen.x1 - td.screen.x0 + 80, top: screenY - 2 }}
+          />
           <svg aria-hidden className="pointer-events-none absolute top-0 left-0 overflow-visible" width="1" height="1">
-            <path
-              d={`M ${td.screen.x0} ${screenY + 10} Q ${(td.screen.x0 + td.screen.x1) / 2} ${screenY - 8} ${td.screen.x1} ${screenY + 10}`}
-              fill="none"
-              stroke="rgb(255 255 255 / 0.32)"
-              strokeWidth="2"
-            />
+            <defs>
+              <filter id="screen-glow" x="-10%" y="-200%" width="120%" height="500%">
+                <feGaussianBlur stdDeviation="4" />
+              </filter>
+            </defs>
+            {[0, 1].map((k) => (
+              <path
+                key={k}
+                d={`M ${td.screen.x0} ${screenY + 10} Q ${(td.screen.x0 + td.screen.x1) / 2} ${screenY - 8} ${td.screen.x1} ${screenY + 10}`}
+                fill="none"
+                stroke={k ? "rgb(255 255 255 / 0.7)" : "rgb(220 205 240 / 0.8)"}
+                strokeWidth={k ? 2 : 5}
+                strokeLinecap="round"
+                filter={k ? undefined : "url(#screen-glow)"}
+              />
+            ))}
           </svg>
-          <span className="seatmap__screen" style={{ left: (td.screen.x0 + td.screen.x1) / 2, top: screenY + 16 }}>
+          <span className="seatmap__screen" style={{ left: (td.screen.x0 + td.screen.x1) / 2, top: screenY - 30 }}>
             {t("booking.screen")}
           </span>
           {/* row letters */}
@@ -440,6 +456,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
                   zIndex: drag ? 30 - i : 5,
                 }}
               >
+                {byId.get(id)?.number}
               </span>
             );
           })}
@@ -462,11 +479,11 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
           </div>
           <div className={`tickets transition-opacity duration-300 ${inHall ? "opacity-0" : "pointer-events-auto"}`} role="group" aria-label={t("booking.ticketCount")}>
             <button type="button" className="focus-ring" onClick={() => setCountTo(count - 1)} disabled={count <= 1 || inHall} aria-label={t("booking.lessTickets")}>
-              <Icon name="minus" size={16} />
+              <Icon name="minus" size={18} />
             </button>
             <span className="tabular-nums">{t(count === 1 ? "booking.ticketOne" : "booking.ticketMany", { n: count })}</span>
             <button type="button" className="focus-ring" onClick={() => setCountTo(count + 1)} disabled={count >= MAX_SEATS || inHall} aria-label={t("booking.moreTickets")}>
-              <Icon name="plus" size={16} />
+              <Icon name="plus" size={18} />
             </button>
           </div>
         </div>

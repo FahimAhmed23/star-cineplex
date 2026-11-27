@@ -118,8 +118,10 @@ themes). The **UI stays in the Star purple brand** everywhere (popups, chips, bu
   non-purple UI accent, reserved for "your seat").
 - Hover: brighter glow + lift. Booked: a seated silhouette (§9.5). Seat class: shown by the seat **model shape**
   (regular / semi-recliner / recliner / lounger) and named in the popup.
-- **2D map colours** (UI, same for every branch): Premium `#3D2350`, Semi-Recliner `#6A3482`, VIP `#9A5CC0`,
-  Booked `#26222B`, Selected `#F5B72E`.
+- **2D map** (UI, same for every branch; restyled Nov 27): rounded-square seats with a small armrest bar under
+  each. **Free = outlined** (white 34%; Semi-Recliner and VIP outlined in `--purple-light`), **Booked = filled grey**
+  `#2C2931`, **Yours = gold `#F5B72E` with the seat number**. The screen is a glowing arc ("Screen" above it) with a
+  soft light falling over the front rows. Ticket count: a pill with two round filled −/+ buttons (40px).
 
 ### Theme rule
 - **Dark theme** for immersive areas (opening, home hero, Moments, Film Reel, footer, 3D hall, seat selection).
