@@ -15,7 +15,7 @@ gsap.registerPlugin(ScrollTrigger);
  * lane never slide into each other, and the lanes never share horizontal space, so faster tiles pass slower
  * ones side by side instead of on top of them.
  *   left outer  x 2–18  · speed 0.85      left inner  x 21–32 · speed 1.25
- *   right inner x 67–79 · speed 1.3       right outer x 80–98 · speed 0.9
+ *   right inner x 67–79 · speed 1.3       right outer x 82–98 · speed 0.9 (one slow photo steps in to x 72, clear of the fast lane)
  */
 const TILES = [
   { src: "cosplay-duel", ratio: "3 / 2", focus: "50% 50%", w: 16, x: 2, y: 10, speed: 0.85 },
@@ -27,7 +27,7 @@ const TILES = [
   { src: "cosplay-duel", ratio: "4 / 5", focus: "70% 50%", w: 12, x: 67, y: 66, speed: 1.3 },
   { src: "event-crowd", ratio: "3 / 4", focus: "30% 50%", w: 16, x: 82, y: 34, speed: 0.9 },
   { src: "guest-lineup", ratio: "16 / 9", focus: "50% 50%", w: 16, x: 82, y: 120, speed: 0.9 },
-  { src: "red-carpet-group", ratio: "3 / 4", focus: "55% 50%", w: 12, x: 80, y: 146, speed: 0.9 },
+  { src: "red-carpet-group", ratio: "3 / 4", focus: "55% 50%", w: 12, x: 72, y: 146, speed: 0.9 },
   { src: "event-crowd", ratio: "3 / 2", focus: "50% 50%", w: 16, x: 82, y: 185, speed: 0.9 },
 ] as const;
 
