@@ -7,12 +7,20 @@ import { useSyncExternalStore } from "react";
 
 const PHONE_QUERY = "(max-width: 767px)";
 
+// Probe WebGL2 ONCE per page and release the test context straight away. (Before Nov 27 this ran on every
+// useDevice() render, creating a new WebGL context each time; Chrome caps live contexts, kills the oldest, and after
+// repeated losses blocks WebGL for the page: "Web page caused context loss and was blocked".)
+let glProbe: boolean | null = null;
 function webgl2() {
+  if (glProbe !== null) return glProbe;
   try {
-    return !!document.createElement("canvas").getContext("webgl2");
+    const gl = document.createElement("canvas").getContext("webgl2");
+    glProbe = !!gl;
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
   } catch {
-    return false;
+    glProbe = false;
   }
+  return glProbe;
 }
 
 let cached: { phone: boolean; full3D: boolean } | null = null;
