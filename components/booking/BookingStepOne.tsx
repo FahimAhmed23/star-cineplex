@@ -11,6 +11,7 @@ import type { HallType, PriceTable } from "@/lib/types";
 import { ExperienceCards } from "./ExperienceCards";
 import { Stepper } from "./Stepper";
 import { RevealText } from "@/components/ui/RevealText";
+import { Dropdown } from "@/components/ui/Dropdown";
 
 export interface ShowSlot {
   id: string;
@@ -34,6 +35,8 @@ export interface HallInfo {
 
 /** Bookable in this demo: Bashundhara City (its five halls are built from the real seat maps). */
 export const DEMO_BRANCH = "bashundhara-city";
+/** Today and the next 2 days (designer, Nov 27: starcineplex.com only sells a few days ahead). */
+const BOOKABLE_DAYS = 3;
 
 interface Day {
   real: string;
@@ -60,7 +63,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
   // dates are computed in the browser (local "today"); the demo week maps onto the same weekdays
   useEffect(() => {
     const base = new Date();
-    const list: Day[] = Array.from({ length: 7 }, (_, i) => {
+    const list: Day[] = Array.from({ length: BOOKABLE_DAYS }, (_, i) => {
       const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i);
       const real = localIso(d);
       return {
@@ -111,8 +114,9 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-[1280px] px-8 pt-[140px] pb-32">
-        <Stepper step={1} />
+      {/* everything centred; content starts 60px below the navbar (strip 40 + tab 68 on desktop, tab 60 on phones) */}
+      <main className="mx-auto max-w-[1280px] px-8 pt-[120px] pb-32 text-center max-md:px-5 md:pt-[168px]">
+        <Stepper step={1} className="justify-center" />
         <h1 className="display-m mt-8 mb-12 text-white">
           <RevealText text={t("booking.title")} show delay={0.1} />
         </h1>
@@ -122,25 +126,20 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
           <h2 id="pick-branch" className="mb-4 text-[14px] font-semibold text-muted">
             {t("booking.branch")}
           </h2>
-          <div className="no-scrollbar -mx-2 flex gap-2 overflow-x-auto px-2 py-1">
-            {branches.map((b) => {
-              const on = b.slug === branch;
-              const bookable = b.slug === DEMO_BRANCH;
-              return (
-                <button
-                  key={b.slug}
-                  type="button"
-                  disabled={!bookable}
-                  onClick={() => setBranch(b.slug)}
-                  aria-pressed={on}
-                  title={bookable ? undefined : t("booking.demoOnly")}
-                  className={`pick-pill focus-ring ${on ? "is-on" : ""}`}
-                >
-                  {(lang === "bn" && b.nameBn) || b.name}
-                </button>
-              );
-            })}
-          </div>
+          <Dropdown
+            label={t("booking.branch")}
+            value={branch}
+            onChange={setBranch}
+            size="lg"
+            className="mx-auto w-[360px] max-w-full text-left"
+            options={branches.map((b) => ({
+              value: b.slug,
+              label: lang === "bn" ? `${b.nameBn}, ${b.areaBn.split(",")[0]}` : `${b.name}, ${b.area.split(",")[0]}`,
+              lang: lang === "bn" ? "bn" : undefined,
+              disabled: b.slug !== DEMO_BRANCH,
+              hint: b.slug !== DEMO_BRANCH ? t("booking.demoSoon") : undefined,
+            }))}
+          />
           <p className="mt-3 text-[13px] text-muted">{t("booking.demoOnly")}</p>
         </section>
 
@@ -149,8 +148,8 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
           <h2 id="pick-date" className="mb-4 text-[14px] font-semibold text-muted">
             {t("booking.date")}
           </h2>
-          <div className="no-scrollbar -mx-2 flex gap-2 overflow-x-auto px-2 py-1">
-            {(days ?? Array.from({ length: 7 }, () => null)).map((d, i) => (
+          <div className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto px-2 py-1">
+            {(days ?? Array.from({ length: BOOKABLE_DAYS }, () => null)).map((d, i) => (
               <button
                 key={i}
                 type="button"
@@ -171,7 +170,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
             {t("booking.movie")}
           </h2>
           {days && dayMovies.length === 0 && <p className="text-[15px] text-muted">{t("booking.noShows")}</p>}
-          <div ref={moviesRow} className="no-scrollbar -mx-2 flex gap-4 overflow-x-auto px-2 pt-2 pb-4">
+          <div ref={moviesRow} className="no-scrollbar mx-auto flex w-fit max-w-full items-start gap-4 overflow-x-auto px-2 pt-2 pb-4">
             {dayMovies.map((m) => {
               const on = m.slug === chosen;
               return (
@@ -181,12 +180,12 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
                   data-movie={m.slug}
                   onClick={() => pickMovie(m.slug)}
                   aria-pressed={on}
-                  className={`poster-pick focus-ring w-[140px] shrink-0 text-left ${on ? "is-on" : ""}`}
+                  className={`poster-pick focus-ring flex w-[140px] shrink-0 flex-col text-left ${on ? "is-on" : ""}`}
                 >
                   <span className="poster-pick__frame relative block aspect-[2/3] overflow-hidden rounded-card-sm">
                     <Image src={m.poster} alt="" fill sizes="140px" className="object-cover" />
                   </span>
-                  <span className="mt-2 line-clamp-2 block text-[13px] font-medium text-white/85">{(lang === "bn" && m.titleBn) || m.title}</span>
+                  <span className="mt-2 block text-[13px] font-medium text-white/85">{(lang === "bn" && m.titleBn) || m.title}</span>
                 </button>
               );
             })}

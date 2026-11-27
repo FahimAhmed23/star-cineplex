@@ -3,12 +3,12 @@
 import { useT } from "@/lib/i18n";
 
 /** "1 Showtime · 2 Seats · 3 Checkout" — a small stepper on every booking screen (§9). */
-export function Stepper({ step, tone = "dark" }: { step: 1 | 2 | 3; tone?: "dark" | "light" }) {
+export function Stepper({ step, tone = "dark", className = "" }: { step: 1 | 2 | 3; tone?: "dark" | "light"; className?: string }) {
   const light = tone === "light";
   const { t } = useT();
   const steps = [t("booking.stepShowtime"), t("booking.stepSeats"), t("booking.stepCheckout")];
   return (
-    <ol className="flex items-center gap-2 text-[14px] md:gap-3" aria-label={t("booking.steps")}>
+    <ol className={`flex items-center gap-2 text-[14px] md:gap-3 ${className}`} aria-label={t("booking.steps")}>
       {steps.map((label, i) => {
         const n = i + 1;
         const state = n < step ? "done" : n === step ? "current" : "next";

@@ -1593,6 +1593,13 @@ body {
   background: rgb(127 62 152 / 0.28);
   color: #fff;
 }
+.dropdown-option.is-disabled {
+  color: rgb(255 255 255 / 0.38);
+  cursor: not-allowed;
+}
+.dropdown-option.is-disabled.is-active {
+  background: rgb(255 255 255 / 0.04);
+}
 .dropdown-option[aria-selected="true"] {
   color: #fff;
   font-weight: 500;

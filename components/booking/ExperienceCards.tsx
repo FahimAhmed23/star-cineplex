@@ -72,7 +72,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
       <h2 id="experience-title" className="display-s mb-8 text-white">
         <RevealText text={t("booking.chooseExperience")} show delay={0.15} />
       </h2>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="flex flex-wrap justify-center gap-6 text-left">
         {groups.map((g, gi) => {
           const theme = g.typeHalls[0] ? hallTheme(getHall(g.typeHalls[0].id)!) : null;
           const vip = g.type === "vip";
@@ -83,7 +83,7 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
             <motion.article
               key={g.type}
               {...riseIn(gi, { base: 0.35, reduced, inView: false })}
-              className={`experience-card ${hover === g.type ? "is-hover" : ""}`}
+              className={`experience-card w-full md:w-[calc((100%-48px)/3)] ${hover === g.type ? "is-hover" : ""}`}
               onMouseEnter={() => setHover(g.type)}
               onMouseLeave={() => setHover(null)}
             >

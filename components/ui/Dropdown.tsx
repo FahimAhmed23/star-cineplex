@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useId, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 
-export type DropdownOption = { value: string; label: string; lang?: string };
+export type DropdownOption = { value: string; label: string; lang?: string; disabled?: boolean; hint?: string };
 
 /**
  * Themed dropdown (designer, Nov 26) in place of the browser's own <select> list, which can't take the brand style:
@@ -60,6 +60,7 @@ export function Dropdown({
     setOpen(true);
   };
   const pick = (i: number) => {
+    if (options[i].disabled) return;
     onChange(options[i].value);
     setOpen(false);
     trigger.current?.focus();
@@ -138,11 +139,13 @@ export function Dropdown({
                 role="option"
                 aria-selected={o.value === value}
                 lang={o.lang}
-                className={`dropdown-option ${i === active ? "is-active" : ""}`}
+                aria-disabled={o.disabled || undefined}
+                className={`dropdown-option ${i === active ? "is-active" : ""} ${o.disabled ? "is-disabled" : ""}`}
                 onPointerEnter={() => setActive(i)}
                 onClick={() => pick(i)}
               >
                 <span className="truncate">{o.label}</span>
+                {o.hint && <span className="ml-auto shrink-0 text-[12px] text-muted">{o.hint}</span>}
                 {o.value === value && <Icon name="check" size={16} className="shrink-0 text-purple-light" />}
               </li>
             ))}

@@ -730,15 +730,19 @@ halls** (row E in Halls 1–3), not a hall type.
 Routes: `/book` (step 1) · `/book/seats/[showId]` (step 2) · `/book/checkout` (step 3) · `/book/ticket/[bookingId]` (confirmation).
 
 ### 9.2 Step 1a — Branch · Date · Movie (`/book`)
-Dark theme, one page, top to bottom:
-1. **Branch:** horizontal row of 9 pill buttons (Dhaka branches first). Selected: purple fill.
-   **Demo scope (designer decision):** only Bashundhara City is bookable for now; the other 8 pills are shown
-   disabled with the note "Demo: only Bashundhara City can be booked for now."
-2. **Date:** strip of the next 7 days as chips (`Today`, `Tue 24`, `Wed 25` …).
-3. **Movie:** a row of small poster cards (2:3, ~140px wide) for the movies showing at that branch on that date.
-   Selected: purple outline + slight lift. If the movie was pre-filled, it's already selected and scrolled into view.
+Dark theme, one page, top to bottom, **everything centred** (designer, Nov 27); the stepper starts **60px below the
+navbar** (168px from the top on desktop):
+1. **Branch:** the themed **dropdown** (same component as the hero's "Tonight at"), 360px. **Demo scope:** only
+   Bashundhara City is bookable; the other 8 are listed but disabled with a "Soon" hint, plus the note
+   "Demo: only Bashundhara City can be booked for now."
+2. **Date:** **Today and the next 2 days** as chips (`Today`, `Sat 28`, `Sun 29`) — starcineplex.com only sells a few
+   days ahead.
+3. **Movie:** a row of small poster cards (2:3, ~140px wide), **top-aligned**, titles shown **in full** (any number of
+   lines) for the movies showing at that branch on that date. Selected: purple outline + slight lift. If the movie was
+   pre-filled, it's already selected and scrolled into view.
 - As soon as branch, date and movie are all chosen, **§9.3 slides in below** on the same page (no page change)
-  and the page scrolls smoothly to it. Changing any choice above updates §9.3 in place.
+  and the page scrolls smoothly to it. Changing any choice above updates §9.3 in place. The hall-type cards are
+  centred as a group (a fixed third of the row each), so two cards sit in the middle, not to the left.
 
 ### 9.3 Step 1b — "Choose your experience"
 Section title: "Choose your experience". Up to **3 large cards side by side, one per hall type showing this movie
