@@ -607,38 +607,56 @@ body {
   display: none;
 }
 
-/* Opening (§8.1): beams grow in from the bottom corners (0.3–1.2s) */
-.op-beam {
+/* Opening (§8.1, "Curtain Up", Nov 27): the velvet (public/opening/curtain.webp, from a ChatGPT render, recoloured to
+   the brand purple), dim; a lit copy shows through the projector's soft ellipse (--r grows, --light fades it in) */
+.op-velvet {
+  position: absolute;
+  inset: 0;
+  background: url(/opening/curtain.webp) center bottom / cover no-repeat;
+}
+.op-velvet--dim {
+  filter: brightness(0.42) saturate(0.9);
+}
+.op-velvet--lit {
+  --r: 0vmax;
+  filter: brightness(1.2) saturate(1.05);
+  opacity: var(--light, 0);
+  -webkit-mask-image: radial-gradient(var(--r) calc(var(--r) * 0.62) at 50% 47%, #000 0%, rgb(0 0 0 / 0.65) 45%, transparent 100%);
+  mask-image: radial-gradient(var(--r) calc(var(--r) * 0.62) at 50% 47%, #000 0%, rgb(0 0 0 / 0.65) 45%, transparent 100%);
+}
+.op-glow {
+  --r: 0vmax;
+  position: absolute;
+  inset: 0;
+  opacity: var(--light, 0);
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    calc(var(--r) * 1.1) calc(var(--r) * 0.7) at 50% 47%,
+    rgb(255 240 255 / 0.2),
+    rgb(183 132 214 / 0.1) 45%,
+    transparent 75%
+  );
+}
+.op-flare {
+  position: absolute;
+  width: 52vmin;
+  height: 52vmin;
+  border-radius: 9999px;
   opacity: 0;
-  transform: scale(0.55);
-  transform-box: view-box;
-  transition:
-    opacity 900ms var(--ease-out),
-    transform 900ms var(--ease-out);
+  mix-blend-mode: screen;
+  background: radial-gradient(circle, rgb(255 255 255 / 0.55), rgb(183 132 214 / 0.22) 35%, transparent 70%);
+  filter: blur(6px);
 }
-.op-beam-l {
-  transform-origin: 0px 1110px;
+.op-logo-glow {
+  filter: drop-shadow(0 0 22px rgb(255 255 255 / 0.3));
 }
-.op-beam-r {
-  transform-origin: 2000px 1110px;
-  transition-delay: 60ms;
-}
-.op-beam.is-on {
-  opacity: 1;
-  transform: scale(1);
-}
-/* Opening (§8.1): dust drifting in the projector beams */
-.op-mote {
-  animation: op-drift 5s ease-in-out infinite alternate;
-  transform-box: fill-box;
-}
-@keyframes op-drift {
-  from {
-    transform: translate(-6px, 4px);
-  }
-  to {
-    transform: translate(8px, -10px);
-  }
+/* the hem's shadow falls on the hall as the curtain lifts */
+.op-hem-shadow {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: 18vh;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.6), transparent);
 }
 
 /* ───────────────────────── Buttons — centre fill ───────────────────────── */

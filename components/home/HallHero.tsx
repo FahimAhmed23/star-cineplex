@@ -58,6 +58,10 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
   const bars = useRef<(HTMLSpanElement | null)[]>([]);
   const video = useRef<HTMLVideoElement | null>(null);
   const revealed = stage === "revealed";
+  // after the curtain rises (§8.1) things come in one after another: hall → navbar → hero text → "Tonight at".
+  // A returning visitor (no opening) gets them at once.
+  const afterCurtain = useRef(stage === "intro").current;
+  const D = afterCurtain ? { text: 0.45, dashes: 0.9, strip: 1.05 } : { text: 0, dashes: 0.4, strip: 0.5 };
   const single = !!trailer;
   const movie = trailer ?? movies[index];
 
@@ -203,7 +207,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
             style={phone ? undefined : { maxWidth: "min(600px, calc(46vw - max(0px, (100vw - 1440px) / 2) - 32px))" }}
             initial="hidden"
             animate="show"
-            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+            variants={{ show: { transition: { delayChildren: D.text, staggerChildren: 0.1 } } }}
           >
             {/* the eyebrow and the buttons stay put when the trailer changes; only the middle swaps (designer, Nov 26).
                 They glide (layout) when the middle's height changes, since the block stays centred. */}
@@ -319,7 +323,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
           className="flex items-center gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: revealed ? 1 : 0 }}
-          transition={{ duration: 0.6, delay: revealed ? 0.4 : 0 }}
+          transition={{ duration: 0.6, delay: revealed ? D.dashes : 0 }}
         >
           <button
             type="button"
@@ -373,7 +377,7 @@ export function HallHero({ movies, hall, bookedSeats, tonight, titles, trailer, 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: revealed ? 1 : 0, y: revealed ? 0 : 24 }}
-          transition={{ duration: 0.6, delay: revealed ? 0.5 : 0, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.7, delay: revealed ? D.strip : 0, ease: [0.22, 1, 0.36, 1] }}
         >
           <TonightStrip shows={tonight} titles={titles} order={movies.map((m) => m.slug)} current={movie.slug} />
         </motion.div>

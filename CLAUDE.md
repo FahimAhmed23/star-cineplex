@@ -395,7 +395,7 @@ Note: the current site shows "Branches" twice (utility bar and main nav). Show i
 
 **Behaviour**
 - Hidden during the opening sequence; the strip and tab slide down from above together
-  (`translateY(-100%) → 0`, 600ms, `--ease-out`) right after the split reveal (§8.1 step 4).
+  (`translateY(-100%) → 0`, 600ms, `--ease-out`) as the curtain finishes rising (§8.1 step 6).
 - Fixed on scroll. After 80px of scroll the background becomes slightly more opaque and gets a soft shadow.
 - Active link: white text + small purple dot under it.
 - Below 1100px width: the utilities collapse into the menu (keep only the strip with the tab).
@@ -420,28 +420,30 @@ My tickets, language toggle and the phone number.
 
 ## 8. Home page
 
-### 8.1 Opening sequence ("House Lights Down", chosen direction)
+### 8.1 Opening sequence — "Curtain Up" (designer, Nov 27; replaces "House Lights Down")
 
-**Reference:** `references/opening-projector-beams.png` (two projector beams converging on a centre panel).
-
-Total ≈ 3.2s. Skippable at any time ("Skip intro ›", bottom-right). Plays once per session
-(`sessionStorage`); returning visitors go straight to the hero's final state.
+**It doubles as the page loader:** while it plays, the 3D hall and the first trailer load behind it.
+Skippable at any time ("Skip intro ›", bottom-right, or Escape). Plays once per session (`sessionStorage`);
+returning visitors go straight to the hero's final state.
 
 | Step | Time | What happens |
 |------|------|--------------|
-| 1. Darkness | 0–0.3s | Full screen `--night`. Nothing else. |
-| 2. Projector beams | 0.3–1.2s | **Two projector light beams** fade/grow in from the **bottom-left and bottom-right corners**, angled up toward the centre (shape exactly like the two wedges in the reference). Beams are soft volumetric light: white→`--purple-light` gradient, ~25–35% opacity, blurred edges, subtle floating dust particles inside the beams. |
-| 3. Logo panel | 0.6–1.6s | Where the beams converge, a **centre panel** (the grey rectangle in the reference, ~29% of viewport width, ~2.1:1 ratio) lights up. The **Star Cineplex logo** fades in on it, glowing slightly as if projected. Hold ~0.6s. |
-| 4. Split reveal | 1.8–2.6s | The screen **splits horizontally through the middle of the panel**: the **top half slides up** and the **bottom half slides down** (like opening doors), each taking its half of the beams/logo with it. `--ease-in-out`, 800ms. Behind the split, the 3D hall is revealed. |
-| 5. Hall arrival | 2.2–3.2s | The 3D hall is shown in an **angled view from the left side of the hall** (camera near the left wall, just above the **last row**, a slightly wider 54° lens): the dark left wall and seats fill the left of the frame, where the hero text sits, and the screen sits on the **right half** with rows of seats in the foreground. (Designer decision; replaces the earlier centred front view — row G was too close.) House lights are already dimmed; the screen brightens from 10% → 100% as the trailer starts. Navbar slides in; hero info (§8.2) fades up with a 100ms stagger. |
+| 1. Curtain | 0–0.5s | A heavy **velvet curtain in Star purple** fills the screen (like the hall doors), dim — house lights down. |
+| 2. Projector light | 0.6–1.7s | A soft **projector light** warms up in the middle of the curtain: a lit copy of the velvet shows through a growing soft ellipse, so the folds catch the light; a faint flicker as the lamp settles. Projector hum if sound is on. |
+| 3. Logo is born | 1.3–2.6s | In the light, a flare blooms and the **white Star Cineplex logo** resolves out of a blur (scale 0.86 → 1), with a soft projected glow. |
+| 4. Loader hold | 3.2s → | The curtain rises once the hall is ready. If it isn't, the light gently breathes and the curtain waits; past 5s it rises the moment the hall is ready (never on an empty hall). |
+| 5. Curtain rises | ≈1.5s | The **whole curtain lifts in one piece**, gold-fringed hem leading, its shadow passing over the hall; the light and logo fade as it lifts. Door "thunk" if sound is on. |
+| 6. Arrival | after the rise | **The hall first**, then in order: the **navbar** slides down, the **hero text** (+0.45s), the trailer dashes (+0.9s), **"Tonight at"** (+1.05s). |
+
+Total ≈ 4.9s at 1440×900 on a warm load (measured). Phones run it 1.2× faster.
 
 Implementation notes:
-- Build steps 1–4 as a **2D overlay** (HTML/CSS/SVG or canvas) above the 3D canvas. Only the hall is 3D.
-- Start loading the hall and the first trailer **during** steps 1–3, so the reveal never shows a loading state.
-  If assets are not ready by step 4, hold on the logo panel (with a subtle pulse) instead of revealing an empty hall.
-- The two halves in step 4 can be two clipped copies of the overlay (`clip-path: inset(0 0 50% 0)` and
-  `inset(50% 0 0 0)`) animated in opposite directions.
-- Reduced motion: skip steps 2–4; fade from black to the hall in 600ms.
+- 2D overlay (`components/home/OpeningSequence.tsx`) above the 3D canvas; GSAP timeline; the light is CSS custom
+  properties (`--r`, `--light`) on two layers of the same velvet (dim / lit, the lit one masked by a radial gradient).
+- Curtain image: `public/opening/curtain.webp` (2560px, transparent below the fringe) — a ChatGPT render
+  (`references/star-cineplex-curtain.png`) recoloured to the brand purple ramp (night → `#3A1A48` → `#7F3E98` →
+  `#B784D6`), gold fringe kept.
+- Reduced motion: no rise or growth — the lit curtain with the logo fades into the hall in 600ms.
 
 ### 8.2 Hero — 3D hall with trailer carousel
 
