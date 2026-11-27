@@ -1121,30 +1121,39 @@ body {
 }
 .doors__door--left .doors__plate { right: 48px; }
 .doors__door--right .doors__plate { left: 48px; }
+/* the hall sign: centred on the screen, over the meeting doors (designer, Nov 27: bigger, middle) */
 .doors__sign {
   position: absolute;
-  top: 7vh;
+  top: 50%;
   left: 50%;
-  translate: -50% 0;
-  min-width: 260px;
-  padding: 14px 28px 12px;
-  border-radius: 10px;
+  translate: -50% -50%;
+  z-index: 2;
+  min-width: 380px;
+  padding: 24px 44px 20px;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.55), 0 0 40px rgb(255 170 90 / 0.12);
   background: #120a16;
   border: 1px solid rgb(255 213 152 / 0.25);
   text-align: center;
   opacity: 0;
 }
 .doors__hall {
-  font-size: 28px;
+  font-size: 48px;
+  line-height: 1.1;
   font-weight: 600;
   letter-spacing: 0.18em;
   color: #ffd598;
   text-shadow: 0 0 12px rgb(255 190 110 / 0.8), 0 0 28px rgb(255 160 80 / 0.5);
 }
 .doors__line {
-  margin-top: 4px;
-  font-size: 14px;
+  margin-top: 8px;
+  font-size: 18px;
   color: rgb(255 255 255 / 0.75);
+}
+@media (max-width: 767px) {
+  .doors__sign { min-width: 0; width: max-content; max-width: 86vw; padding: 18px 28px 16px; }
+  .doors__hall { font-size: 34px; }
+  .doors__line { font-size: 15px; }
 }
 /* closing: slide in and meet in the centre */
 .doors--closing .doors__door,

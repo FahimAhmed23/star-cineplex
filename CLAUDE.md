@@ -778,15 +778,15 @@ Each card, top to bottom:
 Performance: render all 3 turntable seats with **one shared WebGL canvas** (drei `<View>`), not 3 canvases. Low-poly models.
 
 ### 9.4 Transition — the cinema doors
-Plays between choosing a showtime and the seat selection. Total ≈ 1.8s.
+Plays between choosing a showtime and the seat selection. Total ≈ 2.9s.
 
 1. **Doors close in (0–0.35s):** two tall cinema doors slide in from the left and right edges and meet in the
    centre, covering the screen. Door look: padded deep-purple leather with vertical stitching, a round porthole
    window in each door with a faint warm glow behind it, brass push plates.
-2. **Hold (0.35–0.8s):** a lit sign above the doors flickers on: **"HALL 1"**, with a small line under it:
+2. **Hold (0.35–1.85s, 1.5s; designer Nov 27):** a lit sign **centred on the screen, over the meeting doors** flickers on: **"HALL 1"** (48px), with a line under it (18px):
    "Japito Jibon · 7:30 PM". The 3D hall finishes loading during this hold. If it isn't ready, hold here (the
    sign glows softly) until it is.
-3. **Doors open (0.8–1.8s):** the doors **swing inward** (CSS 3D `rotateY`, hinged at the outer edges, perspective
+3. **Doors open (1.85–2.85s):** the doors **swing inward** (CSS 3D `rotateY`, hinged at the outer edges, perspective
    1200px, `--ease-in-out`), with warm light spilling through the widening gap. Behind them, the camera glides
    from the hall entrance to the seat-selection overview.
 - Reduced motion: the doors simply fade out over 400ms.

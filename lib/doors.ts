@@ -17,7 +17,7 @@ interface DoorsState {
 }
 
 const CLOSE_MS = 350;
-const MIN_HOLD_MS = 450; // the sign gets its moment even when the next screen is ready instantly
+const MIN_HOLD_MS = 1500; // the sign gets its moment even when the next screen is ready instantly (designer, Nov 27: 1.5s)
 const MAX_HOLD_MS = 6000; // never trap the user behind the doors
 const OPEN_MS = 1000;
 const FADE_MS = 400;
