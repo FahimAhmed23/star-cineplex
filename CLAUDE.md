@@ -121,7 +121,8 @@ themes). The **UI stays in the Star purple brand** everywhere (popups, chips, bu
 - **2D map** (UI, same for every branch; restyled Nov 27): rounded-square seats with a small armrest bar under
   each. **Free = outlined** (white 34%; Semi-Recliner and VIP outlined in `--purple-light`), **Booked = filled grey**
   `#2C2931`, **Yours = gold `#F5B72E` with the seat number**. The screen is a glowing arc ("Screen" above it) with a
-  soft light falling over the front rows. Ticket count: a pill with two round filled −/+ buttons (40px).
+  soft light falling over the front rows. Spacing: the header starts 60px under the navbar (as on step 1), and the
+  "Screen" label sits 40px under the title / ticket row (Nov 27). Ticket count: a pill with two round filled −/+ buttons (40px).
 
 ### Theme rule
 - **Dark theme** for immersive areas (opening, home hero, Moments, Film Reel, footer, 3D hall, seat selection).

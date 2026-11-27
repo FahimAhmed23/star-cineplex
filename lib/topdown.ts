@@ -72,8 +72,10 @@ export function topDown(layout: HallLayout, box: MapBox): TopDown {
   const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0);
   const up = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
   const shift = right.multiplyScalar(-(box.x + box.w / 2 - cx) * worldPerPx).add(up.multiplyScalar((box.y + box.h / 2 - cy) * worldPerPx));
-  cam.position.sub(shift);
-  const look = center.clone().sub(shift);
+  // (moving the camera by +shift moves the picture the other way, onto the box; this was .sub before Nov 27, which
+  // only worked while the box sat near the middle of the screen)
+  cam.position.add(shift);
+  const look = center.clone().add(shift);
   cam.lookAt(look);
   cam.updateMatrixWorld();
 

@@ -97,7 +97,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const w = Math.min(760, vw - 32);
-      const top = head.bottom + 56; // room for the screen arc
+      // 40px under the title/ticket row: the "Screen" label, then the arc, then the seats (designer, Nov 27)
+      const top = head.bottom + 106;
       const next = { vw, vh, x: (vw - w) / 2, y: top, w, h: Math.max(140, foot.top - 20 - top) };
       setBox((b) => (b && Object.keys(next).every((k) => Math.abs(b[k as keyof MapBox] - next[k as keyof MapBox]) < 1) ? b : next));
     };
@@ -406,7 +407,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
               />
             ))}
           </svg>
-          <span className="seatmap__screen" style={{ left: (td.screen.x0 + td.screen.x1) / 2, top: screenY - 30 }}>
+          <span className="seatmap__screen" style={{ left: (td.screen.x0 + td.screen.x1) / 2, top: screenY - 22 }}>
             {t("booking.screen")}
           </span>
           {/* row letters */}
@@ -467,7 +468,8 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
       </p>
 
       {/* header (the column) */}
-      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto w-full max-w-[760px] px-4 md:top-[120px]">
+      {/* 60px under the navbar, like the step-1 page */}
+      <div ref={headRef} className="pointer-events-none absolute inset-x-0 top-[76px] z-10 mx-auto w-full max-w-[760px] px-4 md:top-[168px]">
         <Link href={`/book?movie=${movie.slug}`} className="focus-ring pointer-events-auto inline-flex items-center gap-1.5 text-[13px] text-white/70 hover:text-white">
           <Icon name="arrowLeft" size={16} />
           {t("booking.changeShowtime")}
