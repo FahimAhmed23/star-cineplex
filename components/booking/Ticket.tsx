@@ -159,7 +159,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                       <dd className="font-semibold">{hallName(hall, lang)}</dd>
                     </div>
                     <div className="col-span-2">
-                      <dt className="ticket__label">{t("ticket.seats")}</dt>
+                      <dt className="ticket__label">{t(b.seats.length === 1 ? "ticket.seatOne" : "ticket.seats")}</dt>
                       <dd className="font-mono text-[18px] font-semibold text-purple">{b.seats.map((s) => s.id).join("  ")}</dd>
                     </div>
                     <div>
@@ -173,7 +173,7 @@ export function Ticket({ bookingId }: { bookingId: string }) {
                   {qr ? <img src={qr} alt={t("ticket.qrAlt")} className="size-[148px]" /> : <span className="size-[148px]" />}
                   <p className="mt-4 font-mono text-[12px] tracking-wide text-ink/65">{b.id}</p>
                   <p className="mt-4 text-[13px] text-ink/65">
-                    {b.seats.length} {t("ticket.seats").toLowerCase()} · <span className="font-semibold text-ink tabular-nums">৳{b.total.toLocaleString("en-US")}</span>
+                    {b.seats.length === 1 ? t("checkout.seatCountOne") : t("checkout.seatCount", { n: b.seats.length })} · <span className="font-semibold text-ink tabular-nums">৳{b.total.toLocaleString("en-US")}</span>
                   </p>
                 </div>
               </article>

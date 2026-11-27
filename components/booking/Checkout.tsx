@@ -370,7 +370,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
               <div className={`hold hold--${holdTone}`}>
                 <p className="flex items-center gap-2 text-[15px] font-semibold" aria-live="off">
                   <Icon name="stopwatch" size={20} />
-                  {t("checkout.held")} <span className="font-mono tabular-nums">{mm}</span>
+                  {t(seatIds.length === 1 ? "checkout.heldOne" : "checkout.held")} <span className="font-mono tabular-nums">{mm}</span>
                 </p>
                 {holdTone === "urgent" && (
                   <p className="mt-1 flex items-center gap-1.5 text-[13px]" role="status">
@@ -449,7 +449,7 @@ export function Checkout({ show, seatIds, holdSeconds }: { show: Showtime; seatI
       <div className="fixed inset-x-0 bottom-0 z-50 flex items-center gap-3 border-t border-ink/10 bg-white/95 px-4 py-3 backdrop-blur-md md:hidden">
         <button type="button" onClick={() => setSheet((v) => !v)} aria-expanded={sheet} aria-controls="checkout-summary" className="focus-ring flex min-w-0 flex-1 flex-col items-start rounded-[8px] text-left">
           <span className={`flex items-center gap-1 text-[12px] ${holdTone === "urgent" ? "font-semibold text-[#b42f34]" : holdTone === "warn" ? "font-semibold text-[#8f5d12]" : "text-ink/65"}`}>
-            {seatIds.length} {t("ticket.seats").toLowerCase()} · <span className="font-mono tabular-nums">{mm}</span>
+            {seatIds.length === 1 ? t("checkout.seatCountOne") : t("checkout.seatCount", { n: seatIds.length })} · <span className="font-mono tabular-nums">{mm}</span>
             <Icon name="altArrowUp" size={14} className={`transition-transform ${sheet ? "rotate-180" : ""}`} />
           </span>
           <span className="text-[20px] font-semibold tabular-nums">৳{total.toLocaleString("en-US")}</span>

@@ -793,7 +793,7 @@ export function SeatSelection({ show, hallId, initialSeats = [], taken = [] }: {
                 <>
                   {t("booking.row")} {label.row}{" "}
                   <span className="text-muted">
-                    · {t("booking.seatsWord")} {label.seats}
+                    · {t(/[–,]/.test(label.seats) ? "booking.seatsWord" : "booking.seatWord")} {label.seats}
                   </span>
                 </>
               ) : (
