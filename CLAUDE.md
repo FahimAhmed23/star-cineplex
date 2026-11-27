@@ -240,6 +240,11 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
   | `--radius-card-lg` | 32px | Large surfaces: ticket (§9.8), checkout summary card, slide-over panels (Prices, About) |
 - Tailwind utilities: `rounded-pill`, `rounded-card-sm`, `rounded-card-md`, `rounded-card-lg`.
 
+### Phone loading (Nov 27)
+- Upright phones (< 768px, portrait) get `public/opening/curtain-portrait.webp` (1100px centre crop, 152KB) instead of
+  the 526KB full curtain. Anek Bangla and IBM Plex Mono are not preloaded (`preload: false`), so only Geist and the
+  display face compete with the opening. Measured on the live site (phone size): first paint 0.4s, ~1.3MB before.
+
 ### Section title gaps on 375–820px (Nov 27)
 - Title → content is **32px** in Now Showing, Coming Soon, Moments and Branches up to 820px wide (56px / 40px above).
 - The Now Showing phone row scrolls sideways only (no vertical scroll inside it; on ≤575px the cards only fade in —

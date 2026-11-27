@@ -27,6 +27,8 @@ export const anekBangla = Anek_Bangla({
   subsets: ["bengali", "latin"],
   weight: ["400", "600", "700"],
   display: "swap",
+  // not needed for the first screen in English: load it when it is used, so it never delays the opening (Nov 27)
+  preload: false,
   variable: "--font-anek-bangla",
 });
 
@@ -35,6 +37,8 @@ export const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
+  // not needed for the first screen in English: load it when it is used, so it never delays the opening (Nov 27)
+  preload: false,
   variable: "--font-plex-mono",
 });
 
