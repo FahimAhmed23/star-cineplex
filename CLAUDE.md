@@ -241,7 +241,7 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
 - Tailwind utilities: `rounded-pill`, `rounded-card-sm`, `rounded-card-md`, `rounded-card-lg`.
 
 ### Phone loading (Nov 27)
-- Upright phones (< 768px, portrait) get `public/opening/curtain-portrait.webp` (1100px centre crop, 152KB) instead of
+- Tall screens (phones and tablets held upright, width ≤ ¾ of height) get `public/opening/curtain-portrait.webp` (1100px centre crop, 152KB) instead of
   the 526KB full curtain. Anek Bangla and IBM Plex Mono are not preloaded (`preload: false`), so only Geist and the
   display face compete with the opening. Measured on the live site (phone size): first paint 0.4s, ~1.3MB before.
 

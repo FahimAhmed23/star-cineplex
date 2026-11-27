@@ -727,8 +727,9 @@ body {
   inset: 0;
   background: url(/opening/curtain.webp) center bottom / cover no-repeat;
 }
-/* upright phones only see the middle of the curtain: a 1100px-wide centre crop, 152KB instead of 526KB (Nov 27) */
-@media (max-width: 767px) and (orientation: portrait) {
+/* tall screens (phones and tablets held upright, width ≤ 3/4 of height) only see the middle of the curtain — at most
+   0.75 × its 1407px height = 1055px — so they get a 1100px-wide centre crop, 152KB instead of 526KB (Nov 27) */
+@media (max-aspect-ratio: 3/4) {
   .op-velvet { background-image: url(/opening/curtain-portrait.webp); }
 }
 .op-velvet--dim {
