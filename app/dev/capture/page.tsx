@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { halls } from "@/lib/data";
 import { loadShowtimes, typicalShow } from "@/lib/showtimes.server";
 import { CaptureLab } from "./CaptureLab";
@@ -6,5 +7,10 @@ import { CaptureLab } from "./CaptureLab";
 export default async function Page() {
   const hall = halls.find((h) => h.id === "bdc-hall-1")!;
   const show = typicalShow(await loadShowtimes(), hall.id);
-  return <CaptureLab hall={hall} booked={show?.bookedSeats ?? []} />;
+  // CaptureLab reads the URL (useSearchParams), which Next requires inside a Suspense boundary for the build
+  return (
+    <Suspense>
+      <CaptureLab hall={hall} booked={show?.bookedSeats ?? []} />
+    </Suspense>
+  );
 }
