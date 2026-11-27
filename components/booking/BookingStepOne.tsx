@@ -123,8 +123,8 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
 
         {/* 1. Branch */}
         {/* branch and date side by side (designer, Nov 27) */}
-        <div className="mb-12 flex flex-wrap items-start justify-center gap-x-16 gap-y-10">
-        <section aria-labelledby="pick-branch">
+        <div className="pick-card mx-auto flex w-fit max-w-full flex-wrap items-stretch justify-center max-md:flex-col">
+        <section aria-labelledby="pick-branch" className="px-10 py-7 max-md:px-6">
           <h2 id="pick-branch" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.branch")}
           </h2>
@@ -142,15 +142,16 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
               hint: b.slug !== DEMO_BRANCH ? t("booking.demoSoon") : undefined,
             }))}
           />
-          <p className="mt-3 text-[13px] text-muted">{t("booking.demoOnly")}</p>
         </section>
 
+        <span aria-hidden className="pick-card__divider" />
+
         {/* 2. Date */}
-        <section aria-labelledby="pick-date">
+        <section aria-labelledby="pick-date" className="px-10 py-7 max-md:px-6">
           <h2 id="pick-date" className="mb-4 text-[24px] font-medium text-white">
             {t("booking.date")}
           </h2>
-          <div className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto px-2 py-1">
+          <div className="no-scrollbar mx-auto flex w-fit max-w-full gap-2 overflow-x-auto">
             {(days ?? Array.from({ length: BOOKABLE_DAYS }, () => null)).map((d, i) => (
               <button
                 key={i}
@@ -166,6 +167,7 @@ export function BookingStepOne({ slots, halls, initialMovie }: { slots: ShowSlot
           </div>
         </section>
         </div>
+        <p className="mt-3 mb-12 text-[13px] text-muted">{t("booking.demoOnly")}</p>
 
         {/* 3. Movie */}
         <section aria-labelledby="pick-movie" className="mb-6">

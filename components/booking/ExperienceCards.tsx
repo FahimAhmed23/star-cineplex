@@ -107,7 +107,8 @@ export function ExperienceCards({ movie, slots, halls }: { movie: string; slots:
                 </h3>
                 <p className="mt-2 text-[14px] text-muted">{hallsLine(g)}</p>
                 <p className="mt-3 text-[16px] font-semibold text-white tabular-nums">{t("booking.priceRange", { min, max })}</p>
-                {g.type === "premium" && <p className="mt-1 text-[13px] text-purple-light">{t("booking.semiNote")}</p>}
+                {/* the note line is reserved in every card, so the showtimes start at the same height in all of them */}
+                <p className="mt-1 min-h-5 text-[13px] leading-5 text-purple-light">{g.type === "premium" ? t("booking.semiNote") : null}</p>
                 <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-3 px-1.5" aria-label={t("booking.pickShowtime")}>
                   {g.shows.map((s) => {
                     const cap = halls[s.hall].capacity;

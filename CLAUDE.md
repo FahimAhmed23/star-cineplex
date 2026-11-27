@@ -732,7 +732,9 @@ Routes: `/book` (step 1) · `/book/seats/[showId]` (step 2) · `/book/checkout` 
 ### 9.2 Step 1a — Branch · Date · Movie (`/book`)
 Dark theme, one page, top to bottom, **everything centred** (designer, Nov 27); the stepper starts **60px below the
 navbar** (168px from the top on desktop):
-Section labels "Branch", "Date", "Movie": 24px, medium, white. **Branch and Date sit side by side in one row.**
+Section labels "Branch", "Date", "Movie": 24px, medium, white. **Branch and Date sit side by side in one card**
+(a step lighter than the page, 1.5px purple border, a purple divider between them; labels and controls on the same
+lines); the demo note sits under the card.
 1. **Branch:** the themed **dropdown** (same component as the hero's "Tonight at"), 360px. **Demo scope:** only
    Bashundhara City is bookable; the other 8 are listed but disabled with a "Soon" hint, plus the note
    "Demo: only Bashundhara City can be booked for now."
@@ -763,6 +765,8 @@ Each card, top to bottom:
 - **Showtime chips** for this movie/date in that hall type, as **ticket stubs** (designer, Nov 27 — same shape as the
   hero's "Tonight at" chips, notches cut in the card's colour): `● 7:30 PM ┆ Hall 1`, white, purple on hover. The
   availability dot: green "Available", amber "Filling fast" (>70% booked), red "Sold out" (chip disabled, struck through).
+- Card content lines up across cards: the "includes a Semi-Recliner row" line is reserved in every card, so the first
+  showtime sits at the same height in all of them. Card border 1.5px.
 - The turntable view is inset 8px from the card's top and sides so its square render area never covers the card's
   rounded border.
 - Clicking a showtime chip → **§9.4 cinema doors**.

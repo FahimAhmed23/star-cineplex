@@ -980,9 +980,28 @@ body {
 }
 .experience-card {
   border-radius: var(--radius-card-md);
-  border: 1px solid rgb(255 255 255 / 0.08);
+  border: 1.5px solid rgb(255 255 255 / 0.1);
   background: rgb(255 255 255 / 0.03);
   transition: border-color 0.3s, transform 0.3s var(--ease-out);
+}
+/* branch + date, one card (designer, Nov 27): a step lighter than the page, purple border, divider between */
+.pick-card {
+  border-radius: var(--radius-card-md);
+  border: 1.5px solid rgb(127 62 152 / 0.8);
+  background: rgb(255 255 255 / 0.03);
+}
+.pick-card__divider {
+  width: 1.5px;
+  margin-block: 24px;
+  background: rgb(127 62 152 / 0.45);
+}
+@media (max-width: 767px) {
+  .pick-card__divider {
+    width: auto;
+    height: 1.5px;
+    margin-block: 0;
+    margin-inline: 24px;
+  }
 }
 .experience-card.is-hover {
   border-color: rgb(183 132 214 / 0.45);
