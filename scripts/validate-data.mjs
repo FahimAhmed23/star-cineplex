@@ -12,7 +12,7 @@ const errors = [];
 const ok = (cond, msg) => { if (!cond) errors.push(msg); };
 
 // Expected seat counts from §6
-const EXPECT = { "bdc-hall-1": 248, "bdc-hall-2": 248, "bdc-hall-3": 248, "bdc-hall-5": 113, "bdc-hall-6": 231 };
+const EXPECT = { "bdc-hall-1": 248, "bdc-hall-2": 248, "bdc-hall-3": 248, "bdc-hall-5": 113 };
 
 const seatIndex = new Map();
 for (const h of halls) {

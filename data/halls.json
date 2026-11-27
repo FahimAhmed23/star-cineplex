@@ -1,5 +1,5 @@
 {
-  "_note": "Seat maps per CLAUDE.md §6. Bashundhara Halls 1–3 and 5 are verified against Star Cineplex's own seat maps. Hall 6 Atmos is approximate until the real map is supplied. Other branches have no real seat maps or prices yet: each gets one placeholder hall that reuses the Hall 1 layout and Bashundhara premium prices (approx: true). VIP Hall 5 has a per-hall look (walnut walls, amber lights) from references/ai/hall-vip-back.png.",
+  "_note": "Seat maps per CLAUDE.md §6. Bashundhara Halls 1–3 and 5 are verified against Star Cineplex's own seat maps. Bashundhara has no Atmos hall (designer, Nov 27: the chain's Atmos auditorium is at Shimanto Shambhar), so there is no Hall 6. Other branches have no real seat maps or prices yet: each gets one placeholder hall that reuses the Hall 1 layout and Bashundhara premium prices (approx: true). VIP Hall 5 has a per-hall look (walnut walls, amber lights) from references/ai/hall-vip-back.png.",
   "halls": [
     {
       "id": "bdc-hall-1",
@@ -374,102 +374,6 @@
           "row": "J",
           "class": "vip",
           "pattern": "SSSS......SSSSSSS",
-          "start": 1
-        }
-      ]
-    },
-    {
-      "id": "bdc-hall-6",
-      "branch": "bashundhara-city",
-      "name": "Hall 6",
-      "type": "atmos",
-      "numbering": "ltr",
-      "pad": 2,
-      "approx": true,
-      "prices": {
-        "premium": {
-          "matinee": 600,
-          "evening": 750,
-          "weekend": 750
-        }
-      },
-      "rows": [
-        {
-          "row": "A",
-          "class": "premium",
-          "pattern": ".....SSSSSSSSSSSSS..SSSS",
-          "start": 4
-        },
-        {
-          "row": "B",
-          "class": "premium",
-          "pattern": ".....SSSSSSSSSSSSS..SSSS",
-          "start": 4
-        },
-        {
-          "row": "C",
-          "class": "premium",
-          "pattern": ".....SSSSSSSSSSSSS..SSSS",
-          "start": 4
-        },
-        {
-          "row": "D",
-          "class": "premium",
-          "pattern": ".....SSSSSSSSSSSSS..SSSS",
-          "start": 4
-        },
-        {
-          "row": "E",
-          "class": "premium",
-          "pattern": ".....SSSSSSSSSSSSS..SSSS",
-          "start": 4
-        },
-        {
-          "row": "F",
-          "class": "premium",
-          "pattern": ".....SSSSSSSSSSSSS..SSSS",
-          "start": 4
-        },
-        {
-          "row": "G",
-          "class": "premium",
-          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
-          "start": 1
-        },
-        {
-          "row": "H",
-          "class": "premium",
-          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
-          "start": 1
-        },
-        {
-          "row": "J",
-          "class": "premium",
-          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
-          "start": 1
-        },
-        {
-          "row": "K",
-          "class": "premium",
-          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
-          "start": 1
-        },
-        {
-          "row": "L",
-          "class": "premium",
-          "pattern": "SSS..SSSSSSSSSSSSS..SSSS",
-          "start": 1
-        },
-        {
-          "row": "M",
-          "class": "premium",
-          "pattern": ".....SSSSSS.SSSSSSS.....",
-          "start": 1
-        },
-        {
-          "row": "N",
-          "class": "premium",
-          "pattern": "...SSSSSSSS.SSSSSSSS....",
           "start": 1
         }
       ]
