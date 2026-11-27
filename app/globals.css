@@ -1729,6 +1729,35 @@ body {
   background: rgb(127 62 152 / 0.55);
   border-radius: 9999px;
 }
+/* phones: the list as a full-screen sheet on the night colour (designer, Nov 27) */
+.dropdown-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  background: var(--night);
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+}
+.dropdown-sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 4px 16px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+.dropdown-sheet__list {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 8px;
+  outline: none;
+  overscroll-behavior: contain;
+}
+.dropdown-sheet .dropdown-option {
+  min-height: 52px;
+  font-size: 16px;
+}
 .dropdown-option {
   display: flex;
   align-items: center;

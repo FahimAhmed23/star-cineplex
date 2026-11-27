@@ -128,10 +128,11 @@ export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted =
           </div>
         </div>
       )}
-      {/* soft light from the screen on the walls and the first rows */}
+      {/* soft light from the screen on the walls and the first rows — it starts under the screen's bottom edge
+          (it used to start at 40%, inside the picture, and showed as a pale band across the trailer) */}
       <div
         className="pointer-events-none absolute inset-x-0 transition-opacity duration-500"
-        style={{ top: "40%", height: "22%", opacity: 0.35 * brightness, background: "radial-gradient(60% 70% at 50% 0%, rgb(190 170 220 / 0.35), transparent 70%)" }}
+        style={{ top: `${QUAD[2][1] * 100 + 0.3}%`, height: "22%", opacity: 0.35 * brightness, background: "radial-gradient(60% 70% at 50% 0%, rgb(190 170 220 / 0.35), transparent 70%)" }}
       />
     </div>
   );

@@ -238,6 +238,11 @@ Button has `overflow: hidden`; the fill sits behind the label (`z-index: -1`).
   | `--radius-card-lg` | 32px | Large surfaces: ticket (§9.8), checkout summary card, slide-over panels (Prices, About) |
 - Tailwind utilities: `rounded-pill`, `rounded-card-sm`, `rounded-card-md`, `rounded-card-lg`.
 
+### Dropdown on phones (Nov 27)
+- Below 768px every themed dropdown opens as a **full-screen sheet** on `--night` (label + close button at the top,
+  52px rows), portalled to `<body>` with page scroll locked. Opening a dropdown never scrolls or shifts the page on
+  any screen size (focus without scroll; only the list itself scrolls to the active row).
+
 ### Section spacing
 - Home page: **100px between sections** (designer, Nov 26) — each section starts 100px after the previous one ends
   (Now Showing, Coming Soon, Branches: 100px top; Coming Soon and Branches 100px bottom before Moments / the footer).

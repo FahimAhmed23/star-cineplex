@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/Icon";
 
 export type DropdownOption = { value: string; label: string; lang?: string; disabled?: boolean; hint?: string; /** shorter text for the closed button on phones */ short?: string };
@@ -11,6 +12,10 @@ export type DropdownOption = { value: string; label: string; lang?: string; disa
  * a pill trigger that stays fully round when open, and a dark glass list 4px from it with purple-tinted rows and a
  * check on the current choice. Opens up or down (`placement`). Keyboard: Enter / Space / arrows open; arrows,
  * Home, End move; Enter / Space pick; Escape or Tab close. ARIA listbox pattern.
+ * Phones (< 768px, designer Nov 27): the list opens as a full-screen sheet on the page's night colour (portalled to
+ * <body>, page scroll locked), so it never runs off the screen or pushes the page sideways.
+ * Opening never scrolls the page: focus uses preventScroll and the active row is kept in view by moving only the
+ * list's own scroll position.
  */
 export function Dropdown({
   value,
@@ -36,24 +41,48 @@ export function Dropdown({
   const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const list = useRef<HTMLUListElement>(null);
+  const sheet = useRef<HTMLDivElement>(null);
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   const current = options.find((o) => o.value === value) ?? options[0];
 
   // close on a click outside
   useEffect(() => {
     if (!open) return;
     const off = (e: PointerEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      if (!root.current?.contains(t) && !sheet.current?.contains(t)) setOpen(false);
     };
     window.addEventListener("pointerdown", off);
     return () => window.removeEventListener("pointerdown", off);
   }, [open]);
   // focus the list when it opens, keep the active row in view
   useEffect(() => {
-    if (open) list.current?.focus();
-  }, [open]);
+    if (open) list.current?.focus({ preventScroll: true });
+  }, [open, phone]);
   useEffect(() => {
-    if (open) list.current?.querySelector<HTMLElement>(`[data-i="${active}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [open, active]);
+    const ul = list.current;
+    const li = ul?.querySelector<HTMLElement>(`[data-i="${active}"]`);
+    if (!open || !ul || !li) return;
+    // only the list scrolls (scrollIntoView would also move the page)
+    if (li.offsetTop < ul.scrollTop) ul.scrollTop = li.offsetTop - 6;
+    else if (li.offsetTop + li.offsetHeight > ul.scrollTop + ul.clientHeight) ul.scrollTop = li.offsetTop + li.offsetHeight - ul.clientHeight + 6;
+  }, [open, active, phone]);
+  // phones: the sheet covers the page, so the page underneath must not scroll
+  useEffect(() => {
+    if (!open || !phone) return;
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = prev;
+    };
+  }, [open, phone]);
 
   const show = () => {
     setActive(Math.max(0, options.findIndex((o) => o.value === value)));
@@ -63,7 +92,7 @@ export function Dropdown({
     if (options[i].disabled) return;
     onChange(options[i].value);
     setOpen(false);
-    trigger.current?.focus();
+    trigger.current?.focus({ preventScroll: true });
   };
   const onTriggerKey = (e: React.KeyboardEvent) => {
     if (["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)) {
@@ -82,7 +111,7 @@ export function Dropdown({
       " ": () => pick(active),
       Escape: () => {
         setOpen(false);
-        trigger.current?.focus();
+        trigger.current?.focus({ preventScroll: true });
       },
     };
     if (e.key === "Tab") return setOpen(false);
@@ -95,6 +124,25 @@ export function Dropdown({
 
   const h = size === "lg" ? "h-11 text-[15px]" : "h-10 text-[14px]";
   const y = reduced ? 0 : placement === "up" ? 6 : -6;
+
+  const items = options.map((o, i) => (
+    <li
+      key={o.value}
+      id={`${id}-o${i}`}
+      data-i={i}
+      role="option"
+      aria-selected={o.value === value}
+      lang={o.lang}
+      aria-disabled={o.disabled || undefined}
+      className={`dropdown-option ${i === active ? "is-active" : ""} ${o.disabled ? "is-disabled" : ""}`}
+      onPointerEnter={() => setActive(i)}
+      onClick={() => pick(i)}
+    >
+      <span className="truncate">{o.label}</span>
+      {o.hint && <span className="ml-auto shrink-0 text-[12px] text-muted">{o.hint}</span>}
+      {o.value === value && <Icon name="check" size={16} className="shrink-0 text-purple-light" />}
+    </li>
+  ));
 
   return (
     <div ref={root} className={`relative ${className}`}>
@@ -123,7 +171,7 @@ export function Dropdown({
       </button>
 
       <AnimatePresence>
-        {open && (
+        {open && !phone && (
           <motion.ul
             ref={list}
             id={`${id}-list`}
@@ -138,27 +186,57 @@ export function Dropdown({
             exit={{ opacity: 0, y, transition: { duration: 0.15 } }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
-            {options.map((o, i) => (
-              <li
-                key={o.value}
-                id={`${id}-o${i}`}
-                data-i={i}
-                role="option"
-                aria-selected={o.value === value}
-                lang={o.lang}
-                aria-disabled={o.disabled || undefined}
-                className={`dropdown-option ${i === active ? "is-active" : ""} ${o.disabled ? "is-disabled" : ""}`}
-                onPointerEnter={() => setActive(i)}
-                onClick={() => pick(i)}
-              >
-                <span className="truncate">{o.label}</span>
-                {o.hint && <span className="ml-auto shrink-0 text-[12px] text-muted">{o.hint}</span>}
-                {o.value === value && <Icon name="check" size={16} className="shrink-0 text-purple-light" />}
-              </li>
-            ))}
+            {items}
           </motion.ul>
         )}
       </AnimatePresence>
+      {phone &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                ref={sheet}
+                className="dropdown-sheet"
+                role="dialog"
+                aria-modal="true"
+                aria-label={label}
+                initial={{ opacity: 0, y: reduced ? 0 : 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: reduced ? 0 : 24, transition: { duration: 0.18 } }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="dropdown-sheet__head">
+                  <p className="text-[18px] font-semibold text-white">{label}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      trigger.current?.focus({ preventScroll: true });
+                    }}
+                    className="focus-ring grid size-10 place-items-center rounded-pill bg-white/10 text-white"
+                    aria-label="Close"
+                  >
+                    <Icon name="closeSimple" size={18} />
+                  </button>
+                </div>
+                <ul
+                  ref={list}
+                  id={`${id}-list`}
+                  role="listbox"
+                  tabIndex={-1}
+                  aria-label={label}
+                  aria-activedescendant={`${id}-o${active}`}
+                  onKeyDown={onListKey}
+                  className="dropdown-sheet__list"
+                >
+                  {items}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
+        )}
     </div>
   );
 }
