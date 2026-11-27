@@ -783,7 +783,7 @@ Plays between choosing a showtime and the seat selection. Total ≈ 2.9s.
 1. **Doors close in (0–0.35s):** two tall cinema doors slide in from the left and right edges and meet in the
    centre, covering the screen. Door look: padded deep-purple leather with vertical stitching, a round porthole
    window in each door with a faint warm glow behind it, brass push plates.
-2. **Hold (0.35–1.85s, 1.5s; designer Nov 27):** a lit sign **centred on the screen, over the meeting doors** flickers on: **"HALL 1"** (48px), with a line under it (18px):
+2. **Hold (0.35–1.85s, 1.5s; designer Nov 27):** a lit sign **above the doors (near the top)** fades on (no flicker): **"HALL 1"** (48px), with a line under it (18px):
    "Japito Jibon · 7:30 PM". The 3D hall finishes loading during this hold. If it isn't ready, hold here (the
    sign glows softly) until it is.
 3. **Doors open (1.85–2.85s):** the doors **swing inward** (CSS 3D `rotateY`, hinged at the outer edges, perspective

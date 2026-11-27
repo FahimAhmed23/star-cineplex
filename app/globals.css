@@ -1121,12 +1121,12 @@ body {
 }
 .doors__door--left .doors__plate { right: 48px; }
 .doors__door--right .doors__plate { left: 48px; }
-/* the hall sign: centred on the screen, over the meeting doors (designer, Nov 27: bigger, middle) */
+/* the hall sign: above the doors, near the top (designer, Nov 27: bigger; kept at the top) */
 .doors__sign {
   position: absolute;
-  top: 50%;
+  top: 7vh;
   left: 50%;
-  translate: -50% -50%;
+  translate: -50% 0;
   z-index: 2;
   min-width: 380px;
   padding: 24px 44px 20px;
@@ -1162,17 +1162,14 @@ body {
   transform: none;
 }
 /* holding: the sign flickers on */
+/* the sign lights up with a calm fade (designer, Nov 27: no flicker) */
 .doors--holding .doors__sign,
 .doors--fading .doors__sign {
-  animation: doors-sign 0.45s steps(1) forwards;
+  animation: doors-sign 0.5s var(--ease-out) forwards;
 }
 @keyframes doors-sign {
-  0% { opacity: 0.2; }
-  20% { opacity: 0.9; }
-  35% { opacity: 0.3; }
-  55% { opacity: 1; }
-  70% { opacity: 0.6; }
-  100% { opacity: 1; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 /* opening: swing inward from the outer hinges, warm light through the gap */
 .doors--opening .doors__door {
