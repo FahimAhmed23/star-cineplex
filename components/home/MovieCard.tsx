@@ -62,7 +62,12 @@ export function MovieCard({ movie, variant, onPlayTrailer, priority, inert, stri
           src={movie.poster}
           alt=""
           fill
-          sizes="(min-width: 1280px) 302px, 25vw"
+          // real drawn widths (Nov 28): Now Showing phone row ~64vw (max 300px); Coming Soon 2 / 3 / 4 per row
+          sizes={
+            variant === "now"
+              ? "(max-width: 575px) 300px, (min-width: 1280px) 302px, 25vw"
+              : "(max-width: 639px) 50vw, (max-width: 959px) 34vw, (min-width: 1280px) 302px, 25vw"
+          }
           className="object-cover"
           priority={priority}
         />

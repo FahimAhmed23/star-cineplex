@@ -134,11 +134,15 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
             >
               {track.map((m, i) => {
                 const inView = i >= pos && i < pos + visible;
+                // the row opens on the middle copy (pos = n), so the cards on screen at first are n … n + visible − 1:
+                // those rise in, counted from the first one on screen. (Counting from the start of the track gave the
+                // rise to the hidden copies on the left and left the real first card rising alone, last — Nov 28.)
+                const rise = i - n;
                 return (
                   <li key={`${m.slug}-${i}`} className="shrink-0" style={{ width: cardW }} aria-hidden={!inView || undefined}>
-                    {i < visible ? (
-                      // the first four rise in once, after the title (designer reference: Aave)
-                      <motion.div {...riseIn(i, { reduced })}>
+                    {rise >= 0 && rise < visible ? (
+                      // the first cards on screen rise in once, after the title (designer reference: Aave)
+                      <motion.div {...riseIn(rise, { reduced })}>
                         <MovieCard movie={m} variant="soon" onPlayTrailer={onPlayTrailer} inert={!inView} />
                       </motion.div>
                     ) : (
@@ -181,13 +185,14 @@ export function ComingSoon({ movies, onPlayTrailer }: { movies: Movie[]; onPlayT
                 <button
                   type="button"
                   onClick={() => manual(() => go(i - active))}
-                  className="focus-ring grid h-6 place-items-center px-1 max-md:h-10"
+                  className="group focus-ring grid h-6 place-items-center px-1 max-md:h-10"
                   aria-label={t("cards.goTo", { n: i + 1 })}
                   aria-current={i === active || undefined}
                 >
-                  {/* one 24px pill, scaled down to a dot when inactive (scale, not width) */}
+                  {/* designer, Nov 28: inactive = an 8px light-purple dot, active = a 28px purple pill. The width grows
+                      (a scaled dot would squash its round ends); only three of them, so it's cheap. */}
                   <span
-                    className={`block h-1.5 w-6 rounded-pill transition-[scale,background-color] duration-300 ease-out ${i === active ? "scale-x-100 bg-purple-light" : "scale-x-25 bg-ink/20"}`}
+                    className={`block h-2 rounded-pill transition-[width,background-color] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-colors ${i === active ? "w-7 bg-purple" : "w-2 bg-purple-light group-hover:bg-purple/50"}`}
                   />
                 </button>
               </li>

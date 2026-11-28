@@ -1,3 +1,4 @@
+import { preload } from "react-dom";
 import { HomeExperience } from "@/components/home/HomeExperience";
 import type { HeroMovie } from "@/components/home/HallHero";
 import type { ShowLite } from "@/components/home/TonightStrip";
@@ -7,6 +8,12 @@ import { loadShowtimes, typicalShow } from "@/lib/showtimes.server";
 const HERO_HALL = "bdc-hall-1"; // §8.2: the hero is Bashundhara Hall 1
 
 export default async function Home() {
+  // Nov 28: the curtain (§8.1) is a CSS background inside a client component, so the browser only found it after the
+  // JavaScript ran and the loader itself came in late. Preload it from the HTML: tall screens the 152 KB centre crop,
+  // everything else the full curtain (the same split as .op-velvet in globals.css).
+  preload("/opening/curtain-portrait.webp", { as: "image", fetchPriority: "high", media: "(max-aspect-ratio: 3/4)" });
+  preload("/opening/curtain.webp", { as: "image", fetchPriority: "high", media: "not all and (max-aspect-ratio: 3/4)" });
+
   const showtimes = await loadShowtimes();
 
   // "Playing across N branches" — branches that have this film in the schedule

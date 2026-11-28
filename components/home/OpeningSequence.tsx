@@ -14,19 +14,49 @@ import { useUi } from "@/lib/store";
 let playedThisLoad = false;
 /** the logo is "born" by this point; the curtain may rise from here once the hall is ready */
 const MIN_HOLD = 3.2;
-/** past this, the curtain rises as soon as the hall is ready (it never rises on an empty hall) */
-const MAX_HOLD = 5;
+/** the curtain also waits for the page's images (posters, Moments, footer) — but never longer than this (s, real time).
+ *  ~450 KB in all, so on 4G they are in well before MIN_HOLD; this only helps on a slow connection. */
+const ASSET_CAP = 6;
+
+/**
+ * Nov 28: the curtain is the page loader (§8.1), so the whole page loads behind it, not only the hall: every lazy
+ * image on the page switches to eager (the browser still picks the right srcset size for each), and this resolves
+ * when they have all loaded (or failed). Sections that mount a moment later are picked up by a second pass.
+ */
+async function warmPage() {
+  const imgs = new Set<HTMLImageElement>();
+  const grab = () =>
+    document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => {
+      img.loading = "eager";
+      imgs.add(img);
+    });
+  grab();
+  await new Promise((r) => window.setTimeout(r, 400));
+  grab();
+  await Promise.all(
+    [...imgs].map((img) =>
+      img.complete
+        ? null
+        : new Promise<void>((r) => {
+            img.addEventListener("load", () => r(), { once: true });
+            img.addEventListener("error", () => r(), { once: true });
+          }),
+    ),
+  );
+}
 
 /**
  * "Curtain Up" opening (CLAUDE.md §8.1, designer Nov 27) — it doubles as the page loader:
  * a purple velvet curtain fills the screen → a projector light warms up in its middle → the Star Cineplex logo is
  * born inside the light → while the 3D hall and first trailer load, it holds (the light breathes) → the whole curtain
  * rises in one piece, bottom first edge leading → the hall shows, then the navbar, the hero text and "Tonight at".
- * 3.2–5s, skippable (button or Escape), on every page load (refresh included).
+ * 3.2s, longer only while the hall or the page's images are still loading (images capped at 6s); skippable (button or Escape), on every page load (refresh included).
  */
 export function OpeningSequence() {
   const { t } = useT();
   const setStage = useUi((s) => s.setStage);
+  const setAssetsReady = useUi((s) => s.setAssetsReady);
+  const assets = useRef(false); // the page's images are in (or ASSET_CAP passed)
   const hallReady = useUi((s) => s.hallReady);
   const [show, setShow] = useState<boolean | null>(null); // null = not decided yet (SSR / first paint)
   const root = useRef<HTMLDivElement>(null);
@@ -43,22 +73,61 @@ export function OpeningSequence() {
       if (new URLSearchParams(location.search).has("trailer")) seen = true;
     } catch {}
     setShow(!seen);
-    if (seen) setStage("revealed");
-  }, [setStage]);
+    if (seen) {
+      setStage("revealed");
+      setAssetsReady(true); // no curtain to load behind: the trailer may start right away
+    }
+  }, [setStage, setAssetsReady]);
+
+  // the curtain is up: load the whole page behind it
+  useEffect(() => {
+    if (!show) return;
+    let alive = true;
+    warmPage().then(() => {
+      if (!alive) return;
+      assets.current = true;
+      setAssetsReady(true);
+      tryRise();
+    });
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tryRise reads refs only
+  }, [show, setAssetsReady]);
 
   const finish = useCallback(() => {
     playedThisLoad = true;
+    setAssetsReady(true);
     setShow(false);
-  }, []);
+  }, [setAssetsReady]);
 
   const skip = useCallback(() => {
     tl.current?.kill();
     breathe.current?.kill();
     playedThisLoad = true;
     setStage("revealed");
+    setAssetsReady(true);
     if (root.current) gsap.to(root.current, { opacity: 0, duration: 0.35, ease: "none", onComplete: () => setShow(false) });
     else setShow(false);
-  }, [setStage]);
+  }, [setStage, setAssetsReady]);
+
+  /** the curtain may rise: the hall is ready and the page's images are in (or we've waited ASSET_CAP for them) */
+  const ready = () => {
+    const capped = (performance.now() - started.current) / 1000 > ASSET_CAP;
+    if (capped && !assets.current) {
+      assets.current = true;
+      setAssetsReady(true);
+    }
+    return useUi.getState().hallReady && assets.current;
+  };
+  /** holding at the loader point and everything is ready → rise now */
+  const tryRise = () => {
+    if (!waiting.current || !tl.current || !root.current || !ready()) return;
+    waiting.current = false;
+    breathe.current?.kill();
+    gsap.to(root.current.querySelectorAll(".op-light"), { "--light": 1, duration: 0.25 });
+    tl.current.play();
+  };
 
   // build the timeline
   useEffect(() => {
@@ -68,9 +137,9 @@ export function OpeningSequence() {
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     started.current = performance.now();
 
-    // hold point: wait for the hall (and at least MIN_HOLD); past MAX_HOLD rise the moment it's ready
+    // hold point: wait for the hall and the page's images (and at least MIN_HOLD)
     const holdIfLoading = (tlx: gsap.core.Timeline) => {
-      if (useUi.getState().hallReady) return;
+      if (ready()) return;
       tlx.pause();
       waiting.current = true;
       if (!reduced)
@@ -128,26 +197,18 @@ export function OpeningSequence() {
     };
   }, [show, finish, setStage]);
 
-  // the hall became ready while we were holding → rise now
+  // the hall became ready while we were holding → rise now (if the images are in too)
   useEffect(() => {
-    if (!hallReady || !waiting.current || !tl.current || !root.current) return;
-    waiting.current = false;
-    breathe.current?.kill();
-    gsap.to(root.current.querySelectorAll(".op-light"), { "--light": 1, duration: 0.25 });
-    tl.current.play();
+    if (hallReady) tryRise();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tryRise reads refs only
   }, [hallReady]);
 
-  // safety: never hold the visitor longer than MAX_HOLD once the hall is ready (also covers a missed ready event)
+  // safety: checks the ASSET_CAP clock and covers a missed ready event; never rises before the hall is ready
   useEffect(() => {
     if (!show) return;
-    const id = window.setInterval(() => {
-      if (waiting.current && useUi.getState().hallReady && (performance.now() - started.current) / 1000 > MAX_HOLD) {
-        waiting.current = false;
-        breathe.current?.kill();
-        tl.current?.play();
-      }
-    }, 250);
+    const id = window.setInterval(tryRise, 250);
     return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tryRise reads refs only
   }, [show]);
 
   // Escape skips (§10 Keyboard)

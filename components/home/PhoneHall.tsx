@@ -1,6 +1,7 @@
 "use client";
 
 import { type MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useUi } from "@/lib/store";
 
 // §11 phones: instead of the live 3D hall, a still of the same hall (rendered from the 3D scene with the portrait
 // camera, public/hero/hall-portrait.webp, 1080×2340) with the trailer laid exactly over its screen. Almost no GPU.
@@ -52,6 +53,11 @@ export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted =
   const video = useRef<HTMLVideoElement>(null);
   const [width, setWidth] = useState(0);
   const [live, setLive] = useState(false);
+  // Nov 28: the trailers are full-length files (15–18 MB). On mobile data, downloading one from the first second
+  // starved the posters and photos, so they popped in late. The poster shows on the screen until the page's images
+  // have loaded behind the curtain; then the trailer gets the whole connection.
+  const assetsReady = useUi((s) => s.assetsReady);
+  const videoSrc = assetsReady ? src : undefined;
 
   useLayoutEffect(() => {
     const el = wrap.current;
@@ -64,7 +70,7 @@ export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted =
   // new trailer: seek past the studio logos, then play (same rule as the 3D screen)
   useEffect(() => {
     const el = video.current;
-    if (!el) return;
+    if (!el || !videoSrc) return;
     if (videoRef) videoRef.current = el;
     setLive(false);
     const onMeta = () => {
@@ -81,15 +87,15 @@ export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted =
       el.removeEventListener("seeked", onSeeked);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- startAt only applies to a new src
-  }, [src, videoRef, width > 0]);
+  }, [videoSrc, videoRef, width > 0]);
 
   useEffect(() => {
     const el = video.current;
-    if (!el) return;
+    if (!el || !videoSrc) return;
     el.muted = muted;
     if (playing) el.play().catch(() => {});
     else el.pause();
-  }, [muted, playing, src, width > 0]);
+  }, [muted, playing, videoSrc, width > 0]);
 
   const height = (width * IMG.h) / IMG.w;
   const quad = QUAD.map(([x, y]) => [x * width, y * height] as [number, number]);
@@ -116,7 +122,7 @@ export function PhoneHall({ src, poster, crop, startAt = 0, loop = true, muted =
             <video
               ref={video}
               key={src}
-              src={src}
+              src={videoSrc}
               muted
               loop={loop}
               playsInline
